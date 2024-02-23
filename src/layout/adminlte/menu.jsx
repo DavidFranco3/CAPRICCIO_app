@@ -2,12 +2,20 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 const Menu = ({ datosUsuario }) => {
+
+  console.log("datos usuario menu",datosUsuario)
   const enrutamiento = useNavigate();
+  
   const goTo = (ruta) => enrutamiento(ruta);
 
   const ItemCard = ({ path, title, logo }) => (
     <li className="nav-item">
-      <a className="nav-link" target="_blank" rel="noopener noreferrer" onClick={() => goTo(path)}>
+      <a
+        className="nav-link"
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={() => goTo(path)}
+      >
         <i className={`nav-icon fas ${logo}`} />
         <p>{title}</p>
       </a>
@@ -17,7 +25,7 @@ const Menu = ({ datosUsuario }) => {
     <div>
       <aside className="main-sidebar sidebar-dark-primary elevation-4">
         {/* Brand Logo */}
-        <a href="index3.html" className="brand-link">
+        <a href="#" className="brand-link">
           <img
             src="dist/img/AdminLTELogo.png"
             alt="AdminLTE Logo"
@@ -56,114 +64,127 @@ const Menu = ({ datosUsuario }) => {
               role="menu"
               data-accordion="false"
             >
-              <ItemCard
-                path={"/TerminalPV"}
-                logo={"fa-chart-line"}
-                title={"Ventas"}
-              />
-              <ItemCard
-                path={"/Historiales"}
-                logo={"fa-history"}
-                title={"Historiales"}
-              />
-              <ItemCard
-                path={"/Productos"}
-                logo={"fa-box-open"}
-                title={"Productos"}
-              />
-              <ItemCard
-                path={"/Categorias"}
-                logo={"fa-tags"}
-                title={"Categorías"}
-              />
-              <ItemCard
-                path={"/Ingredientes"}
-                logo={"fa-flask"}
-                title={"Ingredientes"}
-              />
-              <ItemCard
-                path={"/Cajas"}
-                logo={"fa-cash-register"}
-                title={"Cajas"}
-              />
-              <ItemCard
-                path={"/Usuarios"}
-                logo={"fa-users"}
-                title={"Usuarios"}
-              />
-              <ItemCard
-                path={"/Clientes"}
-                logo={"fa-user-friends"}
-                title={"Clientes"}
-              />
-              <ItemCard
-                path={"/PedidosClientes"}
-                logo={"fa-shopping-cart"}
-                title={"Pedidos en línea"}
-              />
-              <ItemCard
-                path={"/Logs"}
-                logo={"fa-clipboard-list"}
-                title={"Logs"}
-              />
-
-              {/**   <li className="nav-item">
-                <a href="pages/widgets.html" className="nav-link">
-                  <i className="nav-icon fas fa-shopping-cart" />
-                  <p>
-                    Pedidos en línea
-                    <span className="right badge badge-danger">New</span>
-                  </p>
-                </a>
-              </li>
-              <li className="nav-item">
-                <a href="pages/gallery.html" className="nav-link">
-                  <i className="nav-icon fas fa-tags" />
-                  <p>Categorías</p>
-                </a>
-              </li>
-              <li className="nav-item">
-                <a href="https://adminlte.io/docs/3.1/" className="nav-link">
-                  <i className="nav-icon fas fa-box-open" />
-                  <p>Productos</p>
-                </a>
-              </li>
-              <li className="nav-item">
-                <a href="#" className="nav-link">
-                  <i className="nav-icon fas fa-flask" />
-                  <p>Ingredientes</p>
-                </a>
-              </li>
-              <li className="nav-item">
-                <a href="#" className="nav-link">
-                  <i className="nav-icon fas fa-history" />
-                  <p>Historiales</p>
-                </a>
-              </li>
-              <li className="nav-item">
-                <a href="#" className="nav-link">
-                  <i className="nav-icon fas fa-cash-register" />
-                  <p>Cajas</p>
-                </a>
-              </li>
-              <li className="nav-item">
-                <a href="#" className="nav-link">
-                  <i className="nav-icon fas fa-users" />
-                  <p>Usuarios</p>
-                </a>
-              </li>
-              <li className="nav-item">
-                <a href="#" className="nav-link">
-                  <i className="nav-icon fas fa-user-friends" />
-                  <p>Clientes</p>
-                </a>
-              </li>
-              <li className="nav-item">
-                <a href="#" className="nav-link">
-                  <i className="nav-icon fas fa-clipboard-list" />
-                  <p>Logs</p>
-                </a>
-              </li>*/}
+              {datosUsuario.estadoUsuario === "true" && 
+              datosUsuario.rol === "administrador" &&
+              datosUsuario.tipo === "interno" && (
+                <>
+                  <ItemCard
+                    path={"/TerminalPV"}
+                    logo={"fa-chart-line"}
+                    title={"Ventas"}
+                  />
+                  <ItemCard
+                    path={"/Historiales"}
+                    logo={"fa-history"}
+                    title={"Historiales"}
+                  />
+                  <ItemCard
+                    path={"/Productos"}
+                    logo={"fa-box-open"}
+                    title={"Productos"}
+                  />
+                  <ItemCard
+                    path={"/Categorias"}
+                    logo={"fa-tags"}
+                    title={"Categorías"}
+                  />
+                  <ItemCard
+                    path={"/Ingredientes"}
+                    logo={"fa-flask"}
+                    title={"Ingredientes"}
+                  />
+                  <ItemCard
+                    path={"/Cajas"}
+                    logo={"fa-cash-register"}
+                    title={"Cajas"}
+                  />
+                  <ItemCard
+                    path={"/Usuarios"}
+                    logo={"fa-users"}
+                    title={"Usuarios"}
+                  />
+                  <ItemCard
+                    path={"/Clientes"}
+                    logo={"fa-user-friends"}
+                    title={"Clientes"}
+                  />
+                  <ItemCard
+                    path={"/PedidosClientes"}
+                    logo={"fa-shopping-cart"}
+                    title={"Pedidos en línea"}
+                  />
+                  <ItemCard
+                    path={"/Logs"}
+                    logo={"fa-clipboard-list"}
+                    title={"Logs"}
+                  />
+                </>
+              )}
+              {/*Vista del Dashboard para un usuario cajero*/}
+              {
+                datosUsuario.rol === "vendedor" &&
+                datosUsuario.tipo === "interno" && (
+                  <>
+                    
+                      <ItemCard
+                        path={"/TerminalPV"}
+                        logo={"fa-chart-line"}
+                        title={"Ventas"}
+                      />
+                      <ItemCard
+                        path={"/Historiales"}
+                        logo={"fa-history"}
+                        title={"Historiales"}
+                      />
+                      <ItemCard
+                        path={"/Cajas"}
+                        logo={"fa-cash-register"}
+                        title={"Cajas"}
+                      />
+                      <ItemCard
+                        path={"/Clientes"}
+                        logo={"fa-user-friends"}
+                        title={"Clientes"}
+                      />
+                      <ItemCard
+                        path={"/PedidosClientes"}
+                        logo={"fa-shopping-cart"}
+                        title={"Pedidos en línea"}
+                      />
+                    
+                  </>
+                )}
+              {/*Vista del Dashboard para un usuario mesero*/}
+              {
+                datosUsuario.rol === "mesero" &&
+                datosUsuario.tipo === "interno" && (
+                  <>
+                    
+                      <ItemCard
+                        path={"/TerminalPV"}
+                        logo={"fa-char-line"}
+                        title={"Ventas"}
+                      />
+                      <ItemCard
+                        path={"/HistorialesNoAdmin"}
+                        logo={"fa-history"}
+                        title={"Historiales"}
+                      />
+                    
+                  </>
+                )}
+              {/*Vista del Dashboard para un usuario cliente*/}
+              {datosUsuario.tipo === "externo" && (
+                <>
+                  
+                    <ItemCard
+                      path={"/PedidosClientes"}
+                      logo={"fa-history"}
+                      title={"Pedidos en línea"}
+                    />
+                  
+                </>
+              )}
             </ul>
           </nav>
 
