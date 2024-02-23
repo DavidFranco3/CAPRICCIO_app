@@ -21,6 +21,7 @@ import MovimientosIngredientes from "../page/MovimientosIngredientes";
 import RegistraProductos from "../components/Productos/RegistraProductos";
 import ModificaProductos from "../components/Productos/ModificaProductos";
 import LayoutAdminLTE from "../layout/adminlte/layout";
+import VistaMesas from "../components/Mesas/VistaMesas/VistaMesas";
 
 
 const configRouting = [
@@ -110,9 +111,14 @@ const configRouting = [
         roles: ["vendedor", "mesero"]
     },
     {
+        path: "/Mesas",
+        page: VistaMesas,
+        roles: ["administrador","vendedor", "mesero"]
+    },
+    {
         path: "*",
         page: Error404,
-        roles: ["administrador", "vendedor", "cliente", "mesero"]
+        roles: ["administrador", "vendedor", "mesero"]
     },
     {
         path: "/",

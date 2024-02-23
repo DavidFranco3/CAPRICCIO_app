@@ -2,10 +2,9 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 const Menu = ({ datosUsuario }) => {
-
-  console.log("datos usuario menu",datosUsuario)
+  console.log("datos usuario menu", datosUsuario);
   const enrutamiento = useNavigate();
-  
+
   const goTo = (ruta) => enrutamiento(ruta);
 
   const ItemCard = ({ path, title, logo }) => (
@@ -64,125 +63,123 @@ const Menu = ({ datosUsuario }) => {
               role="menu"
               data-accordion="false"
             >
-              {datosUsuario.estadoUsuario === "true" && 
-              datosUsuario.rol === "administrador" &&
-              datosUsuario.tipo === "interno" && (
-                <>
-                  <ItemCard
-                    path={"/TerminalPV"}
-                    logo={"fa-chart-line"}
-                    title={"Ventas"}
-                  />
-                  <ItemCard
-                    path={"/Historiales"}
-                    logo={"fa-history"}
-                    title={"Historiales"}
-                  />
-                  <ItemCard
-                    path={"/Productos"}
-                    logo={"fa-box-open"}
-                    title={"Productos"}
-                  />
-                  <ItemCard
-                    path={"/Categorias"}
-                    logo={"fa-tags"}
-                    title={"Categorías"}
-                  />
-                  <ItemCard
-                    path={"/Ingredientes"}
-                    logo={"fa-flask"}
-                    title={"Ingredientes"}
-                  />
-                  <ItemCard
-                    path={"/Cajas"}
-                    logo={"fa-cash-register"}
-                    title={"Cajas"}
-                  />
-                  <ItemCard
-                    path={"/Usuarios"}
-                    logo={"fa-users"}
-                    title={"Usuarios"}
-                  />
-                  <ItemCard
-                    path={"/Clientes"}
-                    logo={"fa-user-friends"}
-                    title={"Clientes"}
-                  />
-                  <ItemCard
-                    path={"/PedidosClientes"}
-                    logo={"fa-shopping-cart"}
-                    title={"Pedidos en línea"}
-                  />
-                  <ItemCard
-                    path={"/Logs"}
-                    logo={"fa-clipboard-list"}
-                    title={"Logs"}
-                  />
-                </>
-              )}
-              {/*Vista del Dashboard para un usuario cajero*/}
-              {
-                datosUsuario.rol === "vendedor" &&
+              {datosUsuario.estadoUsuario === "true" &&
+                datosUsuario.rol === "administrador" &&
                 datosUsuario.tipo === "interno" && (
                   <>
-                    
-                      <ItemCard
-                        path={"/TerminalPV"}
-                        logo={"fa-chart-line"}
-                        title={"Ventas"}
-                      />
-                      <ItemCard
-                        path={"/Historiales"}
-                        logo={"fa-history"}
-                        title={"Historiales"}
-                      />
-                      <ItemCard
-                        path={"/Cajas"}
-                        logo={"fa-cash-register"}
-                        title={"Cajas"}
-                      />
-                      <ItemCard
-                        path={"/Clientes"}
-                        logo={"fa-user-friends"}
-                        title={"Clientes"}
-                      />
-                      <ItemCard
-                        path={"/PedidosClientes"}
-                        logo={"fa-shopping-cart"}
-                        title={"Pedidos en línea"}
-                      />
-                    
+                    <ItemCard
+                      path={"/TerminalPV"}
+                      logo={"fa-chart-line"}
+                      title={"Ventas"}
+                    />
+                    <ItemCard
+                      path={"/Historiales"}
+                      logo={"fa-history"}
+                      title={"Historiales"}
+                    />
+                    <ItemCard
+                      path={"/Productos"}
+                      logo={"fa-box-open"}
+                      title={"Productos"}
+                    />
+                    <ItemCard
+                      path={"/Categorias"}
+                      logo={"fa-tags"}
+                      title={"Categorías"}
+                    />
+                    <ItemCard
+                      path={"/Ingredientes"}
+                      logo={"fa-flask"}
+                      title={"Ingredientes"}
+                    />
+                    <ItemCard
+                      path={"/Cajas"}
+                      logo={"fa-cash-register"}
+                      title={"Cajas"}
+                    />
+                    <ItemCard
+                      path={"/Mesas"}
+                      logo={"fa-table"}
+                      title={"Mesas"}
+                    />
+                    <ItemCard
+                      path={"/Usuarios"}
+                      logo={"fa-users"}
+                      title={"Usuarios"}
+                    />
+                    <ItemCard
+                      path={"/Clientes"}
+                      logo={"fa-user-friends"}
+                      title={"Clientes"}
+                    />
+                    <ItemCard
+                      path={"/PedidosClientes"}
+                      logo={"fa-shopping-cart"}
+                      title={"Pedidos en línea"}
+                    />
+
+                    <ItemCard
+                      path={"/Logs"}
+                      logo={"fa-clipboard-list"}
+                      title={"Logs"}
+                    />
+                  </>
+                )}
+              {/*Vista del Dashboard para un usuario cajero*/}
+              {datosUsuario.rol === "vendedor" &&
+                datosUsuario.tipo === "interno" && (
+                  <>
+                    <ItemCard
+                      path={"/TerminalPV"}
+                      logo={"fa-chart-line"}
+                      title={"Ventas"}
+                    />
+                    <ItemCard
+                      path={"/Historiales"}
+                      logo={"fa-history"}
+                      title={"Historiales"}
+                    />
+                    <ItemCard
+                      path={"/Cajas"}
+                      logo={"fa-cash-register"}
+                      title={"Cajas"}
+                    />
+                    <ItemCard
+                      path={"/Clientes"}
+                      logo={"fa-user-friends"}
+                      title={"Clientes"}
+                    />
+                    <ItemCard
+                      path={"/PedidosClientes"}
+                      logo={"fa-shopping-cart"}
+                      title={"Pedidos en línea"}
+                    />
                   </>
                 )}
               {/*Vista del Dashboard para un usuario mesero*/}
-              {
-                datosUsuario.rol === "mesero" &&
+              {datosUsuario.rol === "mesero" &&
                 datosUsuario.tipo === "interno" && (
                   <>
-                    
-                      <ItemCard
-                        path={"/TerminalPV"}
-                        logo={"fa-char-line"}
-                        title={"Ventas"}
-                      />
-                      <ItemCard
-                        path={"/HistorialesNoAdmin"}
-                        logo={"fa-history"}
-                        title={"Historiales"}
-                      />
-                    
+                    <ItemCard
+                      path={"/TerminalPV"}
+                      logo={"fa-char-line"}
+                      title={"Ventas"}
+                    />
+                    <ItemCard
+                      path={"/HistorialesNoAdmin"}
+                      logo={"fa-history"}
+                      title={"Historiales"}
+                    />
                   </>
                 )}
               {/*Vista del Dashboard para un usuario cliente*/}
               {datosUsuario.tipo === "externo" && (
                 <>
-                  
-                    <ItemCard
-                      path={"/PedidosClientes"}
-                      logo={"fa-history"}
-                      title={"Pedidos en línea"}
-                    />
-                  
+                  <ItemCard
+                    path={"/PedidosClientes"}
+                    logo={"fa-history"}
+                    title={"Pedidos en línea"}
+                  />
                 </>
               )}
             </ul>
