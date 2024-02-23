@@ -1,0 +1,77 @@
+.btnCategorias{
+    background-color: transparent !important;;
+    margin: .5vw;
+    border: transparent !important;
+    transition: transform 0.3s ease;
+    
+}
+.btnCategorias:hover {
+    transform: scale(1.2);
+}
+.categoria {
+    border: 1px solid #ccc;
+    border-radius: 10%; /* Hacemos que el borde sea circular */
+    padding: 1rem; /* Agregamos relleno */
+    overflow: hidden;
+    background-color: rgb(231, 210, 92);
+    max-width: 300px;
+    height: 15rem;
+    box-shadow: 1px 13px 31px -6px rgba(0,0,0,0.75);
+    -webkit-box-shadow: 1px 13px 31px -6px rgba(0,0,0,0.75);
+    -moz-box-shadow: 1px 13px 31px -6px rgba(0,0,0,0.75);
+}
+
+.categoria__image {
+    width: 8rem;
+    height: 8rem;
+    background: white;
+    border: 1px solid var(--secondary-color-lighter);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    box-shadow: 1px 13px 31px -6px rgba(0,0,0,0.75);
+    -webkit-box-shadow: 1px 13px 31px -6px rgba(0,0,0,0.75);
+    -moz-box-shadow: 1px 13px 31px -6px rgba(0,0,0,0.75);
+    transition: transform 0.3s ease;
+}
+
+.categoria__image img {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 50%;
+}
+
+.categoria__image:hover img {
+    transform: scale(1.2);
+}
+
+.categoria__name {
+    position: relative;
+    color:black;
+    
+    border-radius: 1vw;
+    padding: 10px;
+    margin-top: 1.2vw;
+    background-color: rgb(255, 252, 248);
+}
+
+
+/*regresar*/
+.regresarCategorias {
+    position: relative;
+    display: flex;
+    font-size: 20px;
+    
+    color: #000000;
+    cursor: pointer;
+    z-index: 1000;
+    align-items: right;
+    float: right;
+}
+
+.regresarCategorias .home {
+    margin-right: 10px;
+    color: #ccc;
+}

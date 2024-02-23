@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import "../../../scss/styles.scss";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHouse } from '@fortawesome/free-solid-svg-icons';
 import Producto from "../Producto";
@@ -7,6 +6,7 @@ import Categoria from "../Categoria";
 import { getTokenApi, isExpiredToken, logoutApi } from "../../../api/auth";
 import { toast } from "react-toastify";
 import { Button } from "react-bootstrap";
+import "./menu.css";
 
 function Menu(props) {
     const { addItems, setRefreshCheckLogin, listProductos, listCategorias, setCategoriaActual, categoriaActual } = props;
@@ -34,14 +34,14 @@ function Menu(props) {
 
 const ButtonBack = ({ icon, onClick }) => {
     return (
-        <div className="regresarCategorias" style={{ fontSize: '30px', margin: '20px 0', color: '#007bff', cursor: 'pointer', display: 'flex', alignItems: 'center' }} onClick={onClick}>
-            <FontAwesomeIcon
-                icon={icon}
-                className="home"
-                title="Regresar"
-            />
-            <span style={{ marginLeft: '10px' }}>Regresar</span>
+        <>
+        <div className="regresarCategorias"  onClick={onClick}>
+            <i className="fas fa-tags"></i>
+            <span style={{ marginLeft: '10px' }}>Categorias</span>
         </div>
+        <br/>
+        <br/>
+        </>
     )
 }
 
@@ -53,6 +53,7 @@ const ButtonBack = ({ icon, onClick }) => {
     const MenuCategorias = ({ index, nombre, onClick, imagen }) => {
         return (
             <Button
+                className='btnCategorias'
                 key={index}
                 title={nombre}
                 onClick={onClick}>
@@ -68,6 +69,7 @@ const ButtonBack = ({ icon, onClick }) => {
     const MenuProductos = ({ index, nombre, onClick, imagen, precio }) => {
         return (
             <Button
+            className='btnCategorias'
                 key={index}
                 title={nombre + " " + "$" + precio}
                 onClick={onClick}>
