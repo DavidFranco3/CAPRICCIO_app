@@ -4,6 +4,7 @@
 
 .divButtonMesas{
     text-align: right;
+    margin-bottom: 1%;
 }
 
 .divMesasView {
@@ -17,12 +18,17 @@
   box-sizing: border-box; /* Include padding and border in the element's total width and height */
 }
 
-.childMesasView {
-  border: 1px solid black;
-  height: 15rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.descMesa{
+    font-size: x-small;
+    text-transform: uppercase;
+}
+
+.titMesa{
+    text-transform: uppercase;
+}
+
+.mesaDisponible{
+    background-color:rgb(47, 255, 92);
 }
 
 @media (max-width: 900px) {

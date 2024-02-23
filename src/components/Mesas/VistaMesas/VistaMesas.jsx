@@ -3,20 +3,83 @@ import "../style.css";
 import { Button } from "react-bootstrap";
 import BasicModal from "../../Modal/BasicModal";
 import RegistoMesas from "../RegistroMesas/RegistoMesas";
+import TerminalPV from "../../../page/TerminalPV";
 
 const VistaMesas = () => {
   const mesas = [
-    "Mesa 1",
-    "Mesa 2",
-    "Mesa 3",
-    "Mesa 4",
-    "Mesa 5",
-    "Mesa 6",
-    "Mesa 7",
-    "Mesa 8",
-    "Mesa 9",
-    "Mesa 10",
+    {
+      nombre: "Mesa 1",
+      numero: "1",
+      nPersonas: "4",
+      descripcion: "mesa para 4 personas",
+      estado: "0",
+    },
+    {
+      nombre: "Mesa 2",
+      numero: "2",
+      nPersonas: "4",
+      descripcion: "mesa para 4 personas",
+      estado: "1",
+    },
+    {
+      nombre: "Mesa 3",
+      numero: "3",
+      nPersonas: "4",
+      descripcion: "mesa para 4 personas",
+      estado: "0",
+    },
+    {
+      nombre: "Mesa 4",
+      numero: "4",
+      nPersonas: "4",
+      descripcion: "mesa para 4 personas",
+      estado: "1",
+    },
+    {
+      nombre: "Mesa 5",
+      numero: "5",
+      nPersonas: "4",
+      descripcion: "mesa para 4 personas",
+      estado: "1",
+    },
+    {
+      nombre: "Mesa 6",
+      numero: "6",
+      nPersonas: "4",
+      descripcion: "mesa para 4 personas",
+      estado: "1",
+    },
+    {
+      nombre: "Mesa 7",
+      numero: "7",
+      nPersonas: "4",
+      descripcion: "mesa para 4 personas",
+      estado: "1",
+    },
+    {
+      nombre: "Mesa 8",
+      numero: "8",
+      nPersonas: "4",
+      descripcion: "mesa para 4 personas",
+      estado: "1",
+    },
+    {
+      nombre: "Mesa 9",
+      numero: "9",
+      nPersonas: "4",
+      descripcion: "mesa para 4 personas",
+      estado: "1",
+    },
+    {
+      nombre: "Mesa 10",
+      numero: "10",
+      nPersonas: "4",
+      descripcion: "mesa para 4 personas",
+      estado: "0",
+    },
   ];
+
+  console.log(mesas);
 
   const [showModal, setShowModal] = useState(false);
   const [contentModal, setContentModal] = useState(null);
@@ -24,6 +87,12 @@ const VistaMesas = () => {
 
   const registroUsuarios = (content) => {
     setTitulosModal("Registar mesa");
+    setContentModal(content);
+    setShowModal(true);
+  };
+
+  const clicMesa = (content) => {
+    setTitulosModal("Tomar Orden");
     setContentModal(content);
     setShowModal(true);
   };
@@ -37,9 +106,7 @@ const VistaMesas = () => {
         <div className="divButtonMesas">
           <Button
             onClick={() =>
-              registroUsuarios(
-                <RegistoMesas setShow={setShowModal} />
-              )
+              registroUsuarios(<RegistoMesas setShow={setShowModal} />)
             }
           >
             <i class="fa fa-solid fa-plus" /> Agregar
@@ -47,8 +114,25 @@ const VistaMesas = () => {
         </div>
         <div className="divMesasView">
           {mesas.map((mesa, index) => (
-            <div key={index} className="childMesasView">
-              {mesa}
+            <div
+              class="info-box"
+              onClick={() =>
+                clicMesa(<TerminalPV setShow={setShowModal} />)
+              }
+            >
+              <span
+                class={
+                  "info-box-icon " +
+                  (mesa.estado == "1" ? "mesaDisponible" : "bg-secondary")
+                }
+              >
+                <i class="fas fa-utensils"></i>
+              </span>
+              <div class="info-box-content">
+                <span class="info-box-number titMesa">{mesa.nombre}</span>
+                <span class="info-box-text">N. Personas: {mesa.nPersonas}</span>
+                <span class="info-box-text descMesa">{mesa.descripcion}</span>
+              </div>
             </div>
           ))}
         </div>
