@@ -1,12 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../style.css";
 import { Button } from "react-bootstrap";
 import BasicModal from "../../Modal/BasicModal";
 import RegistoMesas from "../RegistroMesas/RegistoMesas";
 import TerminalPV from "../../../page/TerminalPV";
+import { obtenerMesas } from "../../../api/mesas";
+import { toast } from "react-toastify";
 
 const VistaMesas = () => {
-  const mesas = [
+  /*const mesas = [
     {
       nombre: "Mesa 1",
       numero: "1",
@@ -77,9 +79,37 @@ const VistaMesas = () => {
       descripcion: "mesa para 4 personas",
       estado: "0",
     },
-  ];
+  ];*/
 
-  console.log(mesas);
+
+  // Para guardar el listado de categorias
+    const [listMesas, setListMesas] = useState([]);
+
+    const cargarMesas = () => {
+        try {
+          obtenerMesas().then(response => {
+                const { data } = response;
+                console.log("mesas", data);
+                if (!listMesas && data) {
+                  setListMesas(formatModelMesas(data));
+                  
+                } else {
+                    const datosMesas = formatModelMesas(data);
+                    setListMesas(datosMesas);
+                    console.log("mesas", datosMesas);
+                }
+            }).catch(e => {
+                console.log(e)
+            })
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
+    useEffect(() => {
+      cargarMesas();
+    }, []);
+
 
   const [showModal, setShowModal] = useState(false);
   const [contentModal, setContentModal] = useState(null);
@@ -113,7 +143,7 @@ const VistaMesas = () => {
           </Button>
         </div>
         <div className="divMesasView">
-          {mesas.map((mesa, index) => (
+          {listMesas.map((mesa, index) => (
             <div
               class="info-box"
               onClick={() =>
@@ -143,5 +173,20 @@ const VistaMesas = () => {
     </>
   );
 };
+
+function formatModelMesas(mesas) {
+  const tempmesas = []
+  mesas.forEach((mesas) => {
+    tempmesas.push({
+          id: mesas._id,
+          numeroMesa: mesas.numeroMesa,
+          descripcion: mesas.descripcion,
+          numeroPersonas: mesas.numeroPersonas,
+          estado: mesas.estado,
+          
+      });
+  });
+  return tempmesas;
+}
 
 export default VistaMesas;

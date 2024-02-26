@@ -169,3 +169,7 @@ export const ENDPOINTObtenerMovimientosCajasPorCaja = "/movimientosCajas/obtener
 export const ENDPOINTEliminarMovimientosCajas = "/movimientosCajas/eliminar";
 export const ENDPOINTActualizarMovimientosCajas = "/movimientosCajas/actualizar";
 export const ENDPOINTCancelarMovimientosCajas = "/movimientosCajas/cancelar";
+
+// Mesas
+export const ENDPOINTRegistroMesas = "/mesas/registro";
+export const ENDPOINTObtenerMesas = "/mesas/listar";
