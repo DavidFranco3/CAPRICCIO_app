@@ -18,11 +18,53 @@ import { toast } from "react-toastify";
 import Lottie from "react-lottie-player";
 import AnimacionLoading from "../../assets/json/loading.json";
 import { useNavigate } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowCircleLeft } from "@fortawesome/free-solid-svg-icons";
+import { obtenerVentas } from "../../api/ventas";
+
 
 function TerminalPv(props) {
   const { setRefreshCheckLogin } = props;
+
+  const estadoticket = props.estado;
+  const mesaticket = props.mesaticket;
+  const mesaid = props.idmesa;
+  const idTicket = props.idTicket;
+  console.log("id del ticket", idTicket);
+
+
+/**obtener ticke por id*/
+const [listMesas, setListMesas] = useState([]);
+
+  const cargarMesas = (id) => {
+    try {
+      obtenerVentas(id)
+        .then((response) => {
+          const { data } = response;
+          console.log("datos del ticket", data);
+          if (!listMesas && data) {
+            setListMesas(formatModelVentas(data));
+          } else {
+            const datosMesas = formatModelVentas(data);
+            setListMesas(datosMesas);
+            //console.log("mesas", datosMesas);
+          }
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  useEffect(() => {
+    cargarMesas(idTicket);
+  }, [idTicket]);
+/**
+ * fin obtener ticket por id 
+ */
+
+
+
 
   // Para definir el enrutamiento
   const enrutamiento = useNavigate();
@@ -242,6 +284,9 @@ function TerminalPv(props) {
                       empty={emptyTicket}
                       remove={removeProduct}
                       idUsuario={idUsuario}
+                      estadoticket = {estadoticket}
+                      mesaticket = {mesaticket}
+                      mesaid = {mesaid}
                     />
                   </div>
                 </div>
@@ -293,6 +338,41 @@ function formatModelCategorias(categorias) {
     });
   });
   return tempCategorias;
+}
+
+
+function formatModelVentas(ventas) {
+  const tempVentas = [];
+  ventas.forEach((venta) => {
+      tempVentas.push({
+          id: venta._id,
+          numeroTiquet: venta.numeroTiquet,
+          cliente: venta.cliente,
+          mesa: venta.mesa,
+          tipo: venta.tipo ? venta.tipo : "No disponible",
+          usuario: venta.usuario,
+          productosVendidos: venta.productos.length,
+          articulosVendidos: venta.productos,
+          detalles: venta.detalles,
+          tipoPago: venta.tipoPago,
+          efectivo: venta.efectivo,
+          cambio: venta.cambio,
+          total: parseFloat(venta.total),
+          subtotal: parseFloat(venta.subtotal),
+          iva: parseFloat(venta.iva),
+          comision: parseFloat(venta.comision),
+          pagado: venta.pagado,
+          hacerPedido: venta.hacerPedido,
+          tipoPedido: venta.tipoPedido,
+          estado: venta.estado,
+          atendido: !venta.atendido ? "false" : venta.atendido,
+          semana: !venta.semana ? "0" : venta.semana, // Corregido
+          año: !venta.año ? "2023" : venta.año, // Simplificado
+          fechaCreacion: venta.createdAt,
+          fechaActualizacion: venta.updatedAt
+      });
+  });
+  return tempVentas;
 }
 
 export default withRouter(TerminalPv);

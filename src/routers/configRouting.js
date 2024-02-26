@@ -22,6 +22,7 @@ import RegistraProductos from "../components/Productos/RegistraProductos";
 import ModificaProductos from "../components/Productos/ModificaProductos";
 import LayoutAdminLTE from "../layout/adminlte/layout";
 import VistaMesas from "../components/Mesas/VistaMesas/VistaMesas";
+import OrdeneMesas from "../components/ordenesMesas/ordeneMesas";
 
 
 const configRouting = [
@@ -103,6 +104,11 @@ const configRouting = [
     {
         path: "/Historiales",
         page: Historiales,
+        roles: ["administrador", "vendedor", "mesero"]
+    },
+    {
+        path: "/Ordenes",
+        page: OrdeneMesas,
         roles: ["administrador", "vendedor", "mesero"]
     },
     {

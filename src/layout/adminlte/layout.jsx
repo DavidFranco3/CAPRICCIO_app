@@ -21,7 +21,7 @@ const LayoutAdminLTE = (props) => {
       try {
         obtenerUsuario(obtenidusuarioLogueado(getTokenApi())).then(response => {
               const { data } = response;
-              console.log("usuarios",data)
+              //console.log("usuarios",data)
               setDatosUsuario(data);
           }).catch((e) => {
               console.log(e);

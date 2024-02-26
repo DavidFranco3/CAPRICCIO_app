@@ -18,8 +18,33 @@ import timezone from "dayjs/plugin/timezone";
 
 import { LogsInformativos } from "../../Logs/LogsSistema/LogsSistema";
 
+import {actualizaDeshabilitarMesas} from "../../../api/mesas"
+
 function Tiquet(props) {
   const { idUsuario, products, empty, remove } = props;
+
+  const estadoticket = props.estadoticket;
+  const mesaticket = props.mesaticket;
+  const idmesa = props.mesaid;
+  console.log("mesa en ticket", idmesa);
+
+
+
+  //update a mesa
+  const actualizarEstadoS = async () => {
+    try {
+      const dataTemp = {
+        estado: "0",
+      };
+      actualizaDeshabilitarMesas(idmesa, dataTemp).then((response) => {
+        const { data } = response;
+        toast.success(data.mensaje);
+        
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   // Importa el complemento de zona horaria
   dayjs.extend(utc);
@@ -185,6 +210,7 @@ function Tiquet(props) {
   }, [determinaBusquedaTiquet]);
 
   const handleRegistraVenta = () => {
+    
     let iva = "0";
     let comision = "0";
 
@@ -217,13 +243,14 @@ function Tiquet(props) {
       const totalCalculado = parseFloat(total) - descuentoCalculado;
 
       try {
+
         const dataTemp = {
           numeroTiquet: numeroTiquet,
           cliente: nombreCliente,
           tipo: "Pedido inicial",
-          mesa: mesa,
+          mesa: mesaticket,
           usuario: idUsuario,
-          estado: "true",
+          estado: estadoticket,
           detalles: observaciones,
           tipoPago: tipoPago,
           tipoPedido: tipoPedido,
@@ -271,7 +298,7 @@ function Tiquet(props) {
           );
           handlePrint();
           toast.success(data.mensaje);
-
+          actualizarEstadoS();
           handleEmptyTicket();
         });
       } catch (e) {

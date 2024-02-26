@@ -68,25 +68,11 @@ function Cajas(props) {
         obtenerDatosUsuario();
     }, []);
 
-    console.log(datosUltimoMovimiento);
+    
 
-    const cierreSesion = () => {
-        if (getTokenApi()) {
-            if (isExpiredToken(getTokenApi())) {
-                LogsInformativosLogout("Sesión finalizada", datosUsuario, setRefreshCheckLogin);
-                logoutApi();
-                setRefreshCheckLogin(true);
-                toast.warning('Sesión expirada');
-                toast.success('Sesión cerrada por seguridad');
-            }
-        }
-    }
+    
 
-    // Cerrado de sesión automatico
-    useEffect(() => {
-        cierreSesion();
-    }, [])
-    // Termina cerrado de sesión automatico
+    
 
     // Para la lista de abonos
     const registroCajas = (content) => {
@@ -182,8 +168,7 @@ function Cajas(props) {
                     <Col xs={6} md={8}>
                         <div style={{ float: 'right' }}>
                             {
-                                datosUltimoMovimiento.movimiento == "Cierre" &&
-                                (
+                                
                                     <>
                                         <Button
                                             title="Registrar una nueva cajaa"
@@ -203,7 +188,7 @@ function Cajas(props) {
                                             <FontAwesomeIcon icon={faCirclePlus} /> Registrar
                                         </Button>
                                     </>
-                                )
+                                
                             }
                             <Button
                                 title="Regresar a la pagina anterior"

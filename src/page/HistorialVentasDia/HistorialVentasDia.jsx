@@ -15,13 +15,13 @@ import Lottie from "react-lottie-player";
 import AnimacionLoading from "../../assets/json/loading.json";
 
 function HistorialVentasDia(props) {
-    const { dia, setRefreshCheckLogin, location } = props;
-
+    const { dia, location } = props;
+    
     const [tab, setTab] = useState('general');
 
     dayjs.locale('es');
     dayjs.extend(localizedFormat);
-
+    /*
     const [datosUsuario, setDatosUsuario] = useState("");
 
     const obtenerDatosUsuario = () => {
@@ -61,7 +61,7 @@ function HistorialVentasDia(props) {
     useEffect(() => {
         cierreSesion();
     }, []);
-
+*/
     //console.log(dia)
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [page, setPage] = useState(1);
@@ -74,44 +74,28 @@ function HistorialVentasDia(props) {
         try {
             listarDetallesVentasPorDia(dia).then(response => {
                 const { data } = response;
-                setNoTotalVentas(data)
+                setNoTotalVentas(data);
             }).catch(e => {
-                console.log(e)
-            })
-
-            if (page === 0) {
-                setPage(1)
-
-                listarPaginacionVentasDia(page, rowsPerPage, dia).then(response => {
-                    const { data } = response;
-                    if (!listDetallesDia && data) {
-                        setListDetallesDia(formatModelVentas(data));
-                    } else {
-                        const datosVentas = formatModelVentas(data);
-                        setListDetallesDia(datosVentas)
-                    }
-                }).catch(e => {
-                    console.log(e)
-                })
-            } else {
-                listarPaginacionVentasDia(page, rowsPerPage, dia).then(response => {
-                    const { data } = response;
-                    //console.log(data)
-
-                    if (!listDetallesDia && data) {
-                        setListDetallesDia(formatModelVentas(data));
-                    } else {
-                        const datosVentas = formatModelVentas(data);
-                        setListDetallesDia(datosVentas)
-                    }
-                }).catch(e => {
-                    console.log(e)
-                })
-            }
+                console.log(e);
+            });
+    
+            listarPaginacionVentasDia(page, rowsPerPage, dia).then(response => {
+                const { data } = response;
+                if (!listDetallesDia && data) {
+                    setListDetallesDia(formatModelVentas(data));
+                } else {
+                    const datosVentas = formatModelVentas(data);
+                    setListDetallesDia(datosVentas);
+                }
+                setPage(1); // Mover la actualización de la página aquí
+            }).catch(e => {
+                console.log(e);
+            });
         } catch (e) {
-            console.log(e)
+            console.log(e);
         }
     }
+    
 
     useEffect(() => {
         cargarDatos();
@@ -124,9 +108,6 @@ function HistorialVentasDia(props) {
         try {
             listarConsumoIngredientesDiario(dia).then(response => {
                 const { data } = response;
-
-                //console.log(data);
-
                 if (!listIngredientesConsumidos && data) {
                     setListIngredientesConsumidos(formatModelIngredientesConsumidos(data));
                 } else {
@@ -171,7 +152,7 @@ function HistorialVentasDia(props) {
                                             listDetallesDia={listDetallesDia}
                                             dia={dia}
                                             location={location}
-                                            setRefreshCheckLogin={setRefreshCheckLogin}
+                                            //setRefreshCheckLogin={setRefreshCheckLogin}
                                             setRowsPerPage={setRowsPerPage}
                                             rowsPerPage={rowsPerPage}
                                             page={page}
@@ -191,7 +172,7 @@ function HistorialVentasDia(props) {
                                         <ListIngredientesConsumidosDia
                                             listIngredientesConsumidos={listIngredientesConsumidos}
                                             location={location}
-                                            setRefreshCheckLogin={setRefreshCheckLogin}
+                                            //setRefreshCheckLogin={setRefreshCheckLogin}
                                         />
                                     </Suspense>
                                 </Tab>
@@ -210,7 +191,13 @@ function HistorialVentasDia(props) {
 }
 
 function formatModelVentas(ventas) {
-    const tempVentas = []
+    // Verificar si ventas es un array
+    if (!Array.isArray(ventas)) {
+        console.error("El argumento 'ventas' no es un array válido.");
+        return [];
+    }
+
+    const tempVentas = [];
     ventas.forEach((venta) => {
         tempVentas.push({
             id: venta._id,
@@ -237,6 +224,7 @@ function formatModelVentas(ventas) {
     });
     return tempVentas;
 }
+
 
 function formatModelIngredientesConsumidos(ingredientes) {
     const tempIngredientes = []

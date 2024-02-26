@@ -58,7 +58,7 @@ function Dropzone(props) {
     ));
 
     return (
-        <div className="archivo"
+        <div className="archivoimg"
             {...getRootProps()}
         >
             {imagenProductoBD && slide.length === 0 ?
