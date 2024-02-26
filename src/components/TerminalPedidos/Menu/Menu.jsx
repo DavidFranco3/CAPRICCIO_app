@@ -38,20 +38,21 @@ function Menu(props) {
 
     const ButtonBack = ({ icon, onClick }) => {
         return (
-            <div className="regresarCategorias">
-                <FontAwesomeIcon
-                    icon={icon}
-                    className="home"
-                    title="Regresar"
-                    onClick={onClick}
-                />
+            <>
+            <div className="regresarCategorias"  onClick={onClick}>
+                <i className="fas fa-tags"></i>
+                <span style={{ marginLeft: '10px' }}>Categorias</span>
             </div>
+            <br/>
+            <br/>
+            </>
         )
     }
 
     const MenuCategorias = ({ index, nombre, onClick, imagen }) => {
         return (
             <Button
+            className='btnCategorias'
                 key={index}
                 title={nombre}
                 onClick={onClick}>
@@ -67,6 +68,7 @@ function Menu(props) {
     const MenuProductos = ({ index, nombre, onClick, imagen, precio }) => {
         return (
             <Button
+            className='btnCategorias'
                 key={index}
                 title={nombre + " " + "$" + precio}
                 onClick={onClick}>

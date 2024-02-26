@@ -15,7 +15,7 @@ function Categoria(props) {
           className="position-relative p-3 bg-gray"
           style={{
             height: 180,
-            width:"15vw",
+            width:"14vw",
             backgroundImage: `url(${imagen})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
