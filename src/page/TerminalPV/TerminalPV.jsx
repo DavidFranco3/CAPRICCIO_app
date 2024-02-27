@@ -30,43 +30,6 @@ function TerminalPv(props) {
   const idTicket = props.idTicket;
   console.log("id del ticket", idTicket);
 
-
-/**obtener ticke por id*/
-const [listMesas, setListMesas] = useState([]);
-
-  const cargarMesas = (id) => {
-    try {
-      obtenerVentas(id)
-        .then((response) => {
-          const { data } = response;
-          console.log("datos del ticket", data);
-          if (!listMesas && data) {
-            setListMesas(formatModelVentas(data));
-          } else {
-            const datosMesas = formatModelVentas(data);
-            setListMesas(datosMesas);
-            //console.log("mesas", datosMesas);
-          }
-        })
-        .catch((e) => {
-          console.log(e);
-        });
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  useEffect(() => {
-    cargarMesas(idTicket);
-  }, [idTicket]);
-/**
- * fin obtener ticket por id 
- */
-
-
-
-
-  // Para definir el enrutamiento
   const enrutamiento = useNavigate();
 
   const rutaRegreso = () => {
@@ -141,6 +104,32 @@ const [listMesas, setListMesas] = useState([]);
     );
     setTicketItems([...newArray]);
   };
+
+/**obtener ticke por id*/
+const cargarMesas = (id) => {
+  try {
+    obtenerVentas(id)
+      .then((response) => {
+        const { data } = response;
+        console.log("datos del ticket", data);
+        setTicketItems(data.productos);
+
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+  useEffect(() => {
+    cargarMesas(idTicket);
+  }, [idTicket]);
+
+  /**
+ * fin obtener ticket por id 
+ */
 
   // Para almacenar la lista de productos
   const [listProductos, setListProductos] = useState(null);
@@ -287,6 +276,7 @@ const [listMesas, setListMesas] = useState([]);
                       estadoticket = {estadoticket}
                       mesaticket = {mesaticket}
                       mesaid = {mesaid}
+                      idTicket = {idTicket}
                     />
                   </div>
                 </div>
@@ -342,37 +332,32 @@ function formatModelCategorias(categorias) {
 
 
 function formatModelVentas(ventas) {
-  const tempVentas = [];
-  ventas.forEach((venta) => {
-      tempVentas.push({
-          id: venta._id,
-          numeroTiquet: venta.numeroTiquet,
-          cliente: venta.cliente,
-          mesa: venta.mesa,
-          tipo: venta.tipo ? venta.tipo : "No disponible",
-          usuario: venta.usuario,
-          productosVendidos: venta.productos.length,
-          articulosVendidos: venta.productos,
-          detalles: venta.detalles,
-          tipoPago: venta.tipoPago,
-          efectivo: venta.efectivo,
-          cambio: venta.cambio,
-          total: parseFloat(venta.total),
-          subtotal: parseFloat(venta.subtotal),
-          iva: parseFloat(venta.iva),
-          comision: parseFloat(venta.comision),
-          pagado: venta.pagado,
-          hacerPedido: venta.hacerPedido,
-          tipoPedido: venta.tipoPedido,
-          estado: venta.estado,
-          atendido: !venta.atendido ? "false" : venta.atendido,
-          semana: !venta.semana ? "0" : venta.semana, // Corregido
-          año: !venta.año ? "2023" : venta.año, // Simplificado
-          fechaCreacion: venta.createdAt,
-          fechaActualizacion: venta.updatedAt
-      });
-  });
-  return tempVentas;
+  if (Array.isArray(ventas)) {
+    // Si es un array, iterar sobre cada elemento
+    return ventas.map((venta) => formatSingleVenta(venta));
+  } else if (typeof ventas === 'object' && ventas !== null) {
+    // Si es un objeto individual, formatearlo directamente
+    return formatSingleVenta(ventas);
+  } else {
+    // Si no es ni un array ni un objeto individual, devuelve un valor predeterminado o maneja el caso según tus necesidades
+    console.error("El argumento 'ventas' no es ni un array ni un objeto individual válido.");
+    return [];
+  }
 }
+
+function formatSingleVenta(venta) {
+  // Aquí colocas la lógica para formatear un objeto individual
+  return {
+    id: venta._id,
+    numeroTiquet: venta.numeroTiquet,
+    cliente: venta.cliente,
+    mesa: venta.mesa,
+    tipo: venta.tipo ? venta.tipo : "No disponible",
+    // ... (resto de la lógica de transformación aquí)
+    fechaCreacion: venta.createdAt,
+    fechaActualizacion: venta.updatedAt
+  };
+}
+
 
 export default withRouter(TerminalPv);

@@ -18,7 +18,7 @@ import timezone from "dayjs/plugin/timezone";
 
 import { LogsInformativos } from "../../Logs/LogsSistema/LogsSistema";
 
-import {actualizaDeshabilitarMesas} from "../../../api/mesas"
+import { actualizaDeshabilitarMesas } from "../../../api/mesas";
 
 function Tiquet(props) {
   const { idUsuario, products, empty, remove } = props;
@@ -26,9 +26,9 @@ function Tiquet(props) {
   const estadoticket = props.estadoticket;
   const mesaticket = props.mesaticket;
   const idmesa = props.mesaid;
+  const idTiketMesa = props.idTicket;
+
   console.log("mesa en ticket", idmesa);
-
-
 
   //update a mesa
   const actualizarEstadoS = async () => {
@@ -39,7 +39,6 @@ function Tiquet(props) {
       actualizaDeshabilitarMesas(idmesa, dataTemp).then((response) => {
         const { data } = response;
         toast.success(data.mensaje);
-        
       });
     } catch (e) {
       console.log(e);
@@ -210,7 +209,6 @@ function Tiquet(props) {
   }, [determinaBusquedaTiquet]);
 
   const handleRegistraVenta = () => {
-    
     let iva = "0";
     let comision = "0";
 
@@ -243,7 +241,6 @@ function Tiquet(props) {
       const totalCalculado = parseFloat(total) - descuentoCalculado;
 
       try {
-
         const dataTemp = {
           numeroTiquet: numeroTiquet,
           cliente: nombreCliente,
@@ -304,6 +301,15 @@ function Tiquet(props) {
       } catch (e) {
         console.log(e);
       }
+    }
+  };
+
+  // Función para verificar funcion de botón
+  const registraOActualiza = () => {
+    if (idTiketMesa != "") {
+      
+    }else{
+      handleRegistraVenta();
     }
   };
 
@@ -413,7 +419,6 @@ function Tiquet(props) {
               </div>
             </div>
           </div>
-          
         </div>
         {/**/}
         <div className="detallesTitulo">
