@@ -211,7 +211,7 @@ function TerminalPv(props) {
         <>
           <div className="containeripv">
             <div className="row">
-              <div className="col-md-8 col-sm-12">
+              <div className="col-lg-7 col-md-12 col-sm-12">
                 <div className="card card-outline card-danger">
                   <div className="card-header">
                     <h3 className="card-title">Menu</h3>
@@ -243,7 +243,7 @@ function TerminalPv(props) {
                   </div>
                 </div>
               </div>
-              <div className="col-md-4 col-sm-12">
+              <div className="col-lg-5 col-md-12 col-sm-12">
                 <div className="card card-outline card-danger">
                   <div className="card-header">
                     <h3 className="card-title">Ticket</h3>

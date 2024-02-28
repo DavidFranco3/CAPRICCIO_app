@@ -5,26 +5,27 @@ import "../../../scss/styles.scss";
 import ModalHeader from "react-bootstrap/ModalHeader";
 
 function BasicModal(props) {
-    const { show, setShow, title, children } = props;
+    const { show, setShow, title, children, size, fullscreen } = props;
 
     return (
         <Modal
-            className="basic-modal"
             show={show}
             onHide={() => setShow(false)}
-            size="lg"
+            centered
             backdrop="static"
-            keyboard="false"
+            keyboard={false}
+            fullscreen={fullscreen}
+            
+            size={size || "lg"} // Si size no se pasa, por defecto es "lg"
+            
         >
             <ModalHeader>
-                <h2>{title}</h2>
-                <Modal.Title>
-                    <FontAwesomeIcon
-                        title="Cerrar ventana"
-                        icon={faTimesCircle}
-                        onClick={() => setShow(false)}
-                    />
-                </Modal.Title>
+                <Modal.Title>{title}</Modal.Title>
+                <FontAwesomeIcon
+                    title="Cerrar ventana"
+                    icon={faTimesCircle}
+                    onClick={() => setShow(false)}
+                />
             </ModalHeader>
             <Modal.Body>
                 {children}

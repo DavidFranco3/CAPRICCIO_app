@@ -124,7 +124,7 @@ const VistaMesas = () => {
           ))}
         </div>
       </div>
-      <BasicModal show={showModal} setShow={setShowModal} title={titulosModal}>
+      <BasicModal show={showModal} setShow={setShowModal} title={titulosModal} size={"xl"} fullscreen={"true"}>
         {contentModal}
       </BasicModal>
     </>
