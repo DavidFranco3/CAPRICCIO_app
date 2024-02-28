@@ -27,8 +27,8 @@ function TerminalPv(props) {
   const estadoticket = props.estado;
   const mesaticket = props.mesaticket;
   const mesaid = props.idmesa;
-  const idTicket = props.idTicket;
-  console.log("id del ticket", idTicket);
+  
+  //console.log("id del ticket", idTicket);
 
   const enrutamiento = useNavigate();
 
@@ -106,14 +106,16 @@ function TerminalPv(props) {
   };
 
 /**obtener ticke por id*/
-const cargarMesas = (id) => {
+const idTicket = props.idTicket;
+console.log("folio del ticket",idTicket)
+// Definir la función cargarMesas fuera del condicional
+const cargarMesas = (idTicket) => {
   try {
-    obtenerVentas(id)
+    obtenerVentas(idTicket)
       .then((response) => {
         const { data } = response;
         console.log("datos del ticket", data);
         setTicketItems(data.productos);
-
       })
       .catch((e) => {
         console.log(e);
@@ -123,9 +125,13 @@ const cargarMesas = (id) => {
   }
 };
 
-  useEffect(() => {
+// Llamar a useEffect siempre, pero dentro verificar si idTicket es válido
+useEffect(() => {
+  if (idTicket !== undefined && idTicket !== null) {
     cargarMesas(idTicket);
-  }, [idTicket]);
+  }
+}, []);
+
 
   /**
  * fin obtener ticket por id 
@@ -201,29 +207,6 @@ const cargarMesas = (id) => {
 
   return (
     <>
-      {/**
-      <Alert className="fondoPrincipalAlert">
-        <Row>
-          <Col xs={12} md={4} className="titulo">
-            <h1 className="font-bold">Ventas</h1>
-          </Col>
-          <Col xs={6} md={8}>
-            <div style={{ float: "right" }}>
-              <Button
-                title="Regresar a la pagina anterior"
-                className="btnRegistro"
-                style={{ marginRight: "10px" }}
-                onClick={() => {
-                  rutaRegreso();
-                }}
-              >
-                <FontAwesomeIcon icon={faArrowCircleLeft} /> Regresar
-              </Button>
-            </div>
-          </Col>
-        </Row>
-      </Alert>
- */}
       {listProductos && listCategorias ? (
         <>
           <div className="containeripv">
@@ -277,6 +260,7 @@ const cargarMesas = (id) => {
                       mesaticket = {mesaticket}
                       mesaid = {mesaid}
                       idTicket = {idTicket}
+                      
                     />
                   </div>
                 </div>

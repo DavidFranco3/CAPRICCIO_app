@@ -16,13 +16,13 @@ const VistaMesas = () => {
       obtenerMesas()
         .then((response) => {
           const { data } = response;
-          console.log("mesas", data);
+          //console.log("mesas", data);
           if (!listMesas && data) {
             setListMesas(formatModelMesas(data));
           } else {
             const datosMesas = formatModelMesas(data);
             setListMesas(datosMesas);
-            console.log("mesas", datosMesas);
+            //console.log("mesas", datosMesas);
           }
         })
         .catch((e) => {

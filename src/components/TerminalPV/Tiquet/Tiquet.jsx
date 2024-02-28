@@ -9,16 +9,14 @@ import { Col, Button, Row, Image, Table } from "react-bootstrap";
 import DatosExtraVenta from "../../Ventas/DatosExtraVenta";
 import Descuento from "../../Ventas/Descuento";
 import { logoTiquetGris } from "../../../assets/base64/logo-tiquet";
-
 import dayjs from "dayjs";
 import "dayjs/locale/es";
 import localizedFormat from "dayjs/plugin/localizedFormat";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
-
 import { LogsInformativos } from "../../Logs/LogsSistema/LogsSistema";
-
 import { actualizaDeshabilitarMesas } from "../../../api/mesas";
+
 
 function Tiquet(props) {
   const { idUsuario, products, empty, remove } = props;
@@ -27,14 +25,16 @@ function Tiquet(props) {
   const mesaticket = props.mesaticket;
   const idmesa = props.mesaid;
   const idTiketMesa = props.idTicket;
+  console.log("folio",idTiketMesa)
 
-  console.log("mesa en ticket", idmesa);
+  //console.log("mesa en ticket", idmesa);
 
   //update a mesa
   const actualizarEstadoS = async () => {
     try {
       const dataTemp = {
         estado: "0",
+        idTicket: numeroTiquet // Agregar el id del ticket al objeto dataTemp
       };
       actualizaDeshabilitarMesas(idmesa, dataTemp).then((response) => {
         const { data } = response;
@@ -44,6 +44,7 @@ function Tiquet(props) {
       console.log(e);
     }
   };
+  
 
   // Importa el complemento de zona horaria
   dayjs.extend(utc);
@@ -306,7 +307,7 @@ function Tiquet(props) {
 
   // Función para verificar funcion de botón
   const registraOActualiza = () => {
-    if (idTiketMesa != "") {
+    if (idTiketMesa != "" || null || undefined) {
       
     }else{
       handleRegistraVenta();
