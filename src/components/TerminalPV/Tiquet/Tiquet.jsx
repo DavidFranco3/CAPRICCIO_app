@@ -4,7 +4,11 @@ import { toast } from "react-toastify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 import BasicModal from "../../Modal/BasicModal";
-import { obtenUltimoNoTiquet, registraVentas } from "../../../api/ventas";
+import {
+  obtenUltimoNoTiquet,
+  registraVentas,
+  actualizaTicket,
+} from "../../../api/ventas";
 import { Col, Button, Row, Image, Table } from "react-bootstrap";
 import DatosExtraVenta from "../../Ventas/DatosExtraVenta";
 import Descuento from "../../Ventas/Descuento";
@@ -24,9 +28,10 @@ function Tiquet(props) {
   const mesaticket = props.mesaticket;
   const idmesa = props.mesaid;
   const idTiketMesa = props.idTicket;
+  const add = props.agregar;
   //console.log("folio",idTiketMesa)
 
-  //console.log("productos",props.products);
+  //console.log("productos", props.products);
 
   //console.log("mesa en ticket", idmesa);
 
@@ -36,6 +41,21 @@ function Tiquet(props) {
       const dataTemp = {
         estado: "0",
         idTicket: numeroTiquet, // Agregar el id del ticket al objeto dataTemp
+      };
+      actualizaDeshabilitarMesas(idmesa, dataTemp).then((response) => {
+        const { data } = response;
+        toast.success(data.mensaje);
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const actualizarEstadoPagado = async () => {
+    try {
+      const dataTemp = {
+        estado: "1",
+        idTicket: "", // Agregar el id del ticket al objeto dataTemp
       };
       actualizaDeshabilitarMesas(idmesa, dataTemp).then((response) => {
         const { data } = response;
@@ -147,19 +167,19 @@ function Tiquet(props) {
   };
 
   useEffect(() => {
-    if (idTiketMesa !== null) {
+    if (idTiketMesa !== null && idTiketMesa !== undefined && idTiketMesa !== "") {
       setNumeroTiquet(idTiketMesa);
     } else {
       // Lógica para generar un nuevo número de tiquet
       setDeterminaBusquedaTiquet(false);
-  
+
       const obtenerNumeroTiquet = async () => {
         try {
           const response = await obtenUltimoNoTiquet();
           const { data } = response;
-  
+
           let nuevoNumeroTiquet;
-  
+
           if (data.noTiquet === "0") {
             nuevoNumeroTiquet = "1";
           } else {
@@ -177,25 +197,25 @@ function Tiquet(props) {
                 break; // Salir del bucle si el número es único
               }
             } while (intentos < MAX_INTENTOS_GENERACION);
-  
+
             if (intentos === MAX_INTENTOS_GENERACION) {
               console.error(
                 "No se pudo generar un número de ticket único después de varios intentos."
               );
               // Puedes manejar esta situación según tus necesidades
             }
-  
+
             // Después de incrementar el número en 1, agregar un guion y cuatro letras aleatorias
             nuevoNumeroTiquet += "-" + generarLetrasAleatorias();
           }
-  
+
           setNumeroTiquet(nuevoNumeroTiquet);
         } catch (error) {
           console.error("Error al obtener el último número de ticket:", error);
           setNumeroTiquet("1"); // Establecer a 1 en caso de error
         }
       };
-  
+
       // Función para generar letras aleatorias
       const generarLetrasAleatorias = () => {
         const letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -206,11 +226,10 @@ function Tiquet(props) {
         }
         return letrasAleatorias;
       };
-  
+
       obtenerNumeroTiquet();
     }
   }, [idTiketMesa, determinaBusquedaTiquet]);
-  
 
   const handleRegistraVenta = () => {
     let iva = "0";
@@ -297,6 +316,7 @@ function Tiquet(props) {
             "Se ha registrado la venta " + numeroTiquet,
             data.datos
           );
+          //console.log("se a registrado la venta");
           handlePrint();
           toast.success(data.mensaje);
           actualizarEstadoS();
@@ -308,11 +328,206 @@ function Tiquet(props) {
     }
   };
 
+  const handleActualizarVenta = async (idTiket) => {
+    let iva = "0";
+    let comision = "0";
+
+    if (IVA === "0.16") {
+      iva = "0.16";
+    }
+
+    if (products.length === 0) {
+      toast.warning("Debe cargar artículos para la venta");
+    } else {
+      try {
+        const hoy = new Date();
+        const grupo = hoy.getMonth() + 1;
+        const añoVenta = hoy.getFullYear();
+
+        // Configurar el objeto Date para que tome en cuenta el inicio de semana según tu localidad
+        hoy.setHours(0, 0, 0);
+        hoy.setDate(hoy.getDate() + 4 - (hoy.getDay() || 7));
+
+        // Calcular el número de la semana
+        const yearStart = new Date(hoy.getFullYear(), 0, 1);
+        const weekNumber = Math.ceil(((hoy - yearStart) / 86400000 + 1) / 7);
+        const formattedDate = dayjs(fechayHoraSinFormato)
+          .tz("America/Mexico_City")
+          .format("YYYY-MM-DDTHH:mm:ss.SSS");
+
+        const descuentoCalculado =
+          parseFloat(porcentajeDescontado) > 0
+            ? parseFloat(total) * parseFloat(porcentajeDescontado)
+            : parseFloat(dineroDescontado);
+        const totalCalculado = parseFloat(total) - descuentoCalculado;
+
+        const datosActualizados = {
+          numeroTiquet: numeroTiquet,
+          cliente: nombreCliente,
+          tipo: "Pedido actualizado",
+          mesa: mesaticket,
+          usuario: idUsuario,
+          estado: estadoticket,
+          detalles: observaciones,
+          tipoPago: tipoPago,
+          tipoPedido: tipoPedido,
+          hacerPedido: hacerPedido,
+          efectivo: dineroIngresado,
+          pagado: "false",
+          cambio:
+            parseFloat(dineroIngresado) -
+            (parseFloat(total) +
+              parseFloat(total) * parseFloat(iva) +
+              parseFloat(total) * parseFloat(comision))
+              ? parseFloat(dineroIngresado) -
+                (parseFloat(total) +
+                  parseFloat(total) * parseFloat(iva) +
+                  parseFloat(total) * parseFloat(comision))
+              : "0",
+          productos: products,
+          tipoDescuento: tipoDescuento,
+          descuento: descuentoCalculado,
+          iva: parseFloat(total) * parseFloat(iva),
+          comision: parseFloat(total) * parseFloat(comision),
+          subtotal: total,
+          atendido: "false",
+          total:
+            totalCalculado +
+            parseFloat(totalCalculado) * parseFloat(iva) +
+            parseFloat(totalCalculado) * parseFloat(comision),
+          agrupar: grupo,
+          año: añoVenta,
+          semana: weekNumber,
+          createdAt: formattedDate,
+        };
+
+        const response = await actualizaTicket(idTiket, datosActualizados);
+        //console.log("respuesta-->",response);
+        if (response.request.status == 200) {
+          //console.log("respuesta-->",response);
+          setDeterminaBusquedaTiquet(true);
+          LogsInformativos(
+            "Se ha actualizado la venta " + numeroTiquet,
+            response.venta
+          );
+          //console.log("se a actualizado la venta");
+
+          toast.success(response.data.mensaje);
+          setShowModal(false);
+        } else {
+          toast.error(response.data.mensaje);
+        }
+      } catch (e) {
+        console.error(e);
+        toast.error("Error al actualizar la venta");
+      }
+    }
+  };
+
+  const handlePagarVenta = async (idTiket) => {
+    let iva = "0";
+    let comision = "0";
+
+    if (IVA === "0.16") {
+      iva = "0.16";
+    }
+
+    if (products.length === 0) {
+      toast.warning("Debe cargar artículos para la venta");
+    } else {
+      try {
+        const hoy = new Date();
+        const grupo = hoy.getMonth() + 1;
+        const añoVenta = hoy.getFullYear();
+
+        // Configurar el objeto Date para que tome en cuenta el inicio de semana según tu localidad
+        hoy.setHours(0, 0, 0);
+        hoy.setDate(hoy.getDate() + 4 - (hoy.getDay() || 7));
+
+        // Calcular el número de la semana
+        const yearStart = new Date(hoy.getFullYear(), 0, 1);
+        const weekNumber = Math.ceil(((hoy - yearStart) / 86400000 + 1) / 7);
+        const formattedDate = dayjs(fechayHoraSinFormato)
+          .tz("America/Mexico_City")
+          .format("YYYY-MM-DDTHH:mm:ss.SSS");
+
+        const descuentoCalculado =
+          parseFloat(porcentajeDescontado) > 0
+            ? parseFloat(total) * parseFloat(porcentajeDescontado)
+            : parseFloat(dineroDescontado);
+        const totalCalculado = parseFloat(total) - descuentoCalculado;
+
+        const datosActualizados = {
+          numeroTiquet: numeroTiquet,
+          cliente: nombreCliente,
+          tipo: "Pedido pagado",
+          mesa: mesaticket,
+          usuario: idUsuario,
+          estado: estadoticket,
+          detalles: observaciones,
+          tipoPago: tipoPago,
+          tipoPedido: tipoPedido,
+          hacerPedido: hacerPedido,
+          efectivo: dineroIngresado,
+          pagado: "true",
+          cambio:
+            parseFloat(dineroIngresado) -
+            (parseFloat(total) +
+              parseFloat(total) * parseFloat(iva) +
+              parseFloat(total) * parseFloat(comision))
+              ? parseFloat(dineroIngresado) -
+                (parseFloat(total) +
+                  parseFloat(total) * parseFloat(iva) +
+                  parseFloat(total) * parseFloat(comision))
+              : "0",
+          productos: products,
+          tipoDescuento: tipoDescuento,
+          descuento: descuentoCalculado,
+          iva: parseFloat(total) * parseFloat(iva),
+          comision: parseFloat(total) * parseFloat(comision),
+          subtotal: total,
+          atendido: "true",
+          total:
+            totalCalculado +
+            parseFloat(totalCalculado) * parseFloat(iva) +
+            parseFloat(totalCalculado) * parseFloat(comision),
+          agrupar: grupo,
+          año: añoVenta,
+          semana: weekNumber,
+          createdAt: formattedDate,
+        };
+
+        const response = await actualizaTicket(idTiket, datosActualizados);
+        //console.log("respuesta-->",response);
+        if (response.request.status == 200) {
+          //console.log("respuesta-->",response);
+          setDeterminaBusquedaTiquet(true);
+          LogsInformativos(
+            "Se ha actualizado la venta " + numeroTiquet,
+            response.venta
+          );
+          toast.success(response.data.mensaje);
+          handlePrint();
+          handleEmptyTicket();
+          actualizarEstadoPagado();
+          setShowModal(false);
+        } else {
+          toast.error(response.data.mensaje);
+        }
+      } catch (e) {
+        console.error(e);
+        toast.error("Error al actualizar la venta");
+      }
+    }
+  };
+
   // Función para verificar funcion de botón
   const registraOActualiza = () => {
-    if (idTiketMesa !==  null ) {
-      alert("actualizar");
+    if (idTiketMesa !== null && idTiketMesa !== undefined && idTiketMesa !== "") {
+      // El idTiketMesa no es null, undefined ni una cadena vacía, entonces actualiza la venta
+      handleActualizarVenta(idTiketMesa);
     } else {
+      // El idTiketMesa es null, undefined o una cadena vacía, entonces registra una nueva venta
       handleRegistraVenta();
     }
   };
@@ -415,7 +630,7 @@ function Tiquet(props) {
                   <span className="description-text">
                     {tipoPedido !== "para llevar" && (
                       <>
-                        <p className="invoice__cliente">{mesa}</p>
+                        <p className="invoice__cliente">{mesaticket}</p>
                       </>
                     )}
                   </span>
@@ -426,18 +641,6 @@ function Tiquet(props) {
         </div>
         {/**/}
         <div className="detallesTitulo">
-          {/**
-          <p className="cafe__number">Teléfono para pedidos</p>
-          <p className="cafe__number">442-714-09-79</p>
-         
-          <p className="cafe__number">Ticket #{numeroTiquet}</p>
-          <p className="cafe__number">Cliente {nombreCliente}</p>
-          {tipoPedido !== "para llevar" && (
-            <>
-              <p className="invoice__cliente">Mesa {mesa}</p>
-            </>
-          )}
-           */}
           <p className="invoice__cliente">Pedido {tipoPedido}</p>
           <p className="invoice__cliente">Hecho {hacerPedido}</p>
           <p className="cafe__number">{fechayHora}</p>
@@ -697,9 +900,20 @@ function Tiquet(props) {
   const Opciones = ({ icon }) => {
     return (
       <div className="ticket__actions">
-        <button title="Registrar venta" onClick={() => registraOActualiza()}>
-          ✅
-        </button>
+        {add ? (
+          <>
+          <button title="Registrar venta" onClick={() => registraOActualiza()}>
+            <i className="fas fa-plus"></i>
+          </button>
+          <button title="Cobrar" onClick={() => handlePagarVenta(idTiketMesa)}>
+            <i className="fas fa-money-bill"></i>
+          </button>
+          </>
+        ) : (
+          <button title="Registrar venta" onClick={() => registraOActualiza()}>
+            <i className="fas fa-plus"></i>
+          </button>
+        )}
 
         <button title="Limpiar el ticket" onClick={() => handleEmptyTicket()}>
           🗑️
@@ -733,7 +947,7 @@ function Tiquet(props) {
         </button>
 
         <button
-          title="Añadir detalles de la venta"
+          title="Descuento"
           onClick={() =>
             datosExtraVenta(
               <DatosExtraVenta

@@ -20,15 +20,15 @@ import AnimacionLoading from "../../assets/json/loading.json";
 import { useNavigate } from "react-router-dom";
 import { obtenerVentas } from "../../api/ventas";
 
-
 function TerminalPv(props) {
   const { setRefreshCheckLogin } = props;
 
   const estadoticket = props.estado;
   const mesaticket = props.mesaticket;
   const mesaid = props.idmesa;
-  
-  //console.log("id del ticket", idTicket);
+  const estadov = props.agregar;
+
+  //console.log("agregar?", estadov);
 
   const enrutamiento = useNavigate();
 
@@ -105,38 +105,37 @@ function TerminalPv(props) {
     setTicketItems([...newArray]);
   };
 
-/**obtener ticke por id*/
-const idTicket = props.idTicket;
-//console.log("folio del ticket",idTicket)
-// Definir la función cargarMesas fuera del condicional
-const cargarMesas = (idTicket) => {
-  try {
-    obtenerVentas(idTicket)
-      .then((response) => {
-        const { data } = response;
-        //console.log("datos del ticket", data);
-        //console.log("productos del ticket", data[0].productos);
-        setTicketItems(data[0].productos);
-      })
-      .catch((e) => {
-        console.log(e);
-      });
-  } catch (e) {
-    console.log(e);
-  }
-};
+  /**obtener ticke por id*/
+  const idTicket = props.idTicket;
+  //console.log("folio del ticket",idTicket)
+  // Definir la función cargarMesas fuera del condicional
+  const cargarMesas = (idTicket) => {
+    try {
+      obtenerVentas(idTicket)
+        .then((response) => {
+          const { data } = response;
+          //console.log("datos del ticket", data);
+          //console.log("productos del ticket", data[0].productos);
+          setTicketItems(data[0].productos);
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
-// Llamar a useEffect siempre, pero dentro verificar si idTicket es válido
-useEffect(() => {
-  if (idTicket !== undefined && idTicket !== null) {
-    cargarMesas(idTicket);
-  }
-}, []);
-
+  // Llamar a useEffect siempre, pero dentro verificar si idTicket es válido
+  useEffect(() => {
+    if (idTicket !== undefined && idTicket !== null) {
+      cargarMesas(idTicket);
+    }
+  }, []);
 
   /**
- * fin obtener ticket por id 
- */
+   * fin obtener ticket por id
+   */
 
   // Para almacenar la lista de productos
   const [listProductos, setListProductos] = useState(null);
@@ -212,11 +211,18 @@ useEffect(() => {
         <>
           <div className="containeripv">
             <div className="row">
-              <div className="col-md-8">
+              <div className="col-md-8 col-sm-12">
                 <div className="card card-outline card-danger">
                   <div className="card-header">
                     <h3 className="card-title">Menu</h3>
                     <div className="card-tools">
+                      <button
+                        type="button"
+                        class="btn btn-tool"
+                        data-card-widget="collapse"
+                      >
+                        <i class="fas fa-minus"></i>
+                      </button>
                       <button
                         type="button"
                         className="btn btn-tool"
@@ -237,11 +243,18 @@ useEffect(() => {
                   </div>
                 </div>
               </div>
-              <div className="col-md-4">
+              <div className="col-md-4 col-sm-12">
                 <div className="card card-outline card-danger">
                   <div className="card-header">
                     <h3 className="card-title">Ticket</h3>
                     <div className="card-tools">
+                      <button
+                        type="button"
+                        class="btn btn-tool"
+                        data-card-widget="collapse"
+                      >
+                        <i class="fas fa-minus"></i>
+                      </button>
                       <button
                         type="button"
                         className="btn btn-tool"
@@ -257,11 +270,12 @@ useEffect(() => {
                       empty={emptyTicket}
                       remove={removeProduct}
                       idUsuario={idUsuario}
-                      estadoticket = {estadoticket}
-                      mesaticket = {mesaticket}
-                      mesaid = {mesaid}
-                      idTicket = {idTicket}
-                      
+                      estadoticket={estadoticket}
+                      mesaticket={mesaticket}
+                      mesaid={mesaid}
+                      idTicket={idTicket}
+                      setShow={props.setShow}
+                      agregar={estadov}
                     />
                   </div>
                 </div>
@@ -315,17 +329,18 @@ function formatModelCategorias(categorias) {
   return tempCategorias;
 }
 
-
 function formatModelVentas(ventas) {
   if (Array.isArray(ventas)) {
     // Si es un array, iterar sobre cada elemento
     return ventas.map((venta) => formatSingleVenta(venta));
-  } else if (typeof ventas === 'object' && ventas !== null) {
+  } else if (typeof ventas === "object" && ventas !== null) {
     // Si es un objeto individual, formatearlo directamente
     return formatSingleVenta(ventas);
   } else {
     // Si no es ni un array ni un objeto individual, devuelve un valor predeterminado o maneja el caso según tus necesidades
-    console.error("El argumento 'ventas' no es ni un array ni un objeto individual válido.");
+    console.error(
+      "El argumento 'ventas' no es ni un array ni un objeto individual válido."
+    );
     return [];
   }
 }
@@ -340,9 +355,8 @@ function formatSingleVenta(venta) {
     tipo: venta.tipo ? venta.tipo : "No disponible",
     // ... (resto de la lógica de transformación aquí)
     fechaCreacion: venta.createdAt,
-    fechaActualizacion: venta.updatedAt
+    fechaActualizacion: venta.updatedAt,
   };
 }
-
 
 export default withRouter(TerminalPv);

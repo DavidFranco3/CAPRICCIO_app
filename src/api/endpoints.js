@@ -68,6 +68,7 @@ export const ENDPOINTObtenerVentaAsociada = "/ventas/obtenerVentaAsociada";
 export const ENDPOINTObtenerVentas = "/ventas/obtener";
 export const ENDPOINTEliminarVentas = "/ventas/eliminar";
 export const ENDPOINTActualizarVentas = "/ventas/actualizar";
+export const ENDPOINTActualizarTicketVentas = "/ventas/actualizarticket";
 export const ENDPOINTCancelarVentas = "/ventas/cancelar";
 export const ENDPOINTAtenderVentas = "/ventas/cambiarIdentificador";
 export const ENDPOINTObtenerNumeroVenta = "/ventas/obtenNoTiquet";

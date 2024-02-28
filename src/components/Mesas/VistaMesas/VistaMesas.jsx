@@ -76,9 +76,32 @@ const VistaMesas = () => {
         </div>
         <div className="divMesasView">
           {listMesas.map((mesa, index) => (
+            
             <div
               class="info-box"
-              onClick={() => clicMesa(<TerminalPV setShow={setShowModal} estado={"abierto"} mesaticket={mesa.numeroMesa} idmesa={mesa.id} idTicket={mesa.idTicket}/>)}
+               onClick={() =>
+                mesa.idTicket
+                  ? clicMesa(
+                      <TerminalPV
+                        agregar={true}
+                        setShow={setShowModal}
+                        estado={"abierto"}
+                        mesaticket={mesa.numeroMesa}
+                        idmesa={mesa.id}
+                        idTicket={mesa.idTicket}
+                      />
+                    )
+                  : clicMesa(
+                    <TerminalPV
+                      agregar={false}
+                      setShow={setShowModal}
+                      estado={"cerrado"}
+                      mesaticket={mesa.numeroMesa}
+                      idmesa={mesa.id}
+                      idTicket={mesa.idTicket}
+                    />
+                  )
+              }
             >
               <span
                 class={

@@ -13,6 +13,7 @@ import {
     ENDPOINTObtenerVentas,
     ENDPOINTEliminarVentas,
     ENDPOINTActualizarVentas,
+    ENDPOINTActualizarTicketVentas,
     ENDPOINTCancelarVentas,
     ENDPOINTObtenerNumeroVenta,
     ENDPOINTListarVentasPorDia,
@@ -477,7 +478,19 @@ export async function actualizaVenta(id, data) {
 
     return await axios.put(API_HOST + ENDPOINTActualizarVentas + `/${id}`, data, config);
 }
+//ENDPOINTActualizarTicketVentas
+//actualizar productos del ticket
+export async function actualizaTicket(id, data) {
+    const config = {
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${getTokenApi()}`
+        }
+    };
 
+    return await axios.put(API_HOST + ENDPOINTActualizarTicketVentas + `/${id}`, data, config);
+}
 // Cambiar estado de las ventas
 export async function cancelarVenta(id, data) {
     const config = {
