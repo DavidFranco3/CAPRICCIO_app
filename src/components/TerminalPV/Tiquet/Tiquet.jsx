@@ -17,7 +17,6 @@ import timezone from "dayjs/plugin/timezone";
 import { LogsInformativos } from "../../Logs/LogsSistema/LogsSistema";
 import { actualizaDeshabilitarMesas } from "../../../api/mesas";
 
-
 function Tiquet(props) {
   const { idUsuario, products, empty, remove } = props;
 
@@ -25,7 +24,9 @@ function Tiquet(props) {
   const mesaticket = props.mesaticket;
   const idmesa = props.mesaid;
   const idTiketMesa = props.idTicket;
-  console.log("folio",idTiketMesa)
+  //console.log("folio",idTiketMesa)
+
+  //console.log("productos",props.products);
 
   //console.log("mesa en ticket", idmesa);
 
@@ -34,7 +35,7 @@ function Tiquet(props) {
     try {
       const dataTemp = {
         estado: "0",
-        idTicket: numeroTiquet // Agregar el id del ticket al objeto dataTemp
+        idTicket: numeroTiquet, // Agregar el id del ticket al objeto dataTemp
       };
       actualizaDeshabilitarMesas(idmesa, dataTemp).then((response) => {
         const { data } = response;
@@ -44,7 +45,6 @@ function Tiquet(props) {
       console.log(e);
     }
   };
-  
 
   // Importa el complemento de zona horaria
   dayjs.extend(utc);
@@ -57,7 +57,6 @@ function Tiquet(props) {
   );
 
   const [determinaBusquedaTiquet, setDeterminaBusquedaTiquet] = useState(false);
-  const [numeroTiquet, setNumeroTiquet] = useState("");
 
   //Para el modal
   const [showModal, setShowModal] = useState(false);
@@ -112,16 +111,14 @@ function Tiquet(props) {
     }
   };
 
-  //se agrega esta constante para la formula y que no se generen repetidos
+  const [numeroTiquet, setNumeroTiquet] = useState("");
   const MAX_INTENTOS_GENERACION = 100;
-
   //esta funcion verifica el numero anterior para establecer un numero y que no se repita el numero de ticket
   const verificaExistenciaNumeroTiquet = async (numeroTiquet) => {
     try {
       // Obtener el número del último tiquet desde el archivo ventas.js
       const response = await obtenUltimoNoTiquet();
       const ultimoNumeroTiquet = parseInt(response.data.noTiquet);
-
       // Verificar si el número generado ya existe
       let intentos = 0;
       while (intentos < MAX_INTENTOS_GENERACION) {
@@ -134,7 +131,6 @@ function Tiquet(props) {
           return false;
         }
       }
-
       // Si llegamos a este punto, se ha intentado generar un número único varias veces sin éxito
       console.error(
         "No se pudo generar un número de tiquet único después de varios intentos"
@@ -146,68 +142,75 @@ function Tiquet(props) {
         error
       );
       // Puedes manejar este error según tus necesidades
-      throw error; // Puedes elegir lanzar el error nuevamente o manejarlo de otra manera
+      throw error;
     }
   };
 
-  //se modifico para que la funcion siga hasta encontrar un numero que no este registrado
   useEffect(() => {
-    setDeterminaBusquedaTiquet(false);
-
-    const obtenerNumeroTiquet = async () => {
-      try {
-        const response = await obtenUltimoNoTiquet();
-        const { data } = response;
-
-        let nuevoNumeroTiquet;
-
-        if (data.noTiquet === "0") {
-          nuevoNumeroTiquet = "1";
-        } else {
-          // Incrementar el número hasta encontrar uno único
-          let intentos = 0;
-          do {
-            intentos++;
-            nuevoNumeroTiquet = (parseInt(data.noTiquet) + intentos).toString();
-            const existe = await verificaExistenciaNumeroTiquet(
-              nuevoNumeroTiquet
-            );
-            if (!existe) {
-              break; // Salir del bucle si el número es único
+    if (idTiketMesa !== null) {
+      setNumeroTiquet(idTiketMesa);
+    } else {
+      // Lógica para generar un nuevo número de tiquet
+      setDeterminaBusquedaTiquet(false);
+  
+      const obtenerNumeroTiquet = async () => {
+        try {
+          const response = await obtenUltimoNoTiquet();
+          const { data } = response;
+  
+          let nuevoNumeroTiquet;
+  
+          if (data.noTiquet === "0") {
+            nuevoNumeroTiquet = "1";
+          } else {
+            // Incrementar el número hasta encontrar uno único
+            let intentos = 0;
+            do {
+              intentos++;
+              nuevoNumeroTiquet = (
+                parseInt(data.noTiquet) + intentos
+              ).toString();
+              const existe = await verificaExistenciaNumeroTiquet(
+                nuevoNumeroTiquet
+              );
+              if (!existe) {
+                break; // Salir del bucle si el número es único
+              }
+            } while (intentos < MAX_INTENTOS_GENERACION);
+  
+            if (intentos === MAX_INTENTOS_GENERACION) {
+              console.error(
+                "No se pudo generar un número de ticket único después de varios intentos."
+              );
+              // Puedes manejar esta situación según tus necesidades
             }
-          } while (intentos < MAX_INTENTOS_GENERACION);
-
-          if (intentos === MAX_INTENTOS_GENERACION) {
-            console.error(
-              "No se pudo generar un número de ticket único después de varios intentos."
-            );
-            // Puedes manejar esta situación según tus necesidades
+  
+            // Después de incrementar el número en 1, agregar un guion y cuatro letras aleatorias
+            nuevoNumeroTiquet += "-" + generarLetrasAleatorias();
           }
-
-          // Después de incrementar el número en 1, agregar un guion y cuatro letras aleatorias
-          nuevoNumeroTiquet += "-" + generarLetrasAleatorias();
+  
+          setNumeroTiquet(nuevoNumeroTiquet);
+        } catch (error) {
+          console.error("Error al obtener el último número de ticket:", error);
+          setNumeroTiquet("1"); // Establecer a 1 en caso de error
         }
-
-        setNumeroTiquet(nuevoNumeroTiquet);
-      } catch (error) {
-        console.error("Error al obtener el último número de ticket:", error);
-        setNumeroTiquet("1"); // Establecer a 1 en caso de error
-      }
-    };
-
-    // Función para generar letras aleatorias
-    const generarLetrasAleatorias = () => {
-      const letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-      let letrasAleatorias = "";
-      for (let i = 0; i < 5; i++) {
-        const indice = Math.floor(Math.random() * letras.length);
-        letrasAleatorias += letras.charAt(indice);
-      }
-      return letrasAleatorias;
-    };
-
-    obtenerNumeroTiquet();
-  }, [determinaBusquedaTiquet]);
+      };
+  
+      // Función para generar letras aleatorias
+      const generarLetrasAleatorias = () => {
+        const letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        let letrasAleatorias = "";
+        for (let i = 0; i < 5; i++) {
+          const indice = Math.floor(Math.random() * letras.length);
+          letrasAleatorias += letras.charAt(indice);
+        }
+        return letrasAleatorias;
+      };
+  
+      obtenerNumeroTiquet();
+    }
+  }, [idTiketMesa, determinaBusquedaTiquet]);
+  
 
   const handleRegistraVenta = () => {
     let iva = "0";
@@ -307,9 +310,9 @@ function Tiquet(props) {
 
   // Función para verificar funcion de botón
   const registraOActualiza = () => {
-    if (idTiketMesa != "" || null || undefined) {
-      
-    }else{
+    if (idTiketMesa !==  null ) {
+      alert("actualizar");
+    } else {
       handleRegistraVenta();
     }
   };
@@ -694,7 +697,7 @@ function Tiquet(props) {
   const Opciones = ({ icon }) => {
     return (
       <div className="ticket__actions">
-        <button title="Registrar venta" onClick={() => handleRegistraVenta()}>
+        <button title="Registrar venta" onClick={() => registraOActualiza()}>
           ✅
         </button>
 

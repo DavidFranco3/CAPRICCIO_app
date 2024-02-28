@@ -107,15 +107,16 @@ function TerminalPv(props) {
 
 /**obtener ticke por id*/
 const idTicket = props.idTicket;
-console.log("folio del ticket",idTicket)
+//console.log("folio del ticket",idTicket)
 // Definir la función cargarMesas fuera del condicional
 const cargarMesas = (idTicket) => {
   try {
     obtenerVentas(idTicket)
       .then((response) => {
         const { data } = response;
-        console.log("datos del ticket", data);
-        setTicketItems(data.productos);
+        //console.log("datos del ticket", data);
+        //console.log("productos del ticket", data[0].productos);
+        setTicketItems(data[0].productos);
       })
       .catch((e) => {
         console.log(e);
