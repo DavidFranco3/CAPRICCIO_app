@@ -939,12 +939,7 @@ function Tiquet(props) {
           tipoPago.trim() !== "" && // Verifica si tipoPago no es nulo, indefinido o vacío
           (add ? (
             <>
-              <button
-                title="Registrar venta"
-                onClick={() => registraOActualiza()}
-              >
-                <i className="fas fa-plus"></i>
-              </button>
+              
               <button
                 title="Cobrar"
                 onClick={() => handlePagarVenta(idTiketMesa)}
@@ -960,7 +955,12 @@ function Tiquet(props) {
               <i className="fas fa-plus"></i>
             </button>
           ))}
-
+        <button
+                title="Registrar venta"
+                onClick={() => registraOActualiza()}
+              >
+                <i className="fas fa-plus"></i>
+        </button>
         <button title="Limpiar el ticket" onClick={() => handleEmptyTicket()}>
           🗑️
         </button>
