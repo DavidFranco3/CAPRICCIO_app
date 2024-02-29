@@ -28,7 +28,8 @@ function TerminalPv(props) {
   const mesaid = props.idmesa;
   const estadov = props.agregar;
 
-  //console.log("agregar?", estadov);
+  console.log("agregar?", estadov);
+  console.log("agregar?", mesaid);
 
   const enrutamiento = useNavigate();
 

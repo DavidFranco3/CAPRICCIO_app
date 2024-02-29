@@ -39,7 +39,8 @@ import {
     ENDPOINTListarPaginandoVentasCanceladasTicket,
     ENDPOINTTotalVentasCanceladasTicket,
     ENDPOINTObtenerVentaAsociada,
-    ENDPOINTAtenderVentas
+    ENDPOINTAtenderVentas,
+    ENDPOINTObtenerVentasenMesasConTicket
 } from "./endpoints";
 import axios from 'axios';
 import { getTokenApi } from "./auth";
@@ -527,4 +528,15 @@ export async function obtenUltimoNoTiquet() {
         }
     };
     return await axios.get(API_HOST + ENDPOINTObtenerNumeroVenta, config);
+}
+//ventas en mesas activas ENDPOINTObtenerVentasenMesasConTicket
+export async function obtenerMesaOcupadas() {
+    const config = {
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${getTokenApi()}`
+        }
+    };
+    return await axios.get(API_HOST + ENDPOINTObtenerVentasenMesasConTicket, config);
 }

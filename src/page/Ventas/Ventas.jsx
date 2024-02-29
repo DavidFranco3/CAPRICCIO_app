@@ -1,5 +1,5 @@
 import { useState, useEffect, Suspense } from 'react';
-import { listarPaginacionVentasActivas, totalVentasActivas, listarPaginacionVentasCanceladas, totalVentasCanceladas, listarPaginacionVentasTicketActivas, totalVentasTicketActivas, listarPaginacionVentasTicketCanceladas, totalVentasTicketCanceladas } from "../../api/ventas";
+import { listarPaginacionVentasActivas, totalVentasActivas, listarPaginacionVentasCanceladas, totalVentasCanceladas, listarPaginacionVentasTicketActivas, totalVentasTicketActivas, listarPaginacionVentasTicketCanceladas, totalVentasTicketCanceladas, obtenerMesaOcupadas } from "../../api/ventas";
 import { withRouter } from "../../utils/withRouter";
 import "../../scss/styles.scss";
 import { Alert, Col, Row, Button, Spinner, Form } from "react-bootstrap";
@@ -20,6 +20,10 @@ function Ventas(props) {
     const [estadoUsuario, setEstadoUsuario] = useState("");
     const [idUsuario, setIdUsuario] = useState("");
     const [datosUsuario, setDatosUsuario] = useState("");
+
+    
+  
+    
 
     const obtenerDatosUsuario = () => {
         try {
@@ -323,5 +327,8 @@ function formatModelVentas(ventas) {
     });
     return tempVentas;
 }
+
+
+
 
 export default withRouter(Ventas);

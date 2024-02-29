@@ -167,7 +167,11 @@ function Tiquet(props) {
   };
 
   useEffect(() => {
-    if (idTiketMesa !== null && idTiketMesa !== undefined && idTiketMesa !== "") {
+    if (
+      idTiketMesa !== null &&
+      idTiketMesa !== undefined &&
+      idTiketMesa !== ""
+    ) {
       setNumeroTiquet(idTiketMesa);
     } else {
       // Lógica para generar un nuevo número de tiquet
@@ -270,7 +274,7 @@ function Tiquet(props) {
           tipo: "Pedido inicial",
           mesa: mesaticket,
           usuario: idUsuario,
-          estado: estadoticket,
+          estado: estadoticket ? estadoticket : "cerrado",
           detalles: observaciones,
           tipoPago: tipoPago,
           tipoPedido: tipoPedido,
@@ -523,7 +527,11 @@ function Tiquet(props) {
 
   // Función para verificar funcion de botón
   const registraOActualiza = () => {
-    if (idTiketMesa !== null && idTiketMesa !== undefined && idTiketMesa !== "") {
+    if (
+      idTiketMesa !== null &&
+      idTiketMesa !== undefined &&
+      idTiketMesa !== ""
+    ) {
       // El idTiketMesa no es null, undefined ni una cadena vacía, entonces actualiza la venta
       handleActualizarVenta(idTiketMesa);
     } else {
@@ -899,21 +907,59 @@ function Tiquet(props) {
 
   const Opciones = ({ icon }) => {
     return (
+      
       <div className="ticket__actions">
-        {add ? (
-          <>
-          <button title="Registrar venta" onClick={() => registraOActualiza()}>
-            <i className="fas fa-plus"></i>
-          </button>
-          <button title="Cobrar" onClick={() => handlePagarVenta(idTiketMesa)}>
-            <i className="fas fa-money-bill"></i>
-          </button>
-          </>
-        ) : (
-          <button title="Registrar venta" onClick={() => registraOActualiza()}>
-            <i className="fas fa-plus"></i>
-          </button>
-        )}
+        <button
+          title="Descuento"
+          onClick={() =>
+            datosExtraVenta(
+              <DatosExtraVenta
+                setTipoPago={setTipoPago}
+                setDineroIngresado={setDineroIngresado}
+                setTipoPedido={setTipoPedido}
+                setHacerPedido={setHacerPedido}
+                setNombreCliente={setNombreCliente}
+                setObservaciones={setObservaciones}
+                setMesa={setMesa}
+                tipoPago={tipoPago}
+                dineroIngresado={dineroIngresado}
+                tipoPedido={tipoPedido}
+                hacerPedido={hacerPedido}
+                nombreCliente={nombreCliente}
+                observaciones={observaciones}
+                mesa={mesa}
+                setShowModal={setShowModal}
+              />
+            )
+          }
+        >
+          <i className="fas fa-check"></i>
+        </button>
+        {tipoPago &&
+          tipoPago.trim() !== "" && // Verifica si tipoPago no es nulo, indefinido o vacío
+          (add ? (
+            <>
+              <button
+                title="Registrar venta"
+                onClick={() => registraOActualiza()}
+              >
+                <i className="fas fa-plus"></i>
+              </button>
+              <button
+                title="Cobrar"
+                onClick={() => handlePagarVenta(idTiketMesa)}
+              >
+                <i className="fas fa-money-bill"></i>
+              </button>
+            </>
+          ) : (
+            <button
+              title="Registrar venta"
+              onClick={() => registraOActualiza()}
+            >
+              <i className="fas fa-plus"></i>
+            </button>
+          ))}
 
         <button title="Limpiar el ticket" onClick={() => handleEmptyTicket()}>
           🗑️
@@ -946,32 +992,7 @@ function Tiquet(props) {
           📉
         </button>
 
-        <button
-          title="Descuento"
-          onClick={() =>
-            datosExtraVenta(
-              <DatosExtraVenta
-                setTipoPago={setTipoPago}
-                setDineroIngresado={setDineroIngresado}
-                setTipoPedido={setTipoPedido}
-                setHacerPedido={setHacerPedido}
-                setNombreCliente={setNombreCliente}
-                setObservaciones={setObservaciones}
-                setMesa={setMesa}
-                tipoPago={tipoPago}
-                dineroIngresado={dineroIngresado}
-                tipoPedido={tipoPedido}
-                hacerPedido={hacerPedido}
-                nombreCliente={nombreCliente}
-                observaciones={observaciones}
-                mesa={mesa}
-                setShowModal={setShowModal}
-              />
-            )
-          }
-        >
-          <FontAwesomeIcon icon={icon} />
-        </button>
+        
 
         {/*<Button href="whatsapp://send?text=Hola Mundo&phone=+524531527363">Enviar mensaje</Button>*/}
       </div>

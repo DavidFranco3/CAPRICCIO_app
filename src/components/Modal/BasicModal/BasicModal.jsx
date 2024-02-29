@@ -5,7 +5,7 @@ import "../../../scss/styles.scss";
 import ModalHeader from "react-bootstrap/ModalHeader";
 
 function BasicModal(props) {
-    const { show, setShow, title, children, size, fullscreen } = props;
+    const { show, setShow, title, children, size } = props;
 
     return (
         <Modal
@@ -14,8 +14,6 @@ function BasicModal(props) {
             centered
             backdrop="static"
             keyboard={false}
-            fullscreen={fullscreen}
-            
             size={size || "lg"} // Si size no se pasa, por defecto es "lg"
             
         >

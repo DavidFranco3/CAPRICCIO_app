@@ -86,6 +86,8 @@ export const ENDPOINTTotalVentasCajerosActivas = "/ventas/totalVentasCajerosActi
 export const ENDPOINTListarPaginandoVentasCajerosCanceladas = "/ventas/listarPaginandoCajerosCanceladas";
 export const ENDPOINTTotalVentasCajerosCanceladas = "/ventas/totalVentasCajerosCanceladas";
 export const ENDPOINTTotalIngredientesConsumidosDiarios = "/ventas/listarConsumoIngredientes";
+export const ENDPOINTObtenerVentasenMesasConTicket = "/ventas/obtenerVentasenMesasConTicket";
+
 
 // Pedidos de clientes
 export const ENDPOINTRegistroPedidos = "/pedidos/registro";
