@@ -7,7 +7,7 @@ import TerminalPV from "../../page/TerminalPV";
 
 const Tablaordenesmesas = () => {
   const [listarventaenmesas, setListMesasocupadas] = useState([]);
-  console.log("----", listarventaenmesas);
+  //console.log("----", listarventaenmesas);
   //console.log("++++++",listarventaenmesas.ventas_mesa);
   const cargarMesasOcupadas = () => {
     try {
