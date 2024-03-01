@@ -4,6 +4,11 @@ import Tablaordenesmesas from "./tablaordenesmesas";
 import TablaVentasTerminadas from "./tablaVentasTerminadas";
 
 const OrdeneMesas = (props) => {
+  const [mostrarTablaVentasTerminadas, setMostrarTablaVentasTerminadas] = useState(false);
+
+  const handleClick = () => {
+    setMostrarTablaVentasTerminadas(true);
+  };
   return (
     <>
       <div className="card card-danger card-outline m-3">
@@ -39,6 +44,7 @@ const OrdeneMesas = (props) => {
                 role="tab"
                 aria-controls="custom-content-below-profile"
                 aria-selected="false"
+                onClick={handleClick}
               >
                 Ventas Concluidas
               </a>
@@ -59,7 +65,7 @@ const OrdeneMesas = (props) => {
               role="tabpanel"
               aria-labelledby="custom-content-below-profile-tab"
             >
-              <TablaVentasTerminadas/>
+              {mostrarTablaVentasTerminadas && <TablaVentasTerminadas />}
             </div>
           </div>
         </div>

@@ -2,29 +2,17 @@ import { useState, useEffect, Suspense } from "react";
 import { obtenerMesaOcupadas } from "../../api/ventas";
 import DataTable from "react-data-table-component";
 import BasicModal from "../Modal/BasicModal";
-import Tiquet from "../TerminalPV/Tiquet";
 import TerminalPV from "../../page/TerminalPV";
 
 const Tablaordenesmesas = () => {
   const [listarventaenmesas, setListMesasocupadas] = useState([]);
-  //console.log("----", listarventaenmesas);
-  //console.log("++++++",listarventaenmesas.ventas_mesa);
   const cargarMesasOcupadas = () => {
     try {
       obtenerMesaOcupadas()
         .then((response) => {
           const { data } = response;
-          console.log("mesas", data);
+          //console.log("mesas", data);
           setListMesasocupadas(data);
-
-          /*if (!listarventaenmesas && data) {
-                
-                setListMesasocupadas(formatModelVentasMesas(data));
-            } else {
-              const datosMesas = formatModelVentasMesas(data);
-              setListMesasocupadas(datosMesas);
-              console.log("venta en mesas", datosMesas);
-            }*/
         })
         .catch((e) => {
           console.log(e);
@@ -38,6 +26,8 @@ const Tablaordenesmesas = () => {
     cargarMesasOcupadas();
   }, []);
 
+  
+
   const [showModal, setShowModal] = useState(false);
   const [contentModal, setContentModal] = useState(null);
   const [titulosModal, setTitulosModal] = useState(null);
@@ -46,7 +36,11 @@ const Tablaordenesmesas = () => {
     setTitulosModal("Ticket");
     setContentModal(content);
     setShowModal(true);
-  };
+  };useEffect(() => {
+    if (!showModal) {
+        cargarMesasOcupadas();
+      }
+  }, [showModal]);
 
   const columns = [
     {

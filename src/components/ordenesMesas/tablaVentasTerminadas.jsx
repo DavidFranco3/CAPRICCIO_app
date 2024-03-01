@@ -6,7 +6,7 @@ import ModalProductos from "./modalProductos";
 
 const TablaVentasTerminadas = () => {
   const [listarventadeldia, setListVentasDelDia] = useState([]);
-  console.log("----", listarventadeldia);
+  //console.log("----", listarventadeldia);
   //console.log("----", listarventadeldia.tipoPago);
 
   //console.log("++++++",listarventaenmesas.ventas_mesa);
@@ -15,7 +15,7 @@ const TablaVentasTerminadas = () => {
       obtenerVentasdelDia()
         .then((response) => {
           const { data } = response;
-          console.log("mesas", data);
+          //console.log("mesas", data);
           setListVentasDelDia(data);
         })
         .catch((e) => {
