@@ -51,9 +51,8 @@ const VistaMesas = () => {
     setTitulosModal("Tomar Orden");
     setContentModal(content);
     setShowModal(true);
-
-
-  };useEffect(() => {
+  };
+  useEffect(() => {
     if (!showModal) {
       cargarMesas();
     }
@@ -61,70 +60,86 @@ const VistaMesas = () => {
 
   return (
     <>
-      <div className="generalMesas">
-        <div style={{ textAlign: "center" }}>
-          <h3>Mesas del establecimiento</h3>
-        </div>
-        <div className="divButtonMesas">
-          <Button
-            onClick={() =>
-              registroUsuarios(<RegistoMesas setShow={setShowModal} />)
-            }
-          >
-            <i class="fa fa-solid fa-plus" /> Agregar
-          </Button>
-        </div>
-        <div className="divMesasView">
-          {listMesas.map((mesa, index) => (
-            
-            <div
-              class="info-box"
-               onClick={() =>
-                mesa.idTicket
-                  ? clicMesa(
-                      <TerminalPV
-                        agregar={true}
-                        setShow={setShowModal}
-                        estado={"abierto"}
-                        mesaticket={mesa.numeroMesa}
-                        idmesa={mesa.id}
-                        idTicket={mesa.idTicket}
-                      />
-                    )
-                  : clicMesa(
-                    <TerminalPV
-                      agregar={false}
-                      setShow={setShowModal}
-                      estado={"cerrado"}
-                      mesaticket={mesa.numeroMesa}
-                      idmesa={mesa.id}
-                      idTicket={mesa.idTicket}
-                    />
-                  )
-              }
-            >
-              <span
-                class={
-                  "info-box-icon " +
-                  (mesa.estado == "1" ? "mesaDisponible" : "bg-secondary")
-                }
-              >
-                <i class="fas fa-utensils"></i>
-              </span>
-              <div class="info-box-content">
-                <span class="info-box-number titMesa">
-                  N. Mesa: {mesa.numeroMesa}
-                </span>
-                <span class="info-box-text">
-                  N. Personas: {mesa.numeroPersonas}
-                </span>
-                <span class="info-box-text descMesa">{mesa.descripcion}</span>
+      <div className="card card-outline card-danger m-3">
+        <div className="card-header">
+          <div>
+            <div className="row">
+              <div className="col-md-10">
+                <h4>Mesas del establecimiento</h4>
+              </div>
+              <div className="col-md-2">
+                <button
+                className="btn btn-danger"
+                  onClick={() =>
+                    registroUsuarios(<RegistoMesas setShow={setShowModal} />)
+                  }
+                >
+                  <i class="fa fa-solid fa-plus" /> Agregar
+                </button>
               </div>
             </div>
-          ))}
+          </div>
+        </div>
+        <div className="card-body">
+          <div className="divMesasView">
+            {listMesas.map((mesa, index) => (
+              <div
+                class="info-box"
+                onClick={() =>
+                  mesa.idTicket
+                    ? clicMesa(
+                        <TerminalPV
+                          agregar={true}
+                          setShow={setShowModal}
+                          estado={"abierto"}
+                          mesaticket={mesa.numeroMesa}
+                          idmesa={mesa.id}
+                          idTicket={mesa.idTicket}
+                        />
+                      )
+                    : clicMesa(
+                        <TerminalPV
+                          agregar={false}
+                          setShow={setShowModal}
+                          estado={"cerrado"}
+                          mesaticket={mesa.numeroMesa}
+                          idmesa={mesa.id}
+                          idTicket={mesa.idTicket}
+                        />
+                      )
+                }
+              >
+                <span
+                  class={
+                    "info-box-icon " +
+                    (mesa.estado == "1" ? "mesaDisponible" : "bg-secondary")
+                  }
+                >
+                  <i class="fas fa-utensils"></i>
+                </span>
+                <div class="info-box-content">
+                  <span class="info-box-number titMesa">
+                    N. Mesa: {mesa.numeroMesa}
+                  </span>
+                  <span class="info-box-text">
+                    N. Personas: {mesa.numeroPersonas}
+                  </span>
+                  <span class="info-box-text descMesa">{mesa.descripcion}</span>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
-      <BasicModal show={showModal} setShow={setShowModal} title={titulosModal} size={"xl"} fullscreen={"true"}>
+
+      
+      <BasicModal
+        show={showModal}
+        setShow={setShowModal}
+        title={titulosModal}
+        size={"xl"}
+        fullscreen={"true"}
+      >
         {contentModal}
       </BasicModal>
     </>
@@ -140,7 +155,7 @@ function formatModelMesas(mesas) {
       descripcion: mesas.descripcion,
       numeroPersonas: mesas.numeroPersonas,
       estado: mesas.estado,
-      idTicket : mesas.idTicket,
+      idTicket: mesas.idTicket,
     });
   });
   return tempmesas;
