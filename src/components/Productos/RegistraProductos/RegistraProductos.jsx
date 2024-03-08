@@ -393,7 +393,6 @@ function RegistraProductos(props) {
                                 </Form.Group>
                             </Col>
                         </Row>
-
                         <hr />
 
                         {/* Listado de productos  */}
