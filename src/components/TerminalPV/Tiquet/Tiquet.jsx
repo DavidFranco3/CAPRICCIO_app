@@ -1041,9 +1041,9 @@ function Tiquet(props) {
           <>
             {add === "true" ? (
                <>
-               {formDatacantidadPagadaEfectivo !== undefined && formDatacantidadPagadaEfectivo.trim() !== "" ||
+               {(formDatacantidadPagadaEfectivo !== undefined && formDatacantidadPagadaEfectivo.trim() !== "" ||
                 formDatacantidadPagadaTarjeta !== undefined && formDatacantidadPagadaTarjeta.trim() !== "" ||
-                formDatacantidadPagadaTransferencia !== undefined && formDatacantidadPagadaTransferencia.trim() !== "" ? (
+                formDatacantidadPagadaTransferencia !== undefined && formDatacantidadPagadaTransferencia.trim() !== "") ? (
                   
                   <button
                   title="Cobrar"
@@ -1061,7 +1061,7 @@ function Tiquet(props) {
               </button>
                )}
              </>
-            ) : add === undefined ? (
+            ) : add == undefined ? (
               <button
                 title="Cobrar"
                 onClick={() => registraOActualiza()}
@@ -1072,8 +1072,6 @@ function Tiquet(props) {
           </>
         )}
         
-        
-
         <button title="Limpiar el ticket" onClick={() => handleEmptyTicket()}>
           🗑️
         </button>
@@ -1085,27 +1083,6 @@ function Tiquet(props) {
         <button title="Cancelar IVA" onClick={() => handleIVACancel()}>
           🚫️
         </button>
-
-        <button
-          title="Añadir detalles de la venta"
-          onClick={() =>
-            descuento(
-              <Descuento
-                tipoDescuento={tipoDescuento}
-                setTipoDescuento={setTipoDescuento}
-                dineroDescontado={dineroDescontado}
-                setDineroDescontado={setDineroDescontado}
-                porcentajeDescontado={porcentajeDescontado}
-                setPorcentajeDescontado={setPorcentajeDescontado}
-                setShowModal={setShowModal}
-              />
-            )
-          }
-        >
-          📉
-        </button>
-
-        {/*<Button href="whatsapp://send?text=Hola Mundo&phone=+524531527363">Enviar mensaje</Button>*/}
       </div>
     );
   };
