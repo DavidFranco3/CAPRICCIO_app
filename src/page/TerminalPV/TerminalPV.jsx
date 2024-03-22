@@ -27,6 +27,7 @@ function TerminalPv(props) {
   const mesaticket = props.mesaticket;
   const mesaid = props.idmesa;
   const estadov = props.agregar;
+  
 
   console.log("agregar?", estadov);
   console.log("agregar?", mesaid);
@@ -267,6 +268,7 @@ function TerminalPv(props) {
                   </div>
                   <div className="card-body">
                     <Tiquet
+                      agregar={estadov}
                       products={ticketItems}
                       empty={emptyTicket}
                       remove={removeProduct}
@@ -276,7 +278,7 @@ function TerminalPv(props) {
                       mesaid={mesaid}
                       idTicket={idTicket}
                       setShow={props.setShow}
-                      agregar={estadov}
+                      
                     />
                   </div>
                 </div>

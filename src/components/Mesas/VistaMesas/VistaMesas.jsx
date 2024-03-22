@@ -89,7 +89,7 @@ const VistaMesas = () => {
                   mesa.idTicket
                     ? clicMesa(
                         <TerminalPV
-                          agregar={true}
+                          agregar={"true"}
                           setShow={setShowModal}
                           estado={"abierto"}
                           mesaticket={mesa.numeroMesa}
@@ -99,7 +99,7 @@ const VistaMesas = () => {
                       )
                     : clicMesa(
                         <TerminalPV
-                          agregar={false}
+                          agregar={"false"}
                           setShow={setShowModal}
                           estado={"cerrado"}
                           mesaticket={mesa.numeroMesa}

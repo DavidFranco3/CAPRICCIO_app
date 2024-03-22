@@ -107,32 +107,6 @@ function Descuento(props) {
                     }
 
                 </div>
-
-                <Form.Group as={Row} className="botonSubirProducto">
-                    <Col>
-                        <Button
-                            title="Agregar Observaciones"
-                            type="submit"
-                            variant="success"
-                            className="registrar"
-                        >
-                            <FontAwesomeIcon icon={faSave} /> {!loading ? "Aceptar" : <Spinner animation="border" />}
-                        </Button>
-                    </Col>
-                    <Col>
-                        <Button
-                            title="Cerrar ventana"
-                            variant="danger"
-                            className="cancelar"
-                            disabled={loading}
-                            onClick={() => {
-                                cancelarRegistro()
-                            }}
-                        >
-                            <FontAwesomeIcon icon={faX} /> Cancelar
-                        </Button>
-                    </Col>
-                </Form.Group>
             </Form>
         </>
     );

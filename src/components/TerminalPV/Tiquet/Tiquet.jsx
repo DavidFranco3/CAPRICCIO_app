@@ -12,7 +12,6 @@ import {
 import { Col, Button, Row, Image, Table } from "react-bootstrap";
 import DatosExtraVenta from "../../Ventas/DatosExtraVenta";
 import Descuento from "../../Ventas/Descuento";
-import MetodosPago from "../../Ventas/MetodosPago";
 import { logoTiquetGris } from "../../../assets/base64/logo-tiquet";
 import dayjs from "dayjs";
 import "dayjs/locale/es";
@@ -30,14 +29,11 @@ function Tiquet(props) {
   const idmesa = props.mesaid;
   const idTiketMesa = props.idTicket;
   const add = props.agregar;
-  //console.log("folio",idTiketMesa)
+  console.log("agregar",add)
 
   //console.log("productos", props.products);
 
   //console.log("mesa en ticket", idmesa);
-
-  const [listMetodosPago, setListMetodosPago] = useState([]);
-  console.log(listMetodosPago)
 
   //update a mesa
   const actualizarEstadoS = async () => {
@@ -96,7 +92,17 @@ function Tiquet(props) {
     setNombreCliente("");
     setDineroIngresado("");
     setObservaciones("");
+    //setFormDatacantidadPagadaEfectivo();
+    //setFormDatacantidadPagadaTarjeta();
+    //setFormDatacantidadPagadaTransferencia();
     setTipoDescuento("");
+    setFormDatacantidadPagadaEfectivo("");
+    setFormDatacantidadPagadaTarjeta("");
+    setFormDatacantidadPagadaTransferencia("");
+    setPorcentajeDescontado("");
+    setDineroDescontado("");
+    setTipoDescuento("");
+    setTotalFinal("");
   };
 
   const [IVA, setIVA] = useState("0");
@@ -288,17 +294,17 @@ function Tiquet(props) {
             hacerPedido == "por WhatsApp" || hacerPedido == "por llamada"
               ? "false"
               : tipoPedido == "para comer aquí"
-                ? "false"
-                : "true",
+              ? "false"
+              : "true",
           cambio:
             parseFloat(dineroIngresado) -
-              (parseFloat(total) +
-                parseFloat(total) * parseFloat(iva) +
-                parseFloat(total) * parseFloat(comision))
+            (parseFloat(total) +
+              parseFloat(total) * parseFloat(iva) +
+              parseFloat(total) * parseFloat(comision))
               ? parseFloat(dineroIngresado) -
-              (parseFloat(total) +
-                parseFloat(total) * parseFloat(iva) +
-                parseFloat(total) * parseFloat(comision))
+                (parseFloat(total) +
+                  parseFloat(total) * parseFloat(iva) +
+                  parseFloat(total) * parseFloat(comision))
               : "0",
           productos: products,
           tipoDescuento: tipoDescuento,
@@ -314,8 +320,9 @@ function Tiquet(props) {
           agrupar: grupo,
           año: añoVenta,
           semana: weekNumber,
-          metodosPago: listMetodosPago,
+
           createdAt: formattedDate,
+          metodosPago: formDataCantidadPagada,
         };
 
         registraVentas(dataTemp).then((response) => {
@@ -385,13 +392,13 @@ function Tiquet(props) {
           pagado: "false",
           cambio:
             parseFloat(dineroIngresado) -
-              (parseFloat(total) +
-                parseFloat(total) * parseFloat(iva) +
-                parseFloat(total) * parseFloat(comision))
+            (parseFloat(total) +
+              parseFloat(total) * parseFloat(iva) +
+              parseFloat(total) * parseFloat(comision))
               ? parseFloat(dineroIngresado) -
-              (parseFloat(total) +
-                parseFloat(total) * parseFloat(iva) +
-                parseFloat(total) * parseFloat(comision))
+                (parseFloat(total) +
+                  parseFloat(total) * parseFloat(iva) +
+                  parseFloat(total) * parseFloat(comision))
               : "0",
           productos: products,
           tipoDescuento: tipoDescuento,
@@ -408,7 +415,9 @@ function Tiquet(props) {
           año: añoVenta,
           semana: weekNumber,
           createdAt: formattedDate,
+          metodosPago: formDataCantidadPagada,
         };
+        console.log("data venta", datosActualizados);
 
         const response = await actualizaTicket(idTiket, datosActualizados);
         //console.log("respuesta-->",response);
@@ -481,13 +490,13 @@ function Tiquet(props) {
           pagado: "true",
           cambio:
             parseFloat(dineroIngresado) -
-              (parseFloat(total) +
-                parseFloat(total) * parseFloat(iva) +
-                parseFloat(total) * parseFloat(comision))
+            (parseFloat(total) +
+              parseFloat(total) * parseFloat(iva) +
+              parseFloat(total) * parseFloat(comision))
               ? parseFloat(dineroIngresado) -
-              (parseFloat(total) +
-                parseFloat(total) * parseFloat(iva) +
-                parseFloat(total) * parseFloat(comision))
+                (parseFloat(total) +
+                  parseFloat(total) * parseFloat(iva) +
+                  parseFloat(total) * parseFloat(comision))
               : "0",
           productos: products,
           tipoDescuento: tipoDescuento,
@@ -504,6 +513,7 @@ function Tiquet(props) {
           año: añoVenta,
           semana: weekNumber,
           createdAt: formattedDate,
+          metodosPago: formDataCantidadPagada,
         };
 
         const response = await actualizaTicket(idTiket, datosActualizados);
@@ -562,13 +572,57 @@ function Tiquet(props) {
   // Para alamcenar el dinero ingresado
   const [dineroIngresado, setDineroIngresado] = useState("");
   // Para almacenar el tipo de pago
-  const [tipoPago, setTipoPago] = useState("");
+  const [tipoPago, setTipoPago] = useState("efectivo");
   // Para almacenar el tipo de pedido
   const [tipoPedido, setTipoPedido] = useState("");
   // Para almacenar la forma en la que se hizo el pedido
   const [hacerPedido, setHacerPedido] = useState("");
   // Para almacenar las observaciones
   const [observaciones, setObservaciones] = useState("");
+  // para almacenar metodos de pago
+  const [formDatacantidadPagadaEfectivo, setFormDatacantidadPagadaEfectivo] =
+    useState("");
+  const [formDatacantidadPagadaTarjeta, setFormDatacantidadPagadaTarjeta] =
+    useState("");
+  const [
+    formDatacantidadPagadaTransferencia,
+    setFormDatacantidadPagadaTransferencia,
+  ] = useState("");
+
+  //agrupar metodos de pago
+  const [formDataCantidadPagada, setFormDataCantidadPagada] = useState([
+    { metodo: "efectivo", cantidadPagada: formDatacantidadPagadaEfectivo },
+    { metodo: "tarjeta", cantidadPagada: formDatacantidadPagadaTarjeta },
+    {
+      metodo: "transferencia",
+      cantidadPagada: formDatacantidadPagadaTransferencia,
+    },
+  ]);
+
+  useEffect(() => {
+    setFormDataCantidadPagada([
+      { metodo: "efectivo", cantidadPagada: formDatacantidadPagadaEfectivo },
+      { metodo: "tarjeta", cantidadPagada: formDatacantidadPagadaTarjeta },
+      {
+        metodo: "transferencia",
+        cantidadPagada: formDatacantidadPagadaTransferencia,
+      },
+    ]);
+    //console.log("Contenido de formDataCantidadPagada:", formDatacantidadPagadaEfectivo);
+  }, [
+    formDatacantidadPagadaEfectivo,
+    formDatacantidadPagadaTarjeta,
+    formDatacantidadPagadaTransferencia,
+  ]);
+
+  useEffect(() => {
+    console.log("Contenido de formDataCantidadPagada:", formDataCantidadPagada);
+
+    // Actualizar el estado de formDataCantidadPagada con sus últimos datos
+    setFormDataCantidadPagada((prevState) => prevState);
+  }, [formDataCantidadPagada]);
+
+  //console.log(formDatacantidadPagadaEfectivo,formDatacantidadPagadaTarjeta,formDatacantidadPagadaTransferencia);
   // Para el modal de las observaciones
   const datosExtraVenta = (content) => {
     setTitulosModal("Datos extra de la venta");
@@ -606,10 +660,10 @@ function Tiquet(props) {
     setTotalFinal(
       parseFloat(porcentajeDescontado) > 0
         ? parseFloat(total) -
-        parseFloat(total) * parseFloat(porcentajeDescontado)
+            parseFloat(total) * parseFloat(porcentajeDescontado)
         : parseFloat(dineroDescontado) > 0
-          ? parseFloat(total) - parseFloat(dineroDescontado)
-          : total
+        ? parseFloat(total) - parseFloat(dineroDescontado)
+        : total
     );
   }, [total, porcentajeDescontado, dineroDescontado]);
 
@@ -721,7 +775,22 @@ function Tiquet(props) {
           </Col>
           <Col>
             <div className="subtotal__cambio">
-              Pago realizado con {tipoPago}
+              {formDatacantidadPagadaEfectivo && (
+                <div>
+                  Pago realizado con Efectivo: {formDatacantidadPagadaEfectivo}
+                </div>
+              )}
+              {formDatacantidadPagadaTarjeta && (
+                <div>
+                  Pago realizado con Tarjeta: {formDatacantidadPagadaTarjeta}
+                </div>
+              )}
+              {formDatacantidadPagadaTransferencia && (
+                <div>
+                  Pago realizado con Transferencia:{" "}
+                  {formDatacantidadPagadaTransferencia}
+                </div>
+              )}
             </div>
 
             <div className="subtotal__cambio">
@@ -729,8 +798,8 @@ function Tiquet(props) {
               {parseFloat(porcentajeDescontado) > 0
                 ? parseFloat(porcentajeDescontado) * 100 + "%"
                 : parseFloat(dineroDescontado) > 0
-                  ? "$" + parseFloat(dineroDescontado)
-                  : "0"}
+                ? "$" + parseFloat(dineroDescontado)
+                : "0"}
             </div>
 
             <div className="subtotal__IVA"></div>
@@ -743,10 +812,10 @@ function Tiquet(props) {
               }).format(
                 parseFloat(porcentajeDescontado) > 0
                   ? parseFloat(total) -
-                  parseFloat(total) * parseFloat(porcentajeDescontado)
+                      parseFloat(total) * parseFloat(porcentajeDescontado)
                   : parseFloat(dineroDescontado) > 0
-                    ? parseFloat(total) - parseFloat(dineroDescontado)
-                    : total
+                  ? parseFloat(total) - parseFloat(dineroDescontado)
+                  : total
               )}{" "}
               MXN
             </div>
@@ -902,8 +971,8 @@ function Tiquet(props) {
                     parseFloat(dineroIngresado) -
                       (parseFloat(total) + parseFloat(total) * parseFloat(IVA))
                       ? parseFloat(dineroIngresado) -
-                      (parseFloat(total) +
-                        parseFloat(total) * parseFloat(IVA))
+                          (parseFloat(total) +
+                            parseFloat(total) * parseFloat(IVA))
                       : "0"
                   )}{" "}
                   MXN
@@ -919,19 +988,33 @@ function Tiquet(props) {
 
   const Opciones = ({ icon }) => {
     return (
-
       <div className="ticket__actions">
         <button
           title="Descuento"
           onClick={() =>
             datosExtraVenta(
               <DatosExtraVenta
+                tipoDescuento={tipoDescuento}
+                setTipoDescuento={setTipoDescuento}
+                dineroDescontado={dineroDescontado}
+                setDineroDescontado={setDineroDescontado}
+                porcentajeDescontado={porcentajeDescontado}
+                setPorcentajeDescontado={setPorcentajeDescontado}
                 setTipoPago={setTipoPago}
                 setDineroIngresado={setDineroIngresado}
                 setTipoPedido={setTipoPedido}
                 setHacerPedido={setHacerPedido}
                 setNombreCliente={setNombreCliente}
                 setObservaciones={setObservaciones}
+                setFormDatacantidadPagadaEfectivo={
+                  setFormDatacantidadPagadaEfectivo
+                }
+                setFormDatacantidadPagadaTarjeta={
+                  setFormDatacantidadPagadaTarjeta
+                }
+                setFormDatacantidadPagadaTransferencia={
+                  setFormDatacantidadPagadaTransferencia
+                }
                 setMesa={setMesa}
                 tipoPago={tipoPago}
                 dineroIngresado={dineroIngresado}
@@ -939,40 +1022,58 @@ function Tiquet(props) {
                 hacerPedido={hacerPedido}
                 nombreCliente={nombreCliente}
                 observaciones={observaciones}
+                cantidadPagadaEfectivo={formDatacantidadPagadaEfectivo}
+                cantidadPagadaTarjeta={formDatacantidadPagadaTarjeta}
+                cantidadPagadaTransferencia={
+                  formDatacantidadPagadaTransferencia
+                }
                 mesa={mesa}
                 setShowModal={setShowModal}
+                total={totalFinal}
               />
             )
           }
         >
           <i className="fas fa-check"></i>
         </button>
-        {tipoPago &&
-          tipoPago.trim() !== "" && // Verifica si tipoPago no es nulo, indefinido o vacío
-          (add ? (
-            <>
 
+        {tipoPago && tipoPago.trim() !== "" && (
+          <>
+            {add === "true" ? (
+               <>
+               {formDatacantidadPagadaEfectivo !== undefined && formDatacantidadPagadaEfectivo.trim() !== "" ||
+                formDatacantidadPagadaTarjeta !== undefined && formDatacantidadPagadaTarjeta.trim() !== "" ||
+                formDatacantidadPagadaTransferencia !== undefined && formDatacantidadPagadaTransferencia.trim() !== "" ? (
+                  
+                  <button
+                  title="Cobrar"
+                  onClick={() => handlePagarVenta(idTiketMesa)}
+                >
+                  <i className="fas fa-money-bill"></i>
+                </button>
+                 
+               ) : (
+                <button
+                title="Registrar venta"
+                onClick={() => registraOActualiza()}
+              >
+                <i className="fas fa-plus"></i>
+              </button>
+               )}
+             </>
+            ) : add === undefined ? (
               <button
                 title="Cobrar"
-                onClick={() => handlePagarVenta(idTiketMesa)}
+                onClick={() => registraOActualiza()}
               >
                 <i className="fas fa-money-bill"></i>
               </button>
-            </>
-          ) : (
-            <button
-              title="Registrar venta"
-              onClick={() => registraOActualiza()}
-            >
-              <i className="fas fa-plus"></i>
-            </button>
-          ))}
-        <button
-          title="Registrar venta"
-          onClick={() => registraOActualiza()}
-        >
-          <i className="fas fa-plus"></i>
-        </button>
+            ) : null}
+          </>
+        )}
+        
+        
+
         <button title="Limpiar el ticket" onClick={() => handleEmptyTicket()}>
           🗑️
         </button>
@@ -1003,21 +1104,6 @@ function Tiquet(props) {
         >
           📉
         </button>
-
-        <button
-          title="Añadir metodos de pago"
-          onClick={() =>
-            metodosPago(
-              <MetodosPago
-                setListMetodosPago2={setListMetodosPago}
-                setShowModal={setShowModal}
-              />
-            )
-          }
-        >
-          📉
-        </button>
-
 
         {/*<Button href="whatsapp://send?text=Hola Mundo&phone=+524531527363">Enviar mensaje</Button>*/}
       </div>
