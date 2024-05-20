@@ -137,7 +137,6 @@ const configRouting = [
         page: LayoutAdminLTE,
         default: false,
         roles: ["administrador", "vendedor", "cliente", "mesero"]
-       
     }
 ]
 
