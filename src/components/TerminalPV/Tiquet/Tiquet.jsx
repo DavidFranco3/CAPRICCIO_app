@@ -29,7 +29,7 @@ function Tiquet(props) {
   const idmesa = props.mesaid;
   const idTiketMesa = props.idTicket;
   const add = props.agregar;
-  console.log("agregar",add)
+  console.log("agregar", add);
 
   //console.log("productos", props.products);
 
@@ -1040,38 +1040,40 @@ function Tiquet(props) {
         {tipoPago && tipoPago.trim() !== "" && (
           <>
             {add === "true" ? (
-               <>
-               {(formDatacantidadPagadaEfectivo !== undefined && formDatacantidadPagadaEfectivo.trim() !== "" ||
-                formDatacantidadPagadaTarjeta !== undefined && formDatacantidadPagadaTarjeta.trim() !== "" ||
-                formDatacantidadPagadaTransferencia !== undefined && formDatacantidadPagadaTransferencia.trim() !== "") ? (
-                  
+              <>
+                {(formDatacantidadPagadaEfectivo !== undefined &&
+                  formDatacantidadPagadaEfectivo.trim() !== "") ||
+                (formDatacantidadPagadaTarjeta !== undefined &&
+                  formDatacantidadPagadaTarjeta.trim() !== "") ||
+                (formDatacantidadPagadaTransferencia !== undefined &&
+                  formDatacantidadPagadaTransferencia.trim() !== "") ? (
                   <button
-                  title="Cobrar"
-                  onClick={() => handlePagarVenta(idTiketMesa)}
-                >
-                  <i className="fas fa-money-bill"></i>
-                </button>
-                 
-               ) : (
-                <button
-                title="Registrar venta"
-                onClick={() => registraOActualiza()}
-              >
-                <i className="fas fa-plus"></i>
-              </button>
-               )}
-             </>
-            ) : add == undefined ? (
-              <button
-                title="Cobrar"
-                onClick={() => registraOActualiza()}
-              >
+                    title="Cobrar"
+                    onClick={() => handlePagarVenta(idTiketMesa)}
+                  >
+                    <i className="fas fa-money-bill"></i>
+                  </button>
+                ) : (
+                  <button
+                   type="hidden"
+                   style={{display:'none'}}
+                  >
+                    
+                  </button>
+                )}
+              </>
+            ) : add === undefined ? (
+              <button title="Cobrar" onClick={() => registraOActualiza()}>
                 <i className="fas fa-money-bill"></i>
               </button>
             ) : null}
           </>
         )}
-        
+
+        <button title="Cobrar" onClick={() => registraOActualiza()}>
+          <i className="fas fa-plus"></i>
+        </button>
+
         <button title="Limpiar el ticket" onClick={() => handleEmptyTicket()}>
           🗑️
         </button>

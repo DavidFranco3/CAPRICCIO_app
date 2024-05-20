@@ -551,7 +551,7 @@ function DatosExtraVenta(props) {
               type="submit"
               variant="success"
               className="registrar"
-              disabled={!totalPagoValido}
+             // disabled={!totalPagoValido}
             >
               <FontAwesomeIcon icon={faSave} />{" "}
               {!loading ? "Aceptar" : <Spinner animation="border" />}
