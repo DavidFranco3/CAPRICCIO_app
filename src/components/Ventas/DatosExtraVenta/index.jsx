@@ -1,1 +1,1 @@
-export { default } from "./DatosExtraVenta"
+export { default } from "../../../page/TerminalPV/components/DatosExtraVenta"

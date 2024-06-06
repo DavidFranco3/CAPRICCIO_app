@@ -5,8 +5,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleInfo } from '@fortawesome/free-solid-svg-icons'
 import BasicModal from "../../Modal/BasicModal";
 import { obtenUltimoNoTiquet, registraVentas, obtenerVentas } from "../../../api/ventas";
-import { Col, Button, Row, Image, Table } from "react-bootstrap";
-import DatosExtraVenta from "../../Ventas/DatosExtraVenta";
+import { Col, Row, Image, Table } from "react-bootstrap";
+import DatosExtraVenta from '../../../page/TerminalPV/components/DatosExtraVenta';
 import { logoTiquetGris } from "../../../assets/base64/logo-tiquet";
 
 import dayjs from 'dayjs';

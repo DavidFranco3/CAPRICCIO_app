@@ -21,7 +21,7 @@ import MovimientosIngredientes from "../page/MovimientosIngredientes";
 import RegistraProductos from "../components/Productos/RegistraProductos";
 import ModificaProductos from "../components/Productos/ModificaProductos";
 import LayoutAdminLTE from "../layout/adminlte/layout";
-import VistaMesas from "../components/Mesas/VistaMesas/VistaMesas";
+import VistaMesas from "../page/Mesas/VistaMesas/VistaMesas";
 import OrdeneMesas from "../components/ordenesMesas/ordeneMesas";
 
 
