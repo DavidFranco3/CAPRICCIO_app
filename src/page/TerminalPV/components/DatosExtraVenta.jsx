@@ -1,6 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { Col, Form, Row } from "react-bootstrap";
+import dayjs from "dayjs";
+import "dayjs/locale/es";
 import "../../../scss/styles.scss";
+import { toast } from "react-toastify";
 
 function DatosExtraVenta(props) {
 
@@ -18,6 +21,17 @@ function DatosExtraVenta(props) {
   const [total, setTotal] = useState(subtotal);
   const [cambio, setCambio] = useState(0);
   const [totalPagado, setTotalPagado] = useState(0);
+
+  const [fechayHora, setFechayHora] = useState("");
+  const [fechayHoraSinFormato, setFechayHoraSinFormato] = useState("");
+
+  useEffect(() => {
+    const hoy = new Date();
+    const adjustedDate = dayjs(hoy).utc().utcOffset(-360).format(); // Ajusta la hora a CST (UTC -6)
+
+    setFechayHora(dayjs(adjustedDate).locale("es").format("dddd, LL hh:mm A"));
+    setFechayHoraSinFormato(adjustedDate);
+  }, []);
 
   // FORM DATA
   const [formData, setFormData] = useState(
@@ -48,7 +62,6 @@ function DatosExtraVenta(props) {
         año: "",
         semana: "",
         fecha: "",
-        metodosPago: [],
       },
       infoMetodosPago: {
         estadoPagoEfectivo: false,
@@ -253,13 +266,82 @@ function DatosExtraVenta(props) {
   const onSubmit = (e) => {
     e.preventDefault();
 
-    const dataTemp = formData.infoVenta;
-
+    if (!formData.infoMetodosPago) {
+      toast.error("Por favor agrega un método de pago");
+      
+      
+      
+    } else if (!formData.infoMetodosPago.cantidadPagoEfectivo || !formData.infoMetodosPago.cantidadPagoTransfer || !formData.infoMetodosPago.cantidadPagoTarjeta ) {
+      toast.error("Por favor ingresa al menos la cantidad del total");  
+    }
     // if (dataTemp) {
       
     // }
-
+    const dataTemp = formData.infoVenta;
     console.log(dataTemp);
+  }
+
+  const calcularFecha = () => {
+    const hoy = new Date();
+    const mes = hoy.getMonth() + 1;
+    const añoVenta = hoy.getFullYear();
+
+    // Configurar el objeto Date para que tome en cuenta el inicio de semana según tu localidad
+    hoy.setHours(0, 0, 0);
+    hoy.setDate(hoy.getDate() + 4 - (hoy.getDay() || 7));
+
+    // Calcular el número de la semana
+    const yearStart = new Date(hoy.getFullYear(), 0, 1);
+    const weekNumber = Math.ceil(((hoy - yearStart) / 86400000 + 1) / 7);
+    const formattedDate = dayjs(fechayHoraSinFormato)
+      .tz("America/Mexico_City")
+      .format("YYYY-MM-DDTHH:mm:ss.SSS");
+
+  return {
+    mes,
+    añoVenta,
+    weekNumber,
+    formattedDate
+  }
+}
+
+  const handleRegistrarVenta = () => {
+
+    const fechas = calcularFecha();
+
+    try {
+      const dataTemp = {
+        numeroTiquet: formData.infoVenta.numeroTiquet,
+        cliente: formData.infoVenta.cliente,
+        tipo: props.mesaClick ? "Orden de mesa" : "Pedido de mostrador",
+        mesa: formData.infoVenta.mesa,
+        usuario: formData.infoVenta.usuario,
+        estado: props.hacerPedido === "Rappi" && props.hacerPedido === "Uber" ? "PREP" : "COBR",
+        detalles: formData.infoVenta.detalles,
+        observaciones: formData.infoVenta.observaciones,
+        tipoPago: 
+          formData.infoMetodosPago.estadoPagoEfectivo ? "Efectivo" :
+          formData.infoMetodosPago.estadoPagoEfectivo ? "Tarjeta" : "Transferencia",
+        efectivo: formData.infoMetodosPago.cantidadPagoEfectivo,
+        cambio: formData.infoVenta.cambio,
+        subtotal: formData.infoVenta.subtotal,
+        tipoPedido: formData.infoVenta.tipoPedido,
+        hacerPedido: formData.infoVenta.hacerPedido,
+        tipoDescuento: formData.infoVenta.tipoDescuento,
+        descuento: formData.infoVenta.descuento,
+        pagado: props.hacerPedido === "Rappi" && props.hacerPedido === "Uber" ? false : true,
+        total: formData.infoVenta.total,
+        iva: formData.infoVenta.iva,
+        atendido: formData.infoVenta.atendido,
+        comision: formData.infoVenta.comision,
+        año: fechas.añoVenta,
+        mes: fechas.mes,
+        semana: fechas.weekNumber,
+        fecha: fechas.formattedDate,
+      }
+    } catch (error) {
+      
+    }
   }
 
 
@@ -301,6 +383,7 @@ function DatosExtraVenta(props) {
                       value="cantidad"
                       checked={tipoDescuento === 'cantidad'}
                       onChange={handleTipoDescuentoChange}
+                      disabled={formData.infoVenta.hacerPedido === 'Uber' && formData.infoVenta.hacerPedido === 'Rappi'}
                     />
                     <Form.Check
                       type="radio"
@@ -441,7 +524,8 @@ function DatosExtraVenta(props) {
             </Col>
           </Row>
           
-          <Row className="mx-1 p-1 border rounded">
+          {formData.infoVenta.hacerPedido !== 'Rappi' && formData.infoVenta.hacerPedido !== 'Uber' && (
+            <Row className="mx-1 p-1 border rounded">
             <Col className="">
               <h3>
                 Métodos de pago y pago
@@ -544,7 +628,9 @@ function DatosExtraVenta(props) {
             </Col>
           </Row>
           
-          {formData.infoVenta.hacerPedido === 'Presencial' && (
+          )}
+
+          {formData.infoVenta.hacerPedido !== 'Presencial' && (
             <Row className="mt-2 mx-1 p-1 border rounded">
               <Form.Label>Observaciones</Form.Label>
               <Form.Control

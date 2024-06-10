@@ -1,9 +1,24 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 //import { LogsInformativosLogout } from "../../components/Logs/LogsSistema/LogsSistema";
 import { getTokenApi, isExpiredToken, logoutApi } from "../../api/auth";
+import BasicModal from "../../components/Modal/BasicModal";
+import Comision from "../../page/Comision/RegistroComision";
+
 const Header = ({ datosUsuario }) => {
+
+  // Para el modal
+  const [showModal, setShowModal] = useState(false);
+  const [contentModal, setContentModal] = useState(null);
+  const [titulosModal, setTitulosModal] = useState(null);
+
+  const editarComision = (content) => {
+    setTitulosModal("Comisión bancaria");
+    setContentModal(content);
+    setShowModal(true);
+  };
+
   const { setRefreshCheckLogin } = datosUsuario;
   const redirecciona = useNavigate();
   const cierreAutomatico = () => {
@@ -21,6 +36,7 @@ const Header = ({ datosUsuario }) => {
       }
     }
   };
+
   //Para cerrar la sesion
   const cerrarSesion = () => {
     /*LogsInformativosLogout(
@@ -45,20 +61,22 @@ const Header = ({ datosUsuario }) => {
   const enrutaInicio = () => {
     redirecciona("/");
   };
+
+
+
   return (
     <div>
       <nav className="main-header navbar navbar-expand navbar-white navbar-light">
         {/* Left navbar links */}
         <ul className="navbar-nav">
           <li className="nav-item">
-            <a
+            <span
               className="nav-link"
               data-widget="pushmenu"
-              href="#"
               role="button"
             >
               <i className="fas fa-bars" />
-            </a>
+            </span>
           </li>
           <li className="nav-item d-none d-sm-inline-block">
             <a href="index3.html" className="nav-link">
@@ -70,14 +88,13 @@ const Header = ({ datosUsuario }) => {
         <ul className="navbar-nav ml-auto">
           {/* Navbar Search */}
           <li className="nav-item">
-            <a
+            <span
               className="nav-link"
               data-widget="navbar-search"
-              href="#"
               role="button"
             >
               <i className="fas fa-search" />
-            </a>
+            </span>
             <div className="navbar-search-block">
               <form className="form-inline">
                 <div className="input-group input-group-sm">
@@ -106,43 +123,61 @@ const Header = ({ datosUsuario }) => {
 
           {/* Notifications Dropdown Menu */}
           <li className="nav-item dropdown">
-            <a className="nav-link" data-toggle="dropdown" href="#">
+            <span className="nav-link" data-toggle="dropdown" href="#">
               <i className="far fa-bell" />
               <span className="badge badge-warning navbar-badge">
                 <i className="fa fa-user"></i>
               </span>
-            </a>
+            </span>
             <div className="dropdown-menu dropdown-menu-lg dropdown-menu-right">
               <span className="dropdown-item dropdown-header">
                 Usuario: {datosUsuario.nombre}
               </span>
               <div className="dropdown-divider" />
-              <a className="dropdown-item">
-                <button
-                  className="btn btn-block text-left"
-                  onClick={() => {
-                    cerrarSesion();
-                  }}
-                >
-                  <i className="fas fa-sign-out-alt mr-2"></i>
-                  Cerrar sesión
-                </button>
-              </a>
+                <span className="dropdown-item">
+                  <button
+                    className="btn btn-block text-left"
+                    onClick={() => {
+                      cerrarSesion();
+                    }}
+                  >
+                    <i className="fas fa-sign-out-alt mr-2"></i>
+                    Cerrar sesión
+                  </button>
+                </span>
+                {datosUsuario.rol === "administrador" && (
+                  <span className="dropdown-item">
+                    <button 
+                      onClick={() => {
+                        editarComision(
+                          <Comision/>
+                        )
+                      }}
+                    >
+                      <i className="fas fa-landmark mr-2"></i>
+                      Comision bancaria
+                    </button>
+                  </span>
+                )}
               <div className="dropdown-divider" />
             </div>
           </li>
           <li className="nav-item">
-            <a
+            <span
               className="nav-link"
               data-widget="fullscreen"
-              href="#"
               role="button"
             >
               <i className="fas fa-expand-arrows-alt" />
-            </a>
+            </span>
           </li>
         </ul>
       </nav>
+
+      <BasicModal show={showModal} setShow={setShowModal} title={titulosModal} size={"md"}>
+        {contentModal}
+      </BasicModal>
+
     </div>
   );
 };

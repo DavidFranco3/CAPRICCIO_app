@@ -20,6 +20,11 @@ export const ENDPOINTActualizarUsuarios = "/usuarios/actualizar";
 export const ENDPOINTListarPaginandoClientes = "/usuarios/listarPaginandoClientes";
 export const ENDPOINTTotalClientes = "/usuarios/totalClientes";
 
+// Comisiones
+export const ENDPOINTRegistroComision = "/comision/registro";
+export const ENDPOINTListarComision = "/comision/listar";
+export const ENDPOINTActualizarComision = "/comision/actualizar";
+
 // Categorías
 export const ENDPOINTRegistroCategorias = "/categorias/registro";
 export const ENDPOINTListarCategorias = "/categorias/listar";

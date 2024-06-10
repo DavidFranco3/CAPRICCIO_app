@@ -2,9 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./style.css";
 import BasicModal from "../../../../components/Modal/BasicModal";
 import { obtenerMesas } from "../../../../api/mesas";
-import { toast } from "react-toastify";
 import TerminalPVprev from "../../TerminalPVprev";
-import { logDOM } from "@testing-library/react";
 
 const VistaMesasVenta = () => {
   // Para guardar el listado de categorias

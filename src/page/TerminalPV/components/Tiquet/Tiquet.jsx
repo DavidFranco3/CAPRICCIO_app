@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import "./ticket.css";
 import { toast } from "react-toastify";
-import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
+import { faCircleInfo, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import BasicModal from "../../../../components/Modal/BasicModal";
 import {
   obtenUltimoNoTiquet,
@@ -9,7 +9,7 @@ import {
   actualizaTicket,
   listarVentas
 } from "../../../../api/ventas";
-import { Col, Row, Image, Table, FormGroup, Form } from "react-bootstrap";
+import { Col, Row, Image, Table, Form } from "react-bootstrap";
 import DatosExtraVenta from "../DatosExtraVenta";
 import { logoTiquetGris } from "../../../../assets/base64/logo-tiquet";
 import dayjs from "dayjs";
@@ -19,7 +19,7 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { LogsInformativos } from "../../../../components/Logs/LogsSistema/LogsSistema";
 import { actualizaDeshabilitarMesas } from "../../../../api/mesas";
-import { log } from "util";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 function Tiquet(props) {
 
@@ -213,14 +213,6 @@ function Tiquet(props) {
   };
 
   const [IVA, setIVA] = useState("0");
-
-  const handleIVACancel = () => {
-    setIVA("0");
-  };
-
-  const handleIVAApply = () => {
-    setIVA("0.16");
-  };
 
   const handlePrint = () => {
     if (products.length === 0) {
@@ -809,6 +801,7 @@ function Tiquet(props) {
                     tipoPedido={"Para comer aquí"}
                     hacerPedido={"Presencial"}
                     mesaClick={true}
+                    setShowModal={setShowModal}
                   />
                 )
               } else {
@@ -823,6 +816,7 @@ function Tiquet(props) {
                     total={total}
                     tipoPedido={tipoPedido}
                     hacerPedido={hacerPedido}
+                    setShowModal={setShowModal}
                   />
                 )
               }
@@ -835,56 +829,12 @@ function Tiquet(props) {
           <i className="fas fa-duotone fa-money-bill"></i>
         </button>
 
-        {tipoPago && tipoPago.trim() !== "" && (
-          <>
-            {add === "true" ? (
-              <>
-                {(formDatacantidadPagadaEfectivo !== undefined &&
-                  formDatacantidadPagadaEfectivo.trim() !== "") ||
-                (formDatacantidadPagadaTarjeta !== undefined &&
-                  formDatacantidadPagadaTarjeta.trim() !== "") ||
-                (formDatacantidadPagadaTransferencia !== undefined &&
-                  formDatacantidadPagadaTransferencia.trim() !== "") ? (
-                  <button
-                    title="Cobrar"
-                    onClick={() => handlePagarVenta(idTicketMesa)}
-                  >
-                    <i className="fas fa-money-bill"></i>
-                  </button>
-                ) : (
-                  <button
-                    type="hidden"
-                    style={{display:'none'}}
-                  >
-                    
-                  </button>
-                )}
-              </>
-            ) : add === undefined ? (
-              <button title="Cobrar" onClick={() => registraOActualiza()}>
-                <i className="fas fa-money-bill"></i>
-              </button>
-            ) : null}
-          </>
-        )}
-
         <button title="Añadir" onClick={() => registraOActualiza()}>
           <i className="fas fa-plus"></i>
         </button>
 
         <button title="Limpiar el ticket" onClick={() => handleEmptyTicket()}>
-          🗑️
-        </button>
-
-        <button title="Aplicar IVA" onClick={() => handleIVAApply()}>
-          🧾
-        </button>
-
-        <button 
-          title="Liberar mesa" 
-          onClick={() => handleIVACancel()}
-        >
-          <i className="fa fa-chair"></i>
+          <FontAwesomeIcon icon={faTrashCan}></FontAwesomeIcon>
         </button>
       </div>
     );
