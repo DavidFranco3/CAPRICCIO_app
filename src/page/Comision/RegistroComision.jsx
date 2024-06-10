@@ -37,8 +37,12 @@ function Comision() {
         console.log(comision[0]);
         console.log(formData);
 
+        const dataTemp = {
+            valor: formData.valor
+        }
+
         try {
-            const response = await actualizarComision(comision[0]._id, formData.valor);
+            const response = await actualizarComision(comision[0]._id, dataTemp);
             console.log(response);
         } catch (e) {
             console.log(e);
