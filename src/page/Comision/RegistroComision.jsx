@@ -3,7 +3,7 @@ import { actualizarComision, obtenerComisiones, registrarComision } from "../../
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-function Comision() {
+function Comision(props) {
     const [comision, setComision] = useState([]);
 
     const cargarComision = () => {
@@ -44,6 +44,8 @@ function Comision() {
         try {
             const response = await actualizarComision(comision[0]._id, dataTemp);
             console.log(response);
+            toast.success("Comisión actualizada correctamente");
+            props.setShowModal(false);
         } catch (e) {
             console.log(e);
         }

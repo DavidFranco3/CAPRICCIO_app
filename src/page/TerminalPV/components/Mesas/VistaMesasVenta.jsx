@@ -94,6 +94,7 @@ const VistaMesasVenta = () => {
                                     setShow={setShowModal}
                                     estado={"abierto"}
                                     numMesa={mesa.numeroMesa}
+                                    mesaId={mesa.id}
                                     idTicket={mesa.idTicket}
                                     tipoPedido = {"Para comer aquí"}
                                     hacerPedido = {"Presencial"}

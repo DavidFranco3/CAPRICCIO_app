@@ -150,7 +150,9 @@ const Header = ({ datosUsuario }) => {
                     <button 
                       onClick={() => {
                         editarComision(
-                          <Comision/>
+                          <Comision
+                            setShowModal={setShowModal}
+                          />
                         )
                       }}
                     >

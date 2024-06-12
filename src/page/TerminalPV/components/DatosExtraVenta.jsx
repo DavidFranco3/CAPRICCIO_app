@@ -4,6 +4,7 @@ import dayjs from "dayjs";
 import "dayjs/locale/es";
 import "../../../scss/styles.scss";
 import { toast } from "react-toastify";
+import { ocuparDesocuparMesas } from "../../../api/mesas";
 
 function DatosExtraVenta(props) {
 
@@ -14,13 +15,15 @@ function DatosExtraVenta(props) {
   } = props;
 
   // MANEJAR EL DESCUENTO DE MANERA ADECUADA
-  const [tipoDescuento, setTipoDescuento] = useState("porcentaje");
+  const [tipoDescuento, setTipoDescuento] = useState("Porcentaje");
   const [descuento, setDescuento] = useState(0);
   const [descuentoCalculado, setDescuentoCalculado] = useState(0);
-  const [subtotal, setSubtotal] = useState(props.total);
+  const [subtotal, setSubtotal] = useState(props.formData.subtotal);
   const [total, setTotal] = useState(subtotal);
   const [cambio, setCambio] = useState(0);
   const [totalPagado, setTotalPagado] = useState(0);
+
+  const [iva, setIva] = useState(false);
 
   const [fechayHora, setFechayHora] = useState("");
   const [fechayHoraSinFormato, setFechayHoraSinFormato] = useState("");
@@ -36,40 +39,20 @@ function DatosExtraVenta(props) {
   // FORM DATA
   const [formData, setFormData] = useState(
     {
-      infoVenta: {
-        numeroTiquet: props.numTicket,
-        cliente: "",
-        mesa: props.numMesa,
-        usuario: props.usuario,
-        productos: props.products,
-        estado: props.estado,
-        detalles: props.detalles,
-        observaciones: "",
-        tipoPago: "",
-        efectivo: "",
-        cambio: "",
-        subtotal: props.total,
-        tipoPedido: props.tipoPedido,
-        hacerPedido: props.hacerPedido,
-        tipoDescuento: "",
-        descuento: "",
-        pagado: "",
-        total: "",
-        iva: "",
-        atendido: "",
-        comision: "",
-        agrupar: "",
-        año: "",
-        semana: "",
-        fecha: "",
-      },
+      infoVenta: props.formData,
       infoMetodosPago: {
-        estadoPagoEfectivo: false,
-        estadoPagoTarjeta: false,
-        estadoPagoTransfer: false,
-        cantidadPagoEfectivo: '',
-        cantidadPagoTarjeta: '',
-        cantidadPagoTransfer: '',
+        efectivo: {
+          estado: false,
+          cantidad: 0,
+        },
+        tdc: {
+          estado: false,
+          cantidad: 0,
+        },
+        transfer: {
+          estado: false,
+          cantidad: 0,
+        },
       }
   }
   );
@@ -87,15 +70,16 @@ function DatosExtraVenta(props) {
   //   })
   // }
 
-  const calcularTotal = (tipoDescuento, descuento, subtotal) => {
+  const calcularTotal = (tipoDescuento, descuento, subtotal, ivaValue) => {
     let descuentoAplicado = 0;
-    if (tipoDescuento === "porcentaje") {
+    if (tipoDescuento === "Porcentaje") {
       descuentoAplicado = subtotal * (descuento / 100);
     } else {
       descuentoAplicado = parseFloat(descuento);
     }
     setDescuentoCalculado(descuentoAplicado);
-    const totalCalculado = subtotal - descuentoAplicado;
+    formData.infoVenta.iva = (subtotal + descuentoAplicado) * ivaValue;
+    const totalCalculado = subtotal - descuentoAplicado + formData.infoVenta.iva;
     setTotal(totalCalculado);
     setFormData({
       ...formData,
@@ -106,6 +90,10 @@ function DatosExtraVenta(props) {
     });
   };
 
+  useEffect(() => {
+    calcularTotal(tipoDescuento, descuento, subtotal, iva ? 0.16 : 0);
+  }, [subtotal, descuento, tipoDescuento, iva]);
+
   const handleDescuentoChange = useCallback((e) => {
     const newDescuento = parseFloat(e.target.value) || 0;
     setDescuento(newDescuento);
@@ -114,7 +102,7 @@ function DatosExtraVenta(props) {
       ...prevFormData,
       infoVenta: {
         ...prevFormData.infoVenta,
-        descuento: newDescuento,
+        descuento: tipoDescuento === "Porcentaje" ? (newDescuento / 100) * subtotal : newDescuento,
       },
     }));
   }, [tipoDescuento, subtotal]);
@@ -132,79 +120,33 @@ function DatosExtraVenta(props) {
     }));
   }, [descuento, subtotal]);
 
-  const handleInputChange = useCallback((e) => {
-    const { name, value } = e.target;
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      [name]: value,
-    }));
-  }, []);
-
-  const handleInfoVentaChange = useCallback((e) => {
-    const { name, value } = e.target;
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      infoVenta: {
-        ...prevFormData.infoVenta,
-        [name]: value,
-      },
-    }));
-  }, []);
-
   const handleIvaChange = useCallback((e) => {
-    const { value } = e.target;
-    const ivaValue = parseFloat(value);
-    const ivaAmount = ivaValue * subtotal;
+    const isIvaEnabled = e.target.value === "true";
+    const ivaValue = isIvaEnabled ? 0.16 : 0;
   
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      infoVenta: {
-        ...prevFormData.infoVenta,
-        iva: ivaAmount,
-      },
-    }));
-  }, [subtotal, setFormData]);
-
-  useEffect(() => {
-    const totalWithIva = subtotal + formData.infoVenta.iva;
-    setTotal(totalWithIva);
-  }, [subtotal, formData.infoVenta.iva]);
+    calcularTotal(tipoDescuento, descuento, subtotal, ivaValue);
+  
+    setIva(isIvaEnabled);
+  }, [subtotal, descuentoCalculado, tipoDescuento, descuento]);
 
   const handleInfoMetodosPagoChange = useCallback((e) => {
     const { name, value } = e.target;
+    const parsedValue = parseFloat(value) || 0;
+  
+    setInputValues((prevInputValues) => ({
+      ...prevInputValues,
+      [name]: parsedValue,
+    }));
+  
     setFormData((prevFormData) => ({
       ...prevFormData,
       infoMetodosPago: {
         ...prevFormData.infoMetodosPago,
-        [name]: value ? parseFloat(value) : '',
+        [name]: parsedValue,
       },
     }));
   }, []);
   
-
-  const handleCheckboxChange = useCallback((e) => {
-    const { name, checked } = e.target;
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      infoMetodosPago: {
-        ...prevFormData.infoMetodosPago,
-        [name]: checked,
-        [name.replace('estadoPago', 'cantidadPago')]: checked ? prevFormData.infoMetodosPago[name.replace('estadoPago', 'cantidadPago')] : 0,
-      },
-    }));
-  }, []);
-
-  const handleSelectChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      infoVenta: {
-        ...prevFormData.infoVenta,
-        [name]: value,
-      },
-    }));
-  };
-
   // Estado local para manejar el valor de los campos de entrada
   const [inputValues, setInputValues] = useState({
     cantidadPagoEfectivo: formData.infoMetodosPago.cantidadPagoEfectivo,
@@ -221,8 +163,44 @@ function DatosExtraVenta(props) {
         cantidadPagoTarjeta: inputValues.cantidadPagoTarjeta,
         cantidadPagoTransfer: inputValues.cantidadPagoTransfer,
       },
+      infoVenta: {
+        ...prevFormData.infoVenta,
+
+      }
     }));
   }, [inputValues]);
+
+  const handleCheckboxChange = useCallback((e) => {
+    const { name, checked } = e.target;
+    setFormData((prevFormData) => {
+      const updatedMetodosPago = {
+        ...prevFormData.infoMetodosPago,
+        [name]: checked,
+        [name.replace('estadoPago', 'cantidadPago')]: checked ? prevFormData.infoMetodosPago[name.replace('estadoPago', 'cantidadPago')] : 0,
+      };
+  
+      return {
+        ...prevFormData,
+        infoMetodosPago: updatedMetodosPago,
+      };
+    });
+  
+    setInputValues((prevInputValues) => ({
+      ...prevInputValues,
+      [name.replace('estadoPago', 'cantidadPago')]: checked ? prevInputValues[name.replace('estadoPago', 'cantidadPago')] : 0,
+    }));
+  }, []);
+
+  const handleSelectChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      infoVenta: {
+        ...prevFormData.infoVenta,
+        [name]: value,
+      },
+    }));
+  };
 
   useEffect(() => {
     const efectivoPagado = parseFloat(formData.infoMetodosPago.cantidadPagoEfectivo) || 0;
@@ -263,24 +241,6 @@ function DatosExtraVenta(props) {
     setShowModal(false);
   };
 
-  const onSubmit = (e) => {
-    e.preventDefault();
-
-    if (!formData.infoMetodosPago) {
-      toast.error("Por favor agrega un método de pago");
-      
-      
-      
-    } else if (!formData.infoMetodosPago.cantidadPagoEfectivo || !formData.infoMetodosPago.cantidadPagoTransfer || !formData.infoMetodosPago.cantidadPagoTarjeta ) {
-      toast.error("Por favor ingresa al menos la cantidad del total");  
-    }
-    // if (dataTemp) {
-      
-    // }
-    const dataTemp = formData.infoVenta;
-    console.log(dataTemp);
-  }
-
   const calcularFecha = () => {
     const hoy = new Date();
     const mes = hoy.getMonth() + 1;
@@ -297,17 +257,51 @@ function DatosExtraVenta(props) {
       .tz("America/Mexico_City")
       .format("YYYY-MM-DDTHH:mm:ss.SSS");
 
-  return {
-    mes,
-    añoVenta,
-    weekNumber,
-    formattedDate
+    return {
+      mes,
+      añoVenta,
+      weekNumber,
+      formattedDate
+    }
   }
-}
 
-  const handleRegistrarVenta = () => {
+  const desocuparMesa = async () => {
+    try {
+      const dataTemp = {
+        estado: "libre",
+        idTicket: "",
+      };
+      ocuparDesocuparMesas(props.mesaId, dataTemp).then((response) => {
+        const { data } = response;
+        toast.success(data.mensaje);
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const cambiarOrdenAVenta = () => {
+    
+  }
+
+  const onSubmit = (e) => {
 
     const fechas = calcularFecha();
+    formData.infoVenta.total = total;
+    
+    if ((formData.infoMetodosPago.estadoPagoEfectivo && formData.infoMetodosPago.estadoPagoTarjeta) ||
+    (formData.infoMetodosPago.estadoPagoEfectivo && formData.infoMetodosPago.estadoPagoTransfer) || 
+    (formData.infoMetodosPago.estadoPagoTransfer && formData.infoMetodosPago.estadoPagoTarjeta)) {
+      formData.infoVenta.tipoPago = "Combinado";
+    } else if (formData.infoMetodosPago.estadoPagoEfectivo) {
+      formData.infoVenta.tipoPago = "Efectivo";
+    } else if (formData.infoMetodosPago.estadoPagoTarjeta) {
+      formData.infoVenta.tipoPago = "TDC";
+    } else if (formData.infoMetodosPago.estadoPagoTransfer) {
+      formData.infoVenta.tipoPago = "Transferencia";
+    }
+
+    console.log(formData.infoVenta);
 
     try {
       const dataTemp = {
@@ -319,9 +313,7 @@ function DatosExtraVenta(props) {
         estado: props.hacerPedido === "Rappi" && props.hacerPedido === "Uber" ? "PREP" : "COBR",
         detalles: formData.infoVenta.detalles,
         observaciones: formData.infoVenta.observaciones,
-        tipoPago: 
-          formData.infoMetodosPago.estadoPagoEfectivo ? "Efectivo" :
-          formData.infoMetodosPago.estadoPagoEfectivo ? "Tarjeta" : "Transferencia",
+        tipoPago: formData.infoVenta.tipoPago,
         efectivo: formData.infoMetodosPago.cantidadPagoEfectivo,
         cambio: formData.infoVenta.cambio,
         subtotal: formData.infoVenta.subtotal,
@@ -334,16 +326,18 @@ function DatosExtraVenta(props) {
         iva: formData.infoVenta.iva,
         atendido: formData.infoVenta.atendido,
         comision: formData.infoVenta.comision,
-        año: fechas.añoVenta,
-        mes: fechas.mes,
-        semana: fechas.weekNumber,
-        fecha: fechas.formattedDate,
+        año: formData.infoVenta.año,
+        mes: formData.infoVenta.mes,
+        semana: formData.infoVenta.semana,
+        fecha: formData.infoVenta.fecha,
+        metodosPago: formData.infoVenta.metodosPago,
       }
+      console.log(dataTemp);
     } catch (error) {
       
     }
-  }
 
+  }
 
   // RETORNO DE INFO
   return (
@@ -389,8 +383,8 @@ function DatosExtraVenta(props) {
                       type="radio"
                       label="%"
                       name="tipoDescuento"
-                      value="porcentaje"
-                      checked={tipoDescuento === 'porcentaje'}
+                      value="Porcentaje"
+                      checked={tipoDescuento === 'Porcentaje'}
                       onChange={handleTipoDescuentoChange}
                     />  
                   </Col>
@@ -414,16 +408,16 @@ function DatosExtraVenta(props) {
                         type="radio"
                         label="Si"
                         name="iva"
-                        value={0.16}
-                        checked={formData.infoVenta.iva === (0.16 * subtotal)}
+                        value={true}
+                        checked={iva === true}
                         onChange={handleIvaChange}
                       />
                       <Form.Check
                         type="radio"
                         label="No"
                         name="iva"
-                        value={0}
-                        checked={formData.infoVenta.iva === 0}
+                        value={false}
+                        checked={iva === false}
                         onChange={handleIvaChange}
                       />
                     </Col>
@@ -526,109 +520,105 @@ function DatosExtraVenta(props) {
           
           {formData.infoVenta.hacerPedido !== 'Rappi' && formData.infoVenta.hacerPedido !== 'Uber' && (
             <Row className="mx-1 p-1 border rounded">
-            <Col className="">
-              <h3>
-                Métodos de pago y pago
-              </h3>
-              <table className="table table-stripped table-bordered table-hover">
-                <thead>
-                  <tr>
-                    <th>Método de pago</th>
-                    <th>Cantidad pagada</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td className="d-flex align-items-center">
-                      <Form.Check
-                        type="checkbox"
-                        label= "Efectivo"
-                        name="estadoPagoEfectivo"
-                        value="true"
-                        checked = {formData.infoMetodosPago.estadoPagoEfectivo}
-                        onChange={handleCheckboxChange}
-                      />
-                    </td>
-                    <td>
-                      <Form.Control
-                        type="text"
-                        name="cantidadPagoEfectivo"
-                        value={formData.infoMetodosPago.cantidadPagoEfectivo}
-                        onChange={handleInfoMetodosPagoChange}
-                        disabled={!formData.infoMetodosPago.estadoPagoEfectivo}
-                        min="0"
-                      />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="d-flex align-items-center">
-                      <Form.Check
-                        type="checkbox"
-                        label= "Tarjeta"
-                        name="estadoPagoTarjeta"
-                        value="true"
-                        checked = {formData.infoMetodosPago.estadoPagoTarjeta}
-                        onChange={handleCheckboxChange}
-                      />
-                    </td>
-                    <td>
-                      <Form.Control
-                        type="text"
-                        name="cantidadPagoTarjeta"
-                        defaultValue={formData.infoMetodosPago.cantidadPagoTarjeta}
-                        onChange={handleInfoMetodosPagoChange}
-                        disabled={!formData.infoMetodosPago.estadoPagoTarjeta}
-                        min="0"
-                      />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="d-flex align-items-center">
-                      <Form.Check
-                        type="checkbox"
-                        label= "Transferencia"
-                        name="estadoPagoTransfer"
-                        value="true"
-                        checked = {formData.infoMetodosPago.estadoPagoTransfer}
-                        onChange={handleCheckboxChange}
-                      />
-                    </td>
-                    <td>
-                      <Form.Control
-                        type="text"
-                        name="cantidadPagoTransfer"
-                        defaultValue={formData.infoMetodosPago.cantidadPagoTransfer}
-                        onChange={handleInfoMetodosPagoChange}
-                        disabled={!formData.infoMetodosPago.estadoPagoTransfer}
-                        min="0"
-                      />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Total pagado:</td>
-                    <td>
-                      {new Intl.NumberFormat("es-MX", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      }).format(totalPagado)}{" "}MXN
-                    </td>
-                  </tr>
-                  <tr>
-                  <td>Cambio:</td>
-                    <td>
-                      {new Intl.NumberFormat("es-MX", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      }).format(formData.infoVenta.cambio)}{" "}MXN
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </Col>
-          </Row>
-          
+              <Col className="">
+                <h3>
+                  Métodos de pago y pago
+                </h3>
+                <table className="table table-stripped table-bordered table-hover">
+                  <thead>
+                    <tr>
+                      <th>Método de pago</th>
+                      <th>Cantidad pagada</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="d-flex align-items-center">
+                        <Form.Check
+                          type="checkbox"
+                          label="Efectivo"
+                          name="estadoPagoEfectivo"
+                          checked={formData.infoMetodosPago.estadoPagoEfectivo}
+                          onChange={handleCheckboxChange}
+                        />
+                      </td>
+                      <td>
+                        <Form.Control
+                          type="text"
+                          name="cantidadPagoEfectivo"
+                          value={inputValues.cantidadPagoEfectivo}
+                          onChange={handleInfoMetodosPagoChange}
+                          disabled={!formData.infoMetodosPago.estadoPagoEfectivo}
+                          min="0"
+                        />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="d-flex align-items-center">
+                        <Form.Check
+                          type="checkbox"
+                          label="Tarjeta"
+                          name="estadoPagoTarjeta"
+                          checked={formData.infoMetodosPago.estadoPagoTarjeta}
+                          onChange={handleCheckboxChange}
+                        />
+                      </td>
+                      <td>
+                        <Form.Control
+                          type="text"
+                          name="cantidadPagoTarjeta"
+                          value={inputValues.cantidadPagoTarjeta}
+                          onChange={handleInfoMetodosPagoChange}
+                          disabled={!formData.infoMetodosPago.estadoPagoTarjeta}
+                          min="0"
+                        />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="d-flex align-items-center">
+                        <Form.Check
+                          type="checkbox"
+                          label="Transferencia"
+                          name="estadoPagoTransfer"
+                          checked={formData.infoMetodosPago.estadoPagoTransfer}
+                          onChange={handleCheckboxChange}
+                        />
+                      </td>
+                      <td>
+                        <Form.Control
+                          type="text"
+                          name="cantidadPagoTransfer"
+                          value={inputValues.cantidadPagoTransfer}
+                          onChange={handleInfoMetodosPagoChange}
+                          disabled={!formData.infoMetodosPago.estadoPagoTransfer}
+                          min="0"
+                        />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Total pagado:</td>
+                      <td>
+                        {new Intl.NumberFormat("es-MX", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        }).format(totalPagado)}{" "}MXN
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Cambio:</td>
+                      <td>
+                        {new Intl.NumberFormat("es-MX", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        }).format(cambio)}{" "}MXN
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </Col>
+            </Row>
           )}
+
 
           {formData.infoVenta.hacerPedido !== 'Presencial' && (
             <Row className="mt-2 mx-1 p-1 border rounded">
@@ -636,7 +626,8 @@ function DatosExtraVenta(props) {
               <Form.Control
                 as='textarea'
                 name="observaciones"
-                placeholder="Ingresa datos relevantes para la compra como domicilio o extras de algún aderezo"
+                defaultValue={formData.infoVenta.observaciones}
+                placeholder={"Ingresa datos relevantes para la compra como domicilio o extras de algún aderezo"}
                 onChange={(e) =>
                   setFormData({
                     ...formData,
@@ -660,6 +651,10 @@ function DatosExtraVenta(props) {
         <button className="btn btn-success" onClick={onSubmit}>
           <i className="fa fa-coins me-2"></i>
           Cobrar
+        </button>
+        <button className="btn btn-warning" onClick={onSubmit}>
+          <i className="fa fa-hourglass-half me-2"></i>
+          Cobrar después
         </button>
         <button className="btn btn-danger" onClick={cancelarRegistro}>
           <i className="fa fa-ban me-2"></i>

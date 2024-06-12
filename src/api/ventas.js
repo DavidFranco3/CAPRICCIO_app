@@ -41,7 +41,8 @@ import {
     ENDPOINTObtenerVentaAsociada,
     ENDPOINTAtenderVentas,
     ENDPOINTObtenerVentasenMesasConTicket,
-    ENDPOINTObtenerVentasTotalesDelDia
+    ENDPOINTObtenerVentasTotalesDelDia,
+    ENDPOINTActualizarProdsTicket
 } from "./endpoints";
 import axios from 'axios';
 import { getTokenApi } from "./auth";
@@ -60,7 +61,7 @@ export async function registraVentas(data) {
 }
 
 // Para obtener una venta
-export async function obtenerVentas(params) {
+export async function obtenerVentas(numeroTiquet) {
     const config = {
         headers: {
             'Accept': 'application/json',
@@ -68,7 +69,7 @@ export async function obtenerVentas(params) {
             Authorization: `Bearer ${getTokenApi()}`
         }
     };
-    return await axios.get(API_HOST + ENDPOINTObtenerVentas + `/${params}`, config);
+    return await axios.get(API_HOST + ENDPOINTObtenerVentas + `/${numeroTiquet}`, config);
 }
 
 // Para obtener una venta
@@ -493,6 +494,20 @@ export async function actualizaTicket(id, data) {
 
     return await axios.put(API_HOST + ENDPOINTActualizarTicketVentas + `/${id}`, data, config);
 }
+
+// ACTUALIZAR LOS PRODUCTOS DEL TICKET
+export async function actualizarProdsTicket(numeroTiquet, data) {
+    const config = {
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${getTokenApi()}`
+        }
+    };
+
+    return await axios.put(API_HOST + ENDPOINTActualizarProdsTicket + `/${numeroTiquet}`, data, config);
+}
+
 // Cambiar estado de las ventas
 export async function cancelarVenta(id, data) {
     const config = {

@@ -3,7 +3,7 @@ import axios from 'axios';
 import { getTokenApi } from "./auth";
 import {ENDPOINTRegistroMesas,
         ENDPOINTObtenerMesas,
-        ENDPOINTDeshabilitarMesas} from "./endpoints";
+        ENDPOINTOcuparDesocuparMesas} from "./endpoints";
 
 
 // Registra mesas
@@ -34,7 +34,7 @@ export async function obtenerMesas(params) {
     return await axios.get(API_HOST + ENDPOINTObtenerMesas , config);
 }
 
-export async function actualizaDeshabilitarMesas(id, data) {
+export async function ocuparDesocuparMesas(id, data) {
     const config = {
         headers: {
             'Accept': 'application/json',
@@ -43,6 +43,6 @@ export async function actualizaDeshabilitarMesas(id, data) {
         }
     };
 
-    return await axios.put(API_HOST + ENDPOINTDeshabilitarMesas + `/${id}`, data, config);
+    return await axios.put(API_HOST + ENDPOINTOcuparDesocuparMesas + `/${id}`, data, config);
 }
 

@@ -74,6 +74,7 @@ export const ENDPOINTObtenerVentas = "/ventas/obtener";
 export const ENDPOINTEliminarVentas = "/ventas/eliminar";
 export const ENDPOINTActualizarVentas = "/ventas/actualizar";
 export const ENDPOINTActualizarTicketVentas = "/ventas/actualizarticket";
+export const ENDPOINTActualizarProdsTicket = "/ventas/actualizarticketprods";
 export const ENDPOINTCancelarVentas = "/ventas/cancelar";
 export const ENDPOINTAtenderVentas = "/ventas/cambiarIdentificador";
 export const ENDPOINTObtenerNumeroVenta = "/ventas/obtenNoTiquet";
@@ -183,5 +184,5 @@ export const ENDPOINTCancelarMovimientosCajas = "/movimientosCajas/cancelar";
 // Mesas
 export const ENDPOINTRegistroMesas = "/mesas/registro";
 export const ENDPOINTObtenerMesas = "/mesas/listar";
-export const ENDPOINTDeshabilitarMesas = "/mesas/cancelar";
+export const ENDPOINTOcuparDesocuparMesas = "/mesas/ocuparDesocupar";
 

@@ -4,7 +4,6 @@ import Menu from "../../components/TerminalPV/Menu";
 import Tiquet from "./components/Tiquet/Tiquet";
 import "../../scss/styles.scss";
 import { listarProductosCategoria } from "../../api/productos";
-import { Alert, Col, Row, Button } from "react-bootstrap";
 import { listarCategorias } from "../../api/categorias";
 import {
   getTokenApi,
@@ -19,7 +18,6 @@ import Lottie from "react-lottie-player";
 import AnimacionLoading from "../../assets/json/loading.json";
 import { useNavigate } from "react-router-dom";
 import { obtenerVentas } from "../../api/ventas";
-import VistaMesasVenta from "./components/Mesas/VistaMesasVenta";
 
 function TerminalPv(props) {
   console.log(props);
@@ -28,17 +26,11 @@ function TerminalPv(props) {
 
   const estadoticket = props.estado;
   const mesaticket = props.mesaticket;
-  const mesaid = props.numMesa;
+  const numMesa = props.numMesa;
   const estadov = props.agregar;
   const tipoPedido = props.tipoPedido;
   const hacerPedido = props.hacerPedido;
   const mesaClick = props.mesaClick;
-
-  console.log(tipoPedido);
-  
-
-  console.log("agregar?", estadov);
-  console.log("agregar?", mesaid);
 
   const enrutamiento = useNavigate();
 
@@ -94,9 +86,8 @@ function TerminalPv(props) {
     cierreSesion();
   }, []);
 
+  // MANEJO DE TICKET
   const [ticketItems, setTicketItems] = useState([]);
-
-  const [categoriaActual, setCategoriaActual] = useState("");
 
   const emptyTicket = () => {
     setTicketItems([]);
@@ -117,20 +108,18 @@ function TerminalPv(props) {
 
   /**obtener ticke por id*/
   const idTicket = props.idTicket;
-  //console.log("folio del ticket",idTicket)
+
   // Definir la función cargarMesas fuera del condicional
-  const cargarMesas = (idTicket) => {
+  const cargarVentaPorTicket = (idTicket) => {
     try {
       obtenerVentas(idTicket)
-        .then((response) => {
-          const { data } = response;
-          //console.log("datos del ticket", data);
-          //console.log("productos del ticket", data[0].productos);
-          setTicketItems(data[0].productos);
-        })
-        .catch((e) => {
-          console.log(e);
-        });
+      .then((response) => {
+        const { data } = response;
+        console.log(response);
+        setTicketItems(data[0].productos);
+      }).catch((e) => {
+        console.log(e);
+      });
     } catch (e) {
       console.log(e);
     }
@@ -139,7 +128,7 @@ function TerminalPv(props) {
   // Llamar a useEffect siempre, pero dentro verificar si idTicket es válido
   useEffect(() => {
     if (idTicket !== undefined && idTicket !== null) {
-      cargarMesas(idTicket);
+      cargarVentaPorTicket(idTicket);
     }
   }, []);
 
@@ -150,6 +139,7 @@ function TerminalPv(props) {
   // Para almacenar la lista de productos
   const [listProductos, setListProductos] = useState(null);
   const [listCategorias, setListCategorias] = useState(null);
+  const [categoriaActual, setCategoriaActual] = useState("");
 
   // obtener el listado de productos
   const cargarDatosProductos = () => {
@@ -184,7 +174,6 @@ function TerminalPv(props) {
   }, [categoriaActual]);
 
   // Para guardar el listado de categorias
-
   const cargarDatosCategorias = () => {
     try {
       listarCategorias()
@@ -281,9 +270,11 @@ function TerminalPv(props) {
                       empty={emptyTicket}
                       remove={removeProduct}
                       idUsuario={idUsuario}
+                      usuario={datosUsuario.nombre}
                       estadoticket={estadoticket}
                       mesaticket={mesaticket}
-                      mesaid={mesaid}
+                      numMesa={numMesa}
+                      mesaId={props.mesaId}
                       idTicket={idTicket}
                       setShow={props.setShow}
                       tipoPedido = {tipoPedido}
