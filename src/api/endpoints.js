@@ -75,6 +75,7 @@ export const ENDPOINTEliminarVentas = "/ventas/eliminar";
 export const ENDPOINTActualizarVentas = "/ventas/actualizar";
 export const ENDPOINTActualizarTicketVentas = "/ventas/actualizarticket";
 export const ENDPOINTActualizarProdsTicket = "/ventas/actualizarticketprods";
+export const ENDPOINTCobrarTicket = "/ventas/cobrarTicket";
 export const ENDPOINTCancelarVentas = "/ventas/cancelar";
 export const ENDPOINTAtenderVentas = "/ventas/cambiarIdentificador";
 export const ENDPOINTObtenerNumeroVenta = "/ventas/obtenNoTiquet";

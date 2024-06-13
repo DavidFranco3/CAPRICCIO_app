@@ -34,13 +34,14 @@ function Tiquet(props) {
   const mesaticket = props.mesaticket;
   const idTicketMesa = props.idTicket;
   const numMesa = props.numMesa;
+  const mesaId = props.mesaId;
   const add = props.agregar;
   const mesaClick = props.mesaClick;
 
   const [numeroTiquet, setNumeroTiquet] = useState("");
   const [formData, setFormData] = useState(initialFormData());
   const [comision, setComision] = useState(0);
-  const [determinaBusquedaTiquet, setDeterminaBusquedaTiquet] = useState(false);
+  const [agregado, setAgregado] = useState(false);
   const MAX_INTENTOS_GENERACION = 100;
 
   const verificarNumeroTiquetUnico = (data, numeroTiquet) => {
@@ -68,41 +69,30 @@ function Tiquet(props) {
     }
   }, [idTicketMesa]);
 
-  const obtenerNumeroTiquet = async () => {
+  const obtenerNumeroTiquet = async (setNumeroTiquet, setFormData) => {
     try {
       const response = await listarVentas();
       const { data } = response;
-
-      if (!data || !data.length) {
-        const nuevoNumero = "1-" + generarLetrasAleatorias();
-        setNumeroTiquet(nuevoNumero);
-        setFormData((prevFormData) => ({
-          ...prevFormData,
-          numeroTiquet: nuevoNumero,
-        }));
-        return;
-      }
-
-      let maxNumeroTiquet = 0;
-
-      data.forEach((venta) => {
-        const numero = parseInt(venta.numeroTiquet.split('-')[0]);
-        if (!isNaN(numero) && numero > maxNumeroTiquet) {
-          maxNumeroTiquet = numero;
-        }
-      });
-
+  
+      let baseNumero = 1;
       let nuevoNumeroTiquet;
-      let intentos = 0;
       let existe;
-
+      let intentos = 0;
+  
       do {
-        intentos++;
-        nuevoNumeroTiquet = (maxNumeroTiquet + intentos).toString() + "-" + generarLetrasAleatorias();
+        const letrasAleatorias = generarLetrasAleatorias();
+        nuevoNumeroTiquet = baseNumero + "-" + letrasAleatorias;
         existe = verificarNumeroTiquetUnico(data, nuevoNumeroTiquet);
-      } while (existe && intentos < MAX_INTENTOS_GENERACION);
-
-      if (intentos === MAX_INTENTOS_GENERACION) {
+        intentos++;
+  
+        if (intentos >= MAX_INTENTOS_GENERACION) {
+          baseNumero++;
+          intentos = 0; // Resetear intentos para el siguiente número base
+        }
+  
+      } while (existe && baseNumero < 100); // Ajusta el límite de baseNumero si es necesario
+  
+      if (baseNumero >= 100) {
         console.error("No se pudo generar un número de ticket único después de varios intentos.");
         setNumeroTiquet("ERROR");
       } else {
@@ -125,7 +115,7 @@ function Tiquet(props) {
 
   useEffect(() => {
     if (!idTicketMesa) {
-      obtenerNumeroTiquet();
+      obtenerNumeroTiquet(setNumeroTiquet, setFormData);
     }
   }, [idTicketMesa]);
 
@@ -258,6 +248,7 @@ function Tiquet(props) {
   const ponerOrden = async () => {
 
     const fecha = calcularFecha();
+    setAgregado(true);
 
     if (products.length === 0 ) {
       toast.warning("Debe cargar productos al ticket");
@@ -268,7 +259,7 @@ function Tiquet(props) {
           numeroTiquet: formData.numeroTiquet,
           mesa: props.numMesa,
           usuario: props.idUsuario,
-          estado: props.mesaClick ? "OEM" /* Orden En Mesa */ : "",
+          estado: props.mesaClick ? "OEM" /* Orden En Mesa */ : "PP",
           subtotal: total,
           tipoPedido: props.tipoPedido,
           hacerPedido: props.hacerPedido,
@@ -464,15 +455,19 @@ function Tiquet(props) {
                   <DatosExtraVenta
                     formData={formData}
                     setShowModal={setShowModal}
+                    mesaId={mesaId}
                     mesaClick={mesaClick}
+                    isVenta={agregado}
                   />
                 )
               } else {
                 datosExtraVenta(
                   <DatosExtraVenta
                     formData={formData}
+                    mesaId={mesaId}
                     setShowModal={setShowModal}
                     mesaClick={mesaClick}
+                    isVenta={agregado}
                   />
                 )
               }

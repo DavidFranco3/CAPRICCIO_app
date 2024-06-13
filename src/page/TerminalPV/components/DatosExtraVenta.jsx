@@ -5,14 +5,11 @@ import "dayjs/locale/es";
 import "../../../scss/styles.scss";
 import { toast } from "react-toastify";
 import { ocuparDesocuparMesas } from "../../../api/mesas";
+import { cobrarTicket, registraVentas } from "../../../api/ventas";
+import { LogsInformativos } from "../../../components/Logs/LogsSistema/LogsSistema";
 
 function DatosExtraVenta(props) {
-
-  console.log(props);
-
-  const {
-    setShowModal,
-  } = props;
+  const { setShowModal, isVenta } = props;
 
   // MANEJAR EL DESCUENTO DE MANERA ADECUADA
   const [tipoDescuento, setTipoDescuento] = useState("Porcentaje");
@@ -37,38 +34,30 @@ function DatosExtraVenta(props) {
   }, []);
 
   // FORM DATA
-  const [formData, setFormData] = useState(
-    {
-      infoVenta: props.formData,
-      infoMetodosPago: {
-        efectivo: {
-          estado: false,
-          cantidad: 0,
-        },
-        tdc: {
-          estado: false,
-          cantidad: 0,
-        },
-        transfer: {
-          estado: false,
-          cantidad: 0,
-        },
-      }
-  }
-  );
+  const [formData, setFormData] = useState({
+    infoVenta: props.formData,
+    infoMetodosPago: {
+      efectivo: {
+        estado: false,
+        cantidad: 0,
+      },
+      tdc: {
+        estado: false,
+        cantidad: 0,
+      },
+      transfer: {
+        estado: false,
+        cantidad: 0,
+      },
+    },
+  });
 
-  console.log(formData);
-
-  // const cargarInfoPedido = (newHacerPedido, newTipoPedido) => {
-  //   setFormData({
-  //     ...formData,
-  //     infoVenta: {
-  //       ...formData.infoVenta,
-  //       tipoPedido:  newTipoPedido,
-  //       hacerPedido: newHacerPedido,
-  //     }
-  //   })
-  // }
+  // Estado local para manejar el valor de los campos de entrada
+  const [inputValues, setInputValues] = useState({
+    cantidadPagoEfectivo: formData.infoMetodosPago.efectivo.cantidad,
+    cantidadPagoTarjeta: formData.infoMetodosPago.tdc.cantidad,
+    cantidadPagoTransfer: formData.infoMetodosPago.transfer.cantidad,
+  });
 
   const calcularTotal = (tipoDescuento, descuento, subtotal, ivaValue) => {
     let descuentoAplicado = 0;
@@ -123,71 +112,76 @@ function DatosExtraVenta(props) {
   const handleIvaChange = useCallback((e) => {
     const isIvaEnabled = e.target.value === "true";
     const ivaValue = isIvaEnabled ? 0.16 : 0;
-  
+
     calcularTotal(tipoDescuento, descuento, subtotal, ivaValue);
-  
+
     setIva(isIvaEnabled);
   }, [subtotal, descuentoCalculado, tipoDescuento, descuento]);
 
   const handleInfoMetodosPagoChange = useCallback((e) => {
     const { name, value } = e.target;
     const parsedValue = parseFloat(value) || 0;
-  
+
     setInputValues((prevInputValues) => ({
       ...prevInputValues,
       [name]: parsedValue,
     }));
-  
+
     setFormData((prevFormData) => ({
       ...prevFormData,
       infoMetodosPago: {
         ...prevFormData.infoMetodosPago,
-        [name]: parsedValue,
+        [name.split('cantidadPago')[1].toLowerCase()]: {
+          ...prevFormData.infoMetodosPago[name.split('cantidadPago')[1].toLowerCase()],
+          cantidad: parsedValue,
+        },
       },
     }));
   }, []);
-  
-  // Estado local para manejar el valor de los campos de entrada
-  const [inputValues, setInputValues] = useState({
-    cantidadPagoEfectivo: formData.infoMetodosPago.cantidadPagoEfectivo,
-    cantidadPagoTarjeta: formData.infoMetodosPago.cantidadPagoTarjeta,
-    cantidadPagoTransfer: formData.infoMetodosPago.cantidadPagoTransfer,
-  });
 
   useEffect(() => {
     setFormData((prevFormData) => ({
       ...prevFormData,
       infoMetodosPago: {
         ...prevFormData.infoMetodosPago,
-        cantidadPagoEfectivo: inputValues.cantidadPagoEfectivo,
-        cantidadPagoTarjeta: inputValues.cantidadPagoTarjeta,
-        cantidadPagoTransfer: inputValues.cantidadPagoTransfer,
+        efectivo: {
+          ...prevFormData.infoMetodosPago.efectivo,
+          cantidad: inputValues.cantidadPagoEfectivo,
+        },
+        tdc: {
+          ...prevFormData.infoMetodosPago.tdc,
+          cantidad: inputValues.cantidadPagoTarjeta,
+        },
+        transfer: {
+          ...prevFormData.infoMetodosPago.transfer,
+          cantidad: inputValues.cantidadPagoTransfer,
+        },
       },
-      infoVenta: {
-        ...prevFormData.infoVenta,
-
-      }
     }));
   }, [inputValues]);
 
   const handleCheckboxChange = useCallback((e) => {
     const { name, checked } = e.target;
+    const metodoPagoKey = name.split('estadoPago')[1].toLowerCase();
     setFormData((prevFormData) => {
       const updatedMetodosPago = {
         ...prevFormData.infoMetodosPago,
-        [name]: checked,
-        [name.replace('estadoPago', 'cantidadPago')]: checked ? prevFormData.infoMetodosPago[name.replace('estadoPago', 'cantidadPago')] : 0,
+        [metodoPagoKey]: {
+          ...prevFormData.infoMetodosPago[metodoPagoKey],
+          estado: checked,
+          cantidad: checked ? prevFormData.infoMetodosPago[metodoPagoKey].cantidad : 0,
+        },
       };
-  
+
       return {
         ...prevFormData,
         infoMetodosPago: updatedMetodosPago,
       };
     });
-  
+
     setInputValues((prevInputValues) => ({
       ...prevInputValues,
-      [name.replace('estadoPago', 'cantidadPago')]: checked ? prevInputValues[name.replace('estadoPago', 'cantidadPago')] : 0,
+      [`cantidadPago${name.charAt(0).toUpperCase() + name.slice(1)}`]: checked ? prevInputValues[`cantidadPago${name.charAt(0).toUpperCase() + name.slice(1)}`] : 0,
     }));
   }, []);
 
@@ -203,7 +197,7 @@ function DatosExtraVenta(props) {
   };
 
   useEffect(() => {
-    const efectivoPagado = parseFloat(formData.infoMetodosPago.cantidadPagoEfectivo) || 0;
+    const efectivoPagado = parseFloat(formData.infoMetodosPago.efectivo.cantidad) || 0;
     if (efectivoPagado > total) {
       const nuevoCambio = efectivoPagado - total;
       setCambio(nuevoCambio);
@@ -226,15 +220,13 @@ function DatosExtraVenta(props) {
     }
 
     const totalPagado = 
-      (parseFloat(formData.infoMetodosPago.cantidadPagoEfectivo) || 0) +
-      (parseFloat(formData.infoMetodosPago.cantidadPagoTarjeta) || 0) +
-      (parseFloat(formData.infoMetodosPago.cantidadPagoTransfer) || 0);
-    
+      (parseFloat(formData.infoMetodosPago.efectivo.cantidad) || 0) +
+      (parseFloat(formData.infoMetodosPago.tdc.cantidad) || 0) +
+      (parseFloat(formData.infoMetodosPago.transfer.cantidad) || 0);
+
     setTotalPagado(totalPagado);
 
   }, [formData.infoMetodosPago, total]);
-
-
 
   // Para cancelar el registro
   const cancelarRegistro = () => {
@@ -261,9 +253,9 @@ function DatosExtraVenta(props) {
       mes,
       añoVenta,
       weekNumber,
-      formattedDate
-    }
-  }
+      formattedDate,
+    };
+  };
 
   const desocuparMesa = async () => {
     try {
@@ -271,7 +263,7 @@ function DatosExtraVenta(props) {
         estado: "libre",
         idTicket: "",
       };
-      ocuparDesocuparMesas(props.mesaId, dataTemp).then((response) => {
+      await ocuparDesocuparMesas(props.mesaId, dataTemp).then((response) => {
         const { data } = response;
         toast.success(data.mensaje);
       });
@@ -280,25 +272,102 @@ function DatosExtraVenta(props) {
     }
   };
 
-  const cambiarOrdenAVenta = () => {
-    
-  }
-
-  const onSubmit = (e) => {
-
-    const fechas = calcularFecha();
+  const cambiarOrdenAVenta = async () => {
+    // Implementa la lógica para cambiar la orden a orden cobrada
     formData.infoVenta.total = total;
-    
-    if ((formData.infoMetodosPago.estadoPagoEfectivo && formData.infoMetodosPago.estadoPagoTarjeta) ||
-    (formData.infoMetodosPago.estadoPagoEfectivo && formData.infoMetodosPago.estadoPagoTransfer) || 
-    (formData.infoMetodosPago.estadoPagoTransfer && formData.infoMetodosPago.estadoPagoTarjeta)) {
+
+    if ((formData.infoMetodosPago.efectivo.estado && formData.infoMetodosPago.tdc.estado) ||
+      (formData.infoMetodosPago.efectivo.estado && formData.infoMetodosPago.transfer.estado) ||
+      (formData.infoMetodosPago.transfer.estado && formData.infoMetodosPago.tdc.estado)) {
       formData.infoVenta.tipoPago = "Combinado";
-    } else if (formData.infoMetodosPago.estadoPagoEfectivo) {
+    } else if (formData.infoMetodosPago.efectivo.estado) {
       formData.infoVenta.tipoPago = "Efectivo";
-    } else if (formData.infoMetodosPago.estadoPagoTarjeta) {
+    } else if (formData.infoMetodosPago.tdc.estado) {
       formData.infoVenta.tipoPago = "TDC";
-    } else if (formData.infoMetodosPago.estadoPagoTransfer) {
+    } else if (formData.infoMetodosPago.transfer.estado) {
       formData.infoVenta.tipoPago = "Transferencia";
+    }
+
+    console.log(formData.infoVenta);
+
+    if (totalPagado - cambio < total) {
+      toast.warning("Por favor ingresa la cantidad minima del total");
+    } else {
+      try {
+        const dataTemp = {
+          numeroTiquet: formData.infoVenta.numeroTiquet,
+          cliente: formData.infoVenta.cliente,
+          tipo: props.mesaClick ? "Orden de mesa" : "Pedido de mostrador",
+          mesa: formData.infoVenta.mesa,
+          usuario: formData.infoVenta.usuario,
+          estado: "COBR",
+          detalles: formData.infoVenta.detalles,
+          observaciones: formData.infoVenta.observaciones,
+          tipoPago: formData.infoVenta.tipoPago,
+          efectivo: formData.infoMetodosPago.efectivo.cantidad,
+          cambio: formData.infoVenta.cambio,
+          subtotal: formData.infoVenta.subtotal,
+          tipoPedido: formData.infoVenta.tipoPedido,
+          hacerPedido: formData.infoVenta.hacerPedido,
+          tipoDescuento: formData.infoVenta.tipoDescuento,
+          descuento: formData.infoVenta.descuento,
+          pagado: props.hacerPedido === "Rappi" && props.hacerPedido === "Uber" ? false : true,
+          total: formData.infoVenta.total,
+          iva: formData.infoVenta.iva,
+          atendido: formData.infoVenta.atendido,
+          comision: formData.infoVenta.comision,
+          año: formData.infoVenta.año,
+          mes: formData.infoVenta.mes,
+          semana: formData.infoVenta.semana,
+          fecha: formData.infoVenta.fecha,
+          metodosPago: formData.infoMetodosPago,
+        };
+        console.log(dataTemp);
+  
+        if (!isVenta) {
+          await cobrarTicket(formData.infoVenta.numeroTiquet, dataTemp).then( async (response) => {
+            const { data } = response;
+            LogsInformativos(
+              "Se ha cobrado la orden " + formData.infoVenta.numeroTiquet + " de la  mesa " + formData.infoVenta.mesa,
+              data.datos
+            );
+            await desocuparMesa();
+            setShowModal(false);
+            toast.success(`Se ha cobrado la orden de la mesa ${dataTemp.mesa} con éxito`);
+          });
+        } else {
+          await registraVentas(dataTemp).then( async (response) => {
+            const { data } = response;
+            LogsInformativos(
+              "Orden creada y cobrada " + dataTemp.numeroTiquet + " en la  mesa " + props.numMesa,
+              data.datos
+            );
+            await desocuparMesa();
+            setShowModal(false);
+            toast.success("Se ha creado y cobrado la orden en mesa con éxito");
+          });
+        }
+      } catch (error) {
+        console.error("Error al enviar los datos:", error);
+      }
+    }
+  };
+
+  const cobrarDespues = async () => {
+    formData.infoVenta.total = total;
+
+    if ((formData.infoMetodosPago.efectivo.estado && formData.infoMetodosPago.tdc.estado) ||
+      (formData.infoMetodosPago.efectivo.estado && formData.infoMetodosPago.transfer.estado) ||
+      (formData.infoMetodosPago.transfer.estado && formData.infoMetodosPago.tdc.estado)) {
+      formData.infoVenta.tipoPago = "Combinado";
+    } else if (formData.infoMetodosPago.efectivo.estado) {
+      formData.infoVenta.tipoPago = "Efectivo";
+    } else if (formData.infoMetodosPago.tdc.estado) {
+      formData.infoVenta.tipoPago = "TDC";
+    } else if (formData.infoMetodosPago.transfer.estado) {
+      formData.infoVenta.tipoPago = "Transferencia";
+    } else {
+      formData.infoVenta.tipoPago = "";
     }
 
     console.log(formData.infoVenta);
@@ -310,18 +379,18 @@ function DatosExtraVenta(props) {
         tipo: props.mesaClick ? "Orden de mesa" : "Pedido de mostrador",
         mesa: formData.infoVenta.mesa,
         usuario: formData.infoVenta.usuario,
-        estado: props.hacerPedido === "Rappi" && props.hacerPedido === "Uber" ? "PREP" : "COBR",
+        estado: "PP",
         detalles: formData.infoVenta.detalles,
         observaciones: formData.infoVenta.observaciones,
         tipoPago: formData.infoVenta.tipoPago,
-        efectivo: formData.infoMetodosPago.cantidadPagoEfectivo,
+        efectivo: formData.infoMetodosPago.efectivo.cantidad,
         cambio: formData.infoVenta.cambio,
         subtotal: formData.infoVenta.subtotal,
         tipoPedido: formData.infoVenta.tipoPedido,
         hacerPedido: formData.infoVenta.hacerPedido,
         tipoDescuento: formData.infoVenta.tipoDescuento,
         descuento: formData.infoVenta.descuento,
-        pagado: props.hacerPedido === "Rappi" && props.hacerPedido === "Uber" ? false : true,
+        pagado: props.hacerPedido === false,
         total: formData.infoVenta.total,
         iva: formData.infoVenta.iva,
         atendido: formData.infoVenta.atendido,
@@ -330,22 +399,44 @@ function DatosExtraVenta(props) {
         mes: formData.infoVenta.mes,
         semana: formData.infoVenta.semana,
         fecha: formData.infoVenta.fecha,
-        metodosPago: formData.infoVenta.metodosPago,
-      }
+        metodosPago: formData.infoMetodosPago,
+      };
       console.log(dataTemp);
+
+      if (!isVenta) {
+        await registraVentas(dataTemp).then( async (response) => {
+          const { data } = response;
+          LogsInformativos(
+            "Orden creada y puesta para cobrar después " + dataTemp.numeroTiquet,
+            data.datos
+          );
+          setShowModal(false);
+          toast.success("orden creada para pagar después");
+        });
+        
+      } else {
+        await cobrarTicket(formData.infoVenta.numeroTiquet, dataTemp).then( (response) => {
+          const { data } = response;
+          LogsInformativos(
+            "Orden cambiada para cobrar después " + dataTemp.numeroTiquet + " en la  mesa " + props.numMesa,
+            data.datos
+          );
+          setShowModal(false);
+          toast.success("Lista la orden para pagar después");
+        });
+        
+      }
     } catch (error) {
-      
+      console.error("Error al enviar los datos:", error);
     }
+  };
 
-  }
-
-  // RETORNO DE INFO
   return (
     <>
-      <Form onSubmit={onSubmit}>
+      <Form onSubmit={cobrarDespues}>
         <div className="metodoDePago">
           <Row className="mx-1 mb-2 ">
-            <Col className=" border rounded mx-1">
+            <Col className="border rounded mx-1">
               <Row>
                 <Form.Group controlId="formGridNombre">
                   <Form.Label>Nombre del cliente</Form.Label>
@@ -375,18 +466,18 @@ function DatosExtraVenta(props) {
                       label="00"
                       name="tipoDescuento"
                       value="cantidad"
-                      checked={tipoDescuento === 'cantidad'}
+                      checked={tipoDescuento === "cantidad"}
                       onChange={handleTipoDescuentoChange}
-                      disabled={formData.infoVenta.hacerPedido === 'Uber' && formData.infoVenta.hacerPedido === 'Rappi'}
+                      disabled={formData.infoVenta.hacerPedido === "Uber" && formData.infoVenta.hacerPedido === "Rappi"}
                     />
                     <Form.Check
                       type="radio"
                       label="%"
                       name="tipoDescuento"
                       value="Porcentaje"
-                      checked={tipoDescuento === 'Porcentaje'}
+                      checked={tipoDescuento === "Porcentaje"}
                       onChange={handleTipoDescuentoChange}
-                    />  
+                    />
                   </Col>
                   <Col>
                     <Form.Control
@@ -517,7 +608,7 @@ function DatosExtraVenta(props) {
               </table>
             </Col>
           </Row>
-          
+
           {formData.infoVenta.hacerPedido !== 'Rappi' && formData.infoVenta.hacerPedido !== 'Uber' && (
             <Row className="mx-1 p-1 border rounded">
               <Col className="">
@@ -538,7 +629,7 @@ function DatosExtraVenta(props) {
                           type="checkbox"
                           label="Efectivo"
                           name="estadoPagoEfectivo"
-                          checked={formData.infoMetodosPago.estadoPagoEfectivo}
+                          checked={formData.infoMetodosPago.efectivo.estado}
                           onChange={handleCheckboxChange}
                         />
                       </td>
@@ -548,7 +639,7 @@ function DatosExtraVenta(props) {
                           name="cantidadPagoEfectivo"
                           value={inputValues.cantidadPagoEfectivo}
                           onChange={handleInfoMetodosPagoChange}
-                          disabled={!formData.infoMetodosPago.estadoPagoEfectivo}
+                          disabled={!formData.infoMetodosPago.efectivo.estado}
                           min="0"
                         />
                       </td>
@@ -558,18 +649,18 @@ function DatosExtraVenta(props) {
                         <Form.Check
                           type="checkbox"
                           label="Tarjeta"
-                          name="estadoPagoTarjeta"
-                          checked={formData.infoMetodosPago.estadoPagoTarjeta}
+                          name="estadoPagoTdc"
+                          checked={formData.infoMetodosPago.tdc.estado}
                           onChange={handleCheckboxChange}
                         />
                       </td>
                       <td>
                         <Form.Control
                           type="text"
-                          name="cantidadPagoTarjeta"
+                          name="cantidadPagoTdc"
                           value={inputValues.cantidadPagoTarjeta}
                           onChange={handleInfoMetodosPagoChange}
-                          disabled={!formData.infoMetodosPago.estadoPagoTarjeta}
+                          disabled={!formData.infoMetodosPago.tdc.estado}
                           min="0"
                         />
                       </td>
@@ -580,7 +671,7 @@ function DatosExtraVenta(props) {
                           type="checkbox"
                           label="Transferencia"
                           name="estadoPagoTransfer"
-                          checked={formData.infoMetodosPago.estadoPagoTransfer}
+                          checked={formData.infoMetodosPago.transfer.estado}
                           onChange={handleCheckboxChange}
                         />
                       </td>
@@ -590,7 +681,7 @@ function DatosExtraVenta(props) {
                           name="cantidadPagoTransfer"
                           value={inputValues.cantidadPagoTransfer}
                           onChange={handleInfoMetodosPagoChange}
-                          disabled={!formData.infoMetodosPago.estadoPagoTransfer}
+                          disabled={!formData.infoMetodosPago.transfer.estado}
                           min="0"
                         />
                       </td>
@@ -619,7 +710,6 @@ function DatosExtraVenta(props) {
             </Row>
           )}
 
-
           {formData.infoVenta.hacerPedido !== 'Presencial' && (
             <Row className="mt-2 mx-1 p-1 border rounded">
               <Form.Label>Observaciones</Form.Label>
@@ -640,19 +730,15 @@ function DatosExtraVenta(props) {
               />
             </Row>
           )}
-          
-
         </div>
-        
-
       </Form>
-      
+
       <div className="mt-3 d-flex justify-content-evenly">
-        <button className="btn btn-success" onClick={onSubmit}>
+        <button className="btn btn-success" onClick={cambiarOrdenAVenta}>
           <i className="fa fa-coins me-2"></i>
           Cobrar
         </button>
-        <button className="btn btn-warning" onClick={onSubmit}>
+        <button className="btn btn-warning" onClick={cobrarDespues}>
           <i className="fa fa-hourglass-half me-2"></i>
           Cobrar después
         </button>

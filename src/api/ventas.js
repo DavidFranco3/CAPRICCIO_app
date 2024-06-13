@@ -42,7 +42,8 @@ import {
     ENDPOINTAtenderVentas,
     ENDPOINTObtenerVentasenMesasConTicket,
     ENDPOINTObtenerVentasTotalesDelDia,
-    ENDPOINTActualizarProdsTicket
+    ENDPOINTActualizarProdsTicket,
+    ENDPOINTCobrarTicket
 } from "./endpoints";
 import axios from 'axios';
 import { getTokenApi } from "./auth";
@@ -506,6 +507,18 @@ export async function actualizarProdsTicket(numeroTiquet, data) {
     };
 
     return await axios.put(API_HOST + ENDPOINTActualizarProdsTicket + `/${numeroTiquet}`, data, config);
+}
+
+export async function cobrarTicket(numeroTiquet, data) {
+    const config = {
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${getTokenApi()}`
+        }
+    };
+
+    return await axios.put(API_HOST + ENDPOINTCobrarTicket + `/${numeroTiquet}`, data, config);
 }
 
 // Cambiar estado de las ventas
