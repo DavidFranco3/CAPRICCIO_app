@@ -458,6 +458,7 @@ function Tiquet(props) {
                     mesaId={mesaId}
                     mesaClick={mesaClick}
                     isVenta={agregado}
+                    comision={comision}
                   />
                 )
               } else {
@@ -468,6 +469,7 @@ function Tiquet(props) {
                     setShowModal={setShowModal}
                     mesaClick={mesaClick}
                     isVenta={agregado}
+                    comision={comision}
                   />
                 )
               }

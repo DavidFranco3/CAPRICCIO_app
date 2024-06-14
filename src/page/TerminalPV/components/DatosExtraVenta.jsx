@@ -9,7 +9,7 @@ import { cobrarTicket, registraVentas } from "../../../api/ventas";
 import { LogsInformativos } from "../../../components/Logs/LogsSistema/LogsSistema";
 
 function DatosExtraVenta(props) {
-  const { setShowModal, isVenta } = props;
+  const { setShowModal, isVenta, comision } = props;
 
   // MANEJAR EL DESCUENTO DE MANERA ADECUADA
   const [tipoDescuento, setTipoDescuento] = useState("Porcentaje");
@@ -55,38 +55,46 @@ function DatosExtraVenta(props) {
   // Estado local para manejar el valor de los campos de entrada
   const [inputValues, setInputValues] = useState({
     cantidadPagoEfectivo: formData.infoMetodosPago.efectivo.cantidad,
-    cantidadPagoTarjeta: formData.infoMetodosPago.tdc.cantidad,
+    cantidadPagoTdc: formData.infoMetodosPago.tdc.cantidad,
     cantidadPagoTransfer: formData.infoMetodosPago.transfer.cantidad,
   });
 
-  const calcularTotal = (tipoDescuento, descuento, subtotal, ivaValue) => {
+  const calcularTotal = (tipoDescuento, descuento, subtotal, ivaValue, tdcEstado) => {
     let descuentoAplicado = 0;
+    let comisionCalculado = 0;
     if (tipoDescuento === "Porcentaje") {
       descuentoAplicado = subtotal * (descuento / 100);
     } else {
       descuentoAplicado = parseFloat(descuento);
     }
     setDescuentoCalculado(descuentoAplicado);
-    formData.infoVenta.iva = (subtotal + descuentoAplicado) * ivaValue;
-    const totalCalculado = subtotal - descuentoAplicado + formData.infoVenta.iva;
+    formData.infoVenta.iva = (subtotal - descuentoAplicado) * ivaValue;
+    let totalCalculado = subtotal - descuentoAplicado + formData.infoVenta.iva;
+  
+    if (tdcEstado) {
+      comisionCalculado = totalCalculado * (comision / 100); // Calcula la comisión en porcentaje
+      totalCalculado += comisionCalculado;
+    }
+  
     setTotal(totalCalculado);
     setFormData({
       ...formData,
       infoVenta: {
         ...formData.infoVenta,
         total: totalCalculado,
+        comision: comisionCalculado,
       },
     });
   };
 
   useEffect(() => {
-    calcularTotal(tipoDescuento, descuento, subtotal, iva ? 0.16 : 0);
-  }, [subtotal, descuento, tipoDescuento, iva]);
+    calcularTotal(tipoDescuento, descuento, subtotal, iva ? 0.16 : 0, formData.infoMetodosPago.tdc.estado);
+  }, [subtotal, descuento, tipoDescuento, iva, formData.infoMetodosPago.tdc.estado]);
 
   const handleDescuentoChange = useCallback((e) => {
     const newDescuento = parseFloat(e.target.value) || 0;
     setDescuento(newDescuento);
-    calcularTotal(tipoDescuento, newDescuento, subtotal);
+    calcularTotal(tipoDescuento, newDescuento, subtotal, iva, formData.infoMetodosPago.tdc.estado);
     setFormData((prevFormData) => ({
       ...prevFormData,
       infoVenta: {
@@ -94,12 +102,12 @@ function DatosExtraVenta(props) {
         descuento: tipoDescuento === "Porcentaje" ? (newDescuento / 100) * subtotal : newDescuento,
       },
     }));
-  }, [tipoDescuento, subtotal]);
+  }, [tipoDescuento, subtotal, iva, formData.infoMetodosPago.tdc.estado]);
 
   const handleTipoDescuentoChange = useCallback((e) => {
     const newTipoDescuento = e.target.value;
     setTipoDescuento(newTipoDescuento);
-    calcularTotal(newTipoDescuento, descuento, subtotal);
+    calcularTotal(newTipoDescuento, descuento, subtotal, iva, formData.infoMetodosPago.tdc.estado);
     setFormData((prevFormData) => ({
       ...prevFormData,
       infoVenta: {
@@ -113,10 +121,10 @@ function DatosExtraVenta(props) {
     const isIvaEnabled = e.target.value === "true";
     const ivaValue = isIvaEnabled ? 0.16 : 0;
 
-    calcularTotal(tipoDescuento, descuento, subtotal, ivaValue);
+    calcularTotal(tipoDescuento, descuento, subtotal, ivaValue, formData.infoMetodosPago.tdc.estado);
 
     setIva(isIvaEnabled);
-  }, [subtotal, descuentoCalculado, tipoDescuento, descuento]);
+  }, [subtotal, descuentoCalculado, tipoDescuento, descuento, formData.infoMetodosPago.tdc.estado]);
 
   const handleInfoMetodosPagoChange = useCallback((e) => {
     const { name, value } = e.target;
@@ -150,7 +158,7 @@ function DatosExtraVenta(props) {
         },
         tdc: {
           ...prevFormData.infoMetodosPago.tdc,
-          cantidad: inputValues.cantidadPagoTarjeta,
+          cantidad: inputValues.cantidadPagoTdc,
         },
         transfer: {
           ...prevFormData.infoMetodosPago.transfer,
@@ -158,11 +166,14 @@ function DatosExtraVenta(props) {
         },
       },
     }));
+    console.log(formData);
   }, [inputValues]);
 
   const handleCheckboxChange = useCallback((e) => {
     const { name, checked } = e.target;
     const metodoPagoKey = name.split('estadoPago')[1].toLowerCase();
+    console.log(metodoPagoKey);
+  
     setFormData((prevFormData) => {
       const updatedMetodosPago = {
         ...prevFormData.infoMetodosPago,
@@ -172,30 +183,23 @@ function DatosExtraVenta(props) {
           cantidad: checked ? prevFormData.infoMetodosPago[metodoPagoKey].cantidad : 0,
         },
       };
-
+  
       return {
         ...prevFormData,
         infoMetodosPago: updatedMetodosPago,
       };
     });
-
+  
     setInputValues((prevInputValues) => ({
       ...prevInputValues,
-      [`cantidadPago${name.charAt(0).toUpperCase() + name.slice(1)}`]: checked ? prevInputValues[`cantidadPago${name.charAt(0).toUpperCase() + name.slice(1)}`] : 0,
+      [`cantidadPago${metodoPagoKey.charAt(0).toUpperCase() + metodoPagoKey.slice(1)}`]: checked ? prevInputValues[`cantidadPago${metodoPagoKey.charAt(0).toUpperCase() + metodoPagoKey.slice(1)}`] : 0,
     }));
-  }, []);
-
-  const handleSelectChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      infoVenta: {
-        ...prevFormData.infoVenta,
-        [name]: value,
-      },
-    }));
-  };
-
+  
+    if (metodoPagoKey === "tdc") {
+      calcularTotal(tipoDescuento, descuento, subtotal, iva ? 0.16 : 0, checked);
+    }
+  }, [tipoDescuento, descuento, subtotal, iva]);
+  
   useEffect(() => {
     const efectivoPagado = parseFloat(formData.infoMetodosPago.efectivo.cantidad) || 0;
     if (efectivoPagado > total) {
@@ -218,15 +222,26 @@ function DatosExtraVenta(props) {
         },
       }));
     }
-
+  
     const totalPagado = 
       (parseFloat(formData.infoMetodosPago.efectivo.cantidad) || 0) +
       (parseFloat(formData.infoMetodosPago.tdc.cantidad) || 0) +
       (parseFloat(formData.infoMetodosPago.transfer.cantidad) || 0);
-
+  
     setTotalPagado(totalPagado);
-
+  
   }, [formData.infoMetodosPago, total]);
+
+  const handleSelectChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      infoVenta: {
+        ...prevFormData.infoVenta,
+        [name]: value,
+      },
+    }));
+  };
 
   // Para cancelar el registro
   const cancelarRegistro = () => {
@@ -291,7 +306,7 @@ function DatosExtraVenta(props) {
     console.log(formData.infoVenta);
 
     if (totalPagado - cambio < total) {
-      toast.warning("Por favor ingresa la cantidad minima del total");
+      toast.warning("Por favor ingresa la cantidad mínima del total");
     } else {
       try {
         const dataTemp = {
@@ -606,6 +621,9 @@ function DatosExtraVenta(props) {
                   </tr>
                 </tbody>
               </table>
+              {formData.infoVenta.comision > 0 && (
+                <span>Cargo por servicio: ${formData.infoVenta.comision}</span>
+              )}
             </Col>
           </Row>
 
@@ -658,12 +676,15 @@ function DatosExtraVenta(props) {
                         <Form.Control
                           type="text"
                           name="cantidadPagoTdc"
-                          value={inputValues.cantidadPagoTarjeta}
+                          value={inputValues.cantidadPagoTdc}
                           onChange={handleInfoMetodosPagoChange}
                           disabled={!formData.infoMetodosPago.tdc.estado}
                           min="0"
                         />
                       </td>
+                      {formData.infoMetodosPago.tdc.estado === true && (
+                        <td></td>
+                      )}
                     </tr>
                     <tr>
                       <td className="d-flex align-items-center">
