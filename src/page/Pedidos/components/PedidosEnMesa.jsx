@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
-import { obtenerMesaOcupadas } from "../../../api/ventas";
+import { obtenerMesaOcupadas, obtenerVentas } from "../../../api/ventas";
 import TerminalPVprev from "../../TerminalPV/TerminalPVprev";
 import BasicModal from "../../../components/Modal/BasicModal";
+import DatosExtraVenta from "../../TerminalPV/components/DatosExtraVenta";
 
 function PedidosEnMesa() {
+    const [formData, setFormData] = useState(null);
     const [listPedidosMesa, setListPedidosMesa] = useState([]);
 
     const cargarMesasOcupadas = () => {
@@ -36,11 +38,47 @@ function PedidosEnMesa() {
         setShowModal(true);
     };
 
+    const datosVenta = (content) => {
+        setTitulosModal("Cobro");
+        setContentModal(content);
+        setShowModal(true);
+      };
+
     useEffect(() => {
         if (!showModal) {
             cargarMesasOcupadas();
         }
     }, [showModal]);
+
+    const cargarTicket = async (numTicket) => {
+        try {
+          const response = await obtenerVentas(numTicket);
+          const { data } = response;
+          if (data && data.length > 0) {
+            const ticketData = data[0];
+            setFormData(ticketData);
+          }
+        } catch (error) {
+          console.error("Error al cargar los datos del ticket:", error);
+        }
+      };
+    
+      const datosExtra = async (numTicket) => {
+        console.log(numTicket);
+        await cargarTicket(numTicket);
+      };
+    
+      useEffect(() => {
+        if (formData) {
+          datosVenta(
+            <DatosExtraVenta
+              setShow={setShowModal}
+              formData={formData}
+              isVenta={true}
+            />
+          );
+        }
+      }, [formData]);
 
     return (
         <>
@@ -64,16 +102,7 @@ function PedidosEnMesa() {
                                     <button
                                         type="button"
                                         class="btn btn-success btn-sm me-1"
-                                        onClick={() =>clicMesa(
-                                            <TerminalPVprev
-                                            agregar={true}
-                                            setShow={setShowModal}
-                                            estado={"abierto"}
-                                            mesaticket={row.ventas_mesa.mesa}
-                                            idmesa={row.ventas_mesa._id}
-                                            idTicket={row.ventas_mesa.numeroTiquet}
-                                            />
-                                        )}
+                                        onClick={() => datosExtra(row.ventas_mesa.numeroTiquet)}
                                         >
                                         <span class="icon-ticket">
                                             <i class="fas fa-dollar-sign mr-1"></i>
@@ -95,9 +124,9 @@ function PedidosEnMesa() {
                                         )}
                                         >
                                         <span class="icon-ticket">
-                                            <i class="fas fa-ticket-alt mr-1"></i>
+                                            <i class="fas fa-plus mr-1"></i>
                                         </span>
-                                        Ticket
+                                        Añadir
                                     </button>
                                 </td>
                             </tr> 

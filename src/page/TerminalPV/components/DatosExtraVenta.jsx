@@ -5,11 +5,13 @@ import "dayjs/locale/es";
 import "../../../scss/styles.scss";
 import { toast } from "react-toastify";
 import { ocuparDesocuparMesas } from "../../../api/mesas";
-import { cobrarTicket, obtenerVentas, registraVentas } from "../../../api/ventas";
+import { cobrarTicket, listarVentas, obtenerVentas, registraVentas } from "../../../api/ventas";
 import { LogsInformativos } from "../../../components/Logs/LogsSistema/LogsSistema";
 
 function DatosExtraVenta(props) {
   const { setShowModal, isVenta, comision } = props;
+
+  console.log(isVenta);
 
   // MANEJAR EL DESCUENTO DE MANERA ADECUADA
   const [tipoDescuento, setTipoDescuento] = useState("Porcentaje");
@@ -24,6 +26,10 @@ function DatosExtraVenta(props) {
 
   const [fechayHora, setFechayHora] = useState("");
   const [fechayHoraSinFormato, setFechayHoraSinFormato] = useState("");
+
+  const verificarNumeroTiquetUnico = (data, numeroTiquet) => {
+    return data.some((venta) => venta.numeroTiquet === numeroTiquet);
+  };
 
   useEffect(() => {
     const hoy = new Date();
@@ -59,9 +65,8 @@ function DatosExtraVenta(props) {
     cantidadPagoTransfer: formData.infoMetodosPago.transfer.cantidad,
   });
 
-  const calcularTotal = (tipoDescuento, descuento, subtotal, ivaValue, tdcEstado) => {
+  const calcularTotal = (tipoDescuento, descuento, subtotal, ivaValue,) => {
     let descuentoAplicado = 0;
-    let comisionCalculado = 0;
     if (tipoDescuento === "Porcentaje") {
       descuentoAplicado = subtotal * (descuento / 100);
     } else {
@@ -71,25 +76,19 @@ function DatosExtraVenta(props) {
     formData.infoVenta.iva = (subtotal - descuentoAplicado) * ivaValue;
     let totalCalculado = subtotal - descuentoAplicado + formData.infoVenta.iva;
   
-    if (tdcEstado) {
-      comisionCalculado = totalCalculado * (comision / 100); // Calcula la comisión en porcentaje
-      totalCalculado += comisionCalculado;
-    }
-  
     setTotal(totalCalculado);
     setFormData({
       ...formData,
       infoVenta: {
         ...formData.infoVenta,
         total: totalCalculado,
-        comision: comisionCalculado,
       },
     });
   };
 
   useEffect(() => {
-    calcularTotal(tipoDescuento, descuento, subtotal, iva ? 0.16 : 0, formData.infoMetodosPago.tdc.estado);
-  }, [subtotal, descuento, tipoDescuento, iva, formData.infoMetodosPago.tdc.estado]);
+    calcularTotal(tipoDescuento, descuento, subtotal, iva ? 0.16 : 0);
+  }, [subtotal, descuento, tipoDescuento, iva]);
 
   const handleDescuentoChange = useCallback((e) => {
     const newDescuento = parseFloat(e.target.value) || 0;
@@ -102,12 +101,12 @@ function DatosExtraVenta(props) {
         descuento: tipoDescuento === "Porcentaje" ? (newDescuento / 100) * subtotal : newDescuento,
       },
     }));
-  }, [tipoDescuento, subtotal, iva, formData.infoMetodosPago.tdc.estado]);
+  }, [tipoDescuento, subtotal, iva]);
 
   const handleTipoDescuentoChange = useCallback((e) => {
     const newTipoDescuento = e.target.value;
     setTipoDescuento(newTipoDescuento);
-    calcularTotal(newTipoDescuento, descuento, subtotal, iva, formData.infoMetodosPago.tdc.estado);
+    calcularTotal(newTipoDescuento, descuento, subtotal, iva);
     setFormData((prevFormData) => ({
       ...prevFormData,
       infoVenta: {
@@ -121,30 +120,33 @@ function DatosExtraVenta(props) {
     const isIvaEnabled = e.target.value === "true";
     const ivaValue = isIvaEnabled ? 0.16 : 0;
 
-    calcularTotal(tipoDescuento, descuento, subtotal, ivaValue, formData.infoMetodosPago.tdc.estado);
+    calcularTotal(tipoDescuento, descuento, subtotal, ivaValue);
 
     setIva(isIvaEnabled);
-  }, [subtotal, descuentoCalculado, tipoDescuento, descuento, formData.infoMetodosPago.tdc.estado]);
+  }, [subtotal, descuentoCalculado, tipoDescuento, descuento]);
 
   const handleInfoMetodosPagoChange = useCallback((e) => {
     const { name, value } = e.target;
     const parsedValue = parseFloat(value) || 0;
-
+  
     setInputValues((prevInputValues) => ({
       ...prevInputValues,
       [name]: parsedValue,
     }));
-
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      infoMetodosPago: {
-        ...prevFormData.infoMetodosPago,
-        [name.split('cantidadPago')[1].toLowerCase()]: {
-          ...prevFormData.infoMetodosPago[name.split('cantidadPago')[1].toLowerCase()],
-          cantidad: parsedValue,
+  
+    setFormData((prevFormData) => {
+      const updatedFormData = {
+        ...prevFormData,
+        infoMetodosPago: {
+          ...prevFormData.infoMetodosPago,
+          [name.split('cantidadPago')[1].toLowerCase()]: {
+            ...prevFormData.infoMetodosPago[name.split('cantidadPago')[1].toLowerCase()],
+            cantidad: parsedValue,
+          },
         },
-      },
-    }));
+      };
+      return updatedFormData;
+    });
   }, []);
 
   useEffect(() => {
@@ -166,13 +168,11 @@ function DatosExtraVenta(props) {
         },
       },
     }));
-    console.log(formData);
   }, [inputValues]);
 
   const handleCheckboxChange = useCallback((e) => {
     const { name, checked } = e.target;
     const metodoPagoKey = name.split('estadoPago')[1].toLowerCase();
-    console.log(metodoPagoKey);
   
     setFormData((prevFormData) => {
       const updatedMetodosPago = {
@@ -195,10 +195,7 @@ function DatosExtraVenta(props) {
       [`cantidadPago${metodoPagoKey.charAt(0).toUpperCase() + metodoPagoKey.slice(1)}`]: checked ? prevInputValues[`cantidadPago${metodoPagoKey.charAt(0).toUpperCase() + metodoPagoKey.slice(1)}`] : 0,
     }));
   
-    // if (metodoPagoKey === "tdc") {
-    //   calcularTotal(tipoDescuento, descuento, subtotal, iva ? 0.16 : 0, checked);
-    // }
-  }, [tipoDescuento, descuento, subtotal, iva]);
+  }, []);
   
   useEffect(() => {
     const efectivoPagado = parseFloat(formData.infoMetodosPago.efectivo.cantidad) || 0;
@@ -351,7 +348,7 @@ function DatosExtraVenta(props) {
           metodosPago: formData.infoMetodosPago,
         };
         console.log(dataTemp);
-  
+
         if (!isVenta) {
           await registraVentas(dataTemp).then( async (response) => {
             const { data } = response;
@@ -360,7 +357,18 @@ function DatosExtraVenta(props) {
               data.datos
             );
             await desocuparMesa();
-            setShowModal(false);
+            try {
+              setShowModal(false);
+            } catch (error) {
+              console.error("Error al cerrar el modal principal:", error);
+              try {
+                props.setShow(false);
+              } catch (error) {
+                console.error("Error al cerrar el modal secundario:", error);
+                // Mostrar un mensaje de error general aquí
+                alert("Error al cerrar los modales");
+              }
+            }
             toast.success("Se ha creado y cobrado la orden en mesa con éxito");
           });
         } else {
@@ -371,7 +379,18 @@ function DatosExtraVenta(props) {
               data.datos
             );
             await desocuparMesa();
-            setShowModal(false);
+            try {
+              setShowModal(false);
+            } catch (error) {
+              console.error("Error al cerrar el modal principal:", error);
+              try {
+                props.setShow(false);
+              } catch (error) {
+                console.error("Error al cerrar el modal secundario:", error);
+                // Mostrar un mensaje de error general aquí
+                alert("Error al cerrar los modales");
+              }
+            }
             toast.success(`Se ha cobrado la orden de la mesa ${dataTemp.mesa} con éxito`);
           });
         }
@@ -440,7 +459,18 @@ function DatosExtraVenta(props) {
             "Orden creada y puesta para cobrar después " + dataTemp.numeroTiquet,
             data.datos
           );
-          setShowModal(false);
+          try {
+            setShowModal(false);
+          } catch (error) {
+            console.error("Error al cerrar el modal principal:", error);
+            try {
+              props.setShow(false);
+            } catch (error) {
+              console.error("Error al cerrar el modal secundario:", error);
+              // Mostrar un mensaje de error general aquí
+              alert("Error al cerrar los modales");
+            }
+          }
           toast.success("orden creada para pagar después");
         });
         
@@ -451,7 +481,18 @@ function DatosExtraVenta(props) {
             "Orden cambiada para cobrar después " + dataTemp.numeroTiquet + " en la  mesa " + props.numMesa,
             data.datos
           );
-          setShowModal(false);
+          try {
+            setShowModal(false);
+          } catch (error) {
+            console.error("Error al cerrar el modal principal:", error);
+            try {
+              props.setShow(false);
+            } catch (error) {
+              console.error("Error al cerrar el modal secundario:", error);
+              // Mostrar un mensaje de error general aquí
+              alert("Error al cerrar los modales");
+            }
+          }
           toast.success("Lista la orden para pagar después");
         });
         
@@ -636,9 +677,6 @@ function DatosExtraVenta(props) {
                   </tr>
                 </tbody>
               </table>
-              {formData.infoVenta.comision > 0 && (
-                <span>Cargo por servicio: ${formData.infoVenta.comision}</span>
-              )}
             </Col>
           </Row>
 
@@ -652,7 +690,7 @@ function DatosExtraVenta(props) {
                   <thead>
                     <tr>
                       <th>Método de pago</th>
-                      <th>Cantidad pagada</th>
+                      <th colSpan={3}>Cantidad pagada</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -666,7 +704,7 @@ function DatosExtraVenta(props) {
                           onChange={handleCheckboxChange}
                         />
                       </td>
-                      <td>
+                      <td colSpan={3}>
                         <Form.Control
                           type="text"
                           name="cantidadPagoEfectivo"
@@ -697,9 +735,6 @@ function DatosExtraVenta(props) {
                           min="0"
                         />
                       </td>
-                      {formData.infoMetodosPago.tdc.estado === true && (
-                        <td></td>
-                      )}
                     </tr>
                     <tr>
                       <td className="d-flex align-items-center">
@@ -711,7 +746,7 @@ function DatosExtraVenta(props) {
                           onChange={handleCheckboxChange}
                         />
                       </td>
-                      <td>
+                      <td colSpan={3}>
                         <Form.Control
                           type="text"
                           name="cantidadPagoTransfer"
@@ -724,7 +759,7 @@ function DatosExtraVenta(props) {
                     </tr>
                     <tr>
                       <td>Total pagado:</td>
-                      <td>
+                      <td colSpan={3}>
                         {new Intl.NumberFormat("es-MX", {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
@@ -733,7 +768,7 @@ function DatosExtraVenta(props) {
                     </tr>
                     <tr>
                       <td>Cambio:</td>
-                      <td>
+                      <td colSpan={3}>
                         {new Intl.NumberFormat("es-MX", {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,

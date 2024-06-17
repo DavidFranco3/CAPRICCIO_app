@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone'
 import { useEffect, useState } from "react";
 import { listarPedidosPendientes, obtenerVentas } from "../../../api/ventas";
 import "./styles/stylesTabla.css";
@@ -8,6 +9,7 @@ import BasicModal from "../../../components/Modal/BasicModal";
 import DatosExtraVenta from "../../TerminalPV/components/DatosExtraVenta";
 
 dayjs.extend(utc);
+dayjs.extend(timezone);
 
 function PedidosPagoPendiente() {
   const [listaPedidosPendientes, setListaPedidosPendientes] = useState([]);
@@ -54,6 +56,12 @@ function PedidosPagoPendiente() {
     setShowModal(true);
   };
 
+  useEffect(() => {
+    if (!showModal) {
+      cargarPedidosPendientes();
+    }
+  }, [showModal]);
+
   const cargarTicket = async (numTicket) => {
     try {
       const response = await obtenerVentas(numTicket);
@@ -78,6 +86,7 @@ function PedidosPagoPendiente() {
         <DatosExtraVenta
           setShow={setShowModal}
           formData={formData}
+          isVenta={true}
         />
       );
     }
