@@ -23,6 +23,7 @@ function DatosExtraVenta(props) {
   const [totalPagado, setTotalPagado] = useState(0);
 
   const [iva, setIva] = useState(false);
+  const [nombreCliente, setNombreCliente] = useState("");
 
   const [fechayHora, setFechayHora] = useState("");
   const [fechayHoraSinFormato, setFechayHoraSinFormato] = useState("");
@@ -320,7 +321,7 @@ function DatosExtraVenta(props) {
       try {
         const dataTemp = {
           numeroTiquet: formData.infoVenta.numeroTiquet,
-          cliente: formData.infoVenta.cliente,
+          cliente: nombreCliente,
           tipo: props.mesaClick ? "Orden de mesa" : "Pedido de mostrador",
           mesa: formData.infoVenta.mesa,
           usuario: formData.infoVenta.usuario,
@@ -423,7 +424,7 @@ function DatosExtraVenta(props) {
     try {
       const dataTemp = {
         numeroTiquet: formData.infoVenta.numeroTiquet,
-        cliente: formData.infoVenta.cliente,
+        cliente: nombreCliente,
         tipo: props.mesaClick ? "Orden de mesa" : "Pedido de mostrador",
         mesa: formData.infoVenta.mesa,
         usuario: formData.infoVenta.usuario,
@@ -515,16 +516,8 @@ function DatosExtraVenta(props) {
                     type="text"
                     name="cliente"
                     placeholder="Escribe el nombre del cliente"
-                    value={formData.infoVenta.cliente}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        infoVenta: {
-                          ...formData.infoVenta,
-                          cliente: e.target.value,
-                        },
-                      })
-                    }
+                    value={nombreCliente}
+                    onChange={(e) => setNombreCliente(e.target.value)}
                   />
                 </Form.Group>
               </Row>
