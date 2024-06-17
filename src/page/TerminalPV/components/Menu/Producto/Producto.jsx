@@ -1,5 +1,5 @@
 import { Image } from "react-bootstrap";
-import "../../../scss/styles.scss";
+import "../../../../../scss/styles.scss";
 
 function Producto(props) {
   const { imagen, nombre, precio } = props;

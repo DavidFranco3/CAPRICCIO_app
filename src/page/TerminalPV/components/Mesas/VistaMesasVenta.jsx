@@ -106,7 +106,7 @@ const VistaMesasVenta = () => {
                         <span
                         class={
                             "info-box-icon " +
-                            (mesa.estado === "1" ? "mesaDisponible" : "bg-secondary")
+                            (mesa.estado === "libre" ? "mesaDisponible" : "bg-secondary")
                         }
                         >
                         <i class="fas fa-utensils"></i>

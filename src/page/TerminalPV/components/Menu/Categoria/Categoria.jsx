@@ -1,5 +1,5 @@
 import { Image } from "react-bootstrap";
-import "../../../scss/styles.scss";
+import "../../../../../scss/styles.scss";
 
 function Categoria(props) {
   const { imagen, nombre } = props;

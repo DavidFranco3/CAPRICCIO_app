@@ -43,7 +43,8 @@ import {
     ENDPOINTObtenerVentasenMesasConTicket,
     ENDPOINTObtenerVentasTotalesDelDia,
     ENDPOINTActualizarProdsTicket,
-    ENDPOINTCobrarTicket
+    ENDPOINTCobrarTicket,
+    ENDPOINTListarPedidosPendientes
 } from "./endpoints";
 import axios from 'axios';
 import { getTokenApi } from "./auth";
@@ -519,6 +520,18 @@ export async function cobrarTicket(numeroTiquet, data) {
     };
 
     return await axios.put(API_HOST + ENDPOINTCobrarTicket + `/${numeroTiquet}`, data, config);
+}
+
+export async function listarPedidosPendientes() {
+    const config = {
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${getTokenApi()}`
+        }
+    };
+
+    return await axios.get(API_HOST + ENDPOINTListarPedidosPendientes, config);
 }
 
 // Cambiar estado de las ventas

@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHouse } from '@fortawesome/free-solid-svg-icons';
-import Producto from "../Producto";
-import Categoria from "../Categoria";
-import { getTokenApi, isExpiredToken, logoutApi } from "../../../api/auth";
+import Producto from "./Producto";
+import Categoria from "./Categoria";
+import { getTokenApi, isExpiredToken, logoutApi } from "../../../../api/auth";
 import { toast } from "react-toastify";
 import { Button } from "react-bootstrap";
 import "./menu.css";

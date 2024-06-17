@@ -16,13 +16,14 @@ import PedidosClientes from "../page/PedidosClientes";
 import TerminalPedidos from "../page/TerminalPedidos";
 import Clientes from "../page/Clientes";
 import MovimientosIngredientes from "../page/MovimientosIngredientes";
+import Pedidos from "../page/Pedidos/Pedidos";
 
 // Importaciones de productos
 import RegistraProductos from "../components/Productos/RegistraProductos";
 import ModificaProductos from "../components/Productos/ModificaProductos";
 import LayoutAdminLTE from "../layout/adminlte/layout";
 import VistaMesas from "../page/Mesas/VistaMesas/VistaMesas";
-import OrdeneMesas from "../components/ordenesMesas/ordeneMesas";
+import OrdenesMesas from "../components/ordenesMesas/ordeneMesas";
 
 
 const configRouting = [
@@ -108,7 +109,7 @@ const configRouting = [
     },
     {
         path: "/Ordenes",
-        page: OrdeneMesas,
+        page: Pedidos,
         roles: ["administrador", "vendedor", "mesero"]
     },
     {

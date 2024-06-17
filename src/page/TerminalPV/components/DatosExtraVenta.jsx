@@ -5,7 +5,7 @@ import "dayjs/locale/es";
 import "../../../scss/styles.scss";
 import { toast } from "react-toastify";
 import { ocuparDesocuparMesas } from "../../../api/mesas";
-import { cobrarTicket, registraVentas } from "../../../api/ventas";
+import { cobrarTicket, obtenerVentas, registraVentas } from "../../../api/ventas";
 import { LogsInformativos } from "../../../components/Logs/LogsSistema/LogsSistema";
 
 function DatosExtraVenta(props) {
@@ -195,9 +195,9 @@ function DatosExtraVenta(props) {
       [`cantidadPago${metodoPagoKey.charAt(0).toUpperCase() + metodoPagoKey.slice(1)}`]: checked ? prevInputValues[`cantidadPago${metodoPagoKey.charAt(0).toUpperCase() + metodoPagoKey.slice(1)}`] : 0,
     }));
   
-    if (metodoPagoKey === "tdc") {
-      calcularTotal(tipoDescuento, descuento, subtotal, iva ? 0.16 : 0, checked);
-    }
+    // if (metodoPagoKey === "tdc") {
+    //   calcularTotal(tipoDescuento, descuento, subtotal, iva ? 0.16 : 0, checked);
+    // }
   }, [tipoDescuento, descuento, subtotal, iva]);
   
   useEffect(() => {
@@ -245,7 +245,18 @@ function DatosExtraVenta(props) {
 
   // Para cancelar el registro
   const cancelarRegistro = () => {
-    setShowModal(false);
+    try {
+      setShowModal(false);
+    } catch (error) {
+      console.error("Error al cerrar el modal principal:", error);
+      try {
+        props.setShow(false);
+      } catch (error) {
+        console.error("Error al cerrar el modal secundario:", error);
+        // Mostrar un mensaje de error general aquí
+        alert("Error al cerrar los modales");
+      }
+    }
   };
 
   const calcularFecha = () => {
@@ -289,6 +300,7 @@ function DatosExtraVenta(props) {
 
   const cambiarOrdenAVenta = async () => {
     // Implementa la lógica para cambiar la orden a orden cobrada
+    const fecha = calcularFecha();
     formData.infoVenta.total = total;
 
     if ((formData.infoMetodosPago.efectivo.estado && formData.infoMetodosPago.tdc.estado) ||
@@ -321,6 +333,7 @@ function DatosExtraVenta(props) {
           tipoPago: formData.infoVenta.tipoPago,
           efectivo: formData.infoMetodosPago.efectivo.cantidad,
           cambio: formData.infoVenta.cambio,
+          productos: formData.infoVenta.productos,
           subtotal: formData.infoVenta.subtotal,
           tipoPedido: formData.infoVenta.tipoPedido,
           hacerPedido: formData.infoVenta.hacerPedido,
@@ -331,26 +344,15 @@ function DatosExtraVenta(props) {
           iva: formData.infoVenta.iva,
           atendido: formData.infoVenta.atendido,
           comision: formData.infoVenta.comision,
-          año: formData.infoVenta.año,
-          mes: formData.infoVenta.mes,
-          semana: formData.infoVenta.semana,
-          fecha: formData.infoVenta.fecha,
+          año: formData.infoVenta.año || fecha.añoVenta,
+          mes: formData.infoVenta.mes || fecha.mes,
+          semana: formData.infoVenta.semana || fecha.weekNumber,
+          fecha: formData.infoVenta.fecha || fecha.formattedDate,
           metodosPago: formData.infoMetodosPago,
         };
         console.log(dataTemp);
   
         if (!isVenta) {
-          await cobrarTicket(formData.infoVenta.numeroTiquet, dataTemp).then( async (response) => {
-            const { data } = response;
-            LogsInformativos(
-              "Se ha cobrado la orden " + formData.infoVenta.numeroTiquet + " de la  mesa " + formData.infoVenta.mesa,
-              data.datos
-            );
-            await desocuparMesa();
-            setShowModal(false);
-            toast.success(`Se ha cobrado la orden de la mesa ${dataTemp.mesa} con éxito`);
-          });
-        } else {
           await registraVentas(dataTemp).then( async (response) => {
             const { data } = response;
             LogsInformativos(
@@ -361,6 +363,17 @@ function DatosExtraVenta(props) {
             setShowModal(false);
             toast.success("Se ha creado y cobrado la orden en mesa con éxito");
           });
+        } else {
+          await cobrarTicket(formData.infoVenta.numeroTiquet, dataTemp).then( async (response) => {
+            const { data } = response;
+            LogsInformativos(
+              "Se ha cobrado la orden " + formData.infoVenta.numeroTiquet + " de la  mesa " + formData.infoVenta.mesa,
+              data.datos
+            );
+            await desocuparMesa();
+            setShowModal(false);
+            toast.success(`Se ha cobrado la orden de la mesa ${dataTemp.mesa} con éxito`);
+          });
         }
       } catch (error) {
         console.error("Error al enviar los datos:", error);
@@ -369,6 +382,7 @@ function DatosExtraVenta(props) {
   };
 
   const cobrarDespues = async () => {
+    const fecha = calcularFecha();
     formData.infoVenta.total = total;
 
     if ((formData.infoMetodosPago.efectivo.estado && formData.infoMetodosPago.tdc.estado) ||
@@ -401,6 +415,7 @@ function DatosExtraVenta(props) {
         efectivo: formData.infoMetodosPago.efectivo.cantidad,
         cambio: formData.infoVenta.cambio,
         subtotal: formData.infoVenta.subtotal,
+        productos: formData.infoVenta.productos,
         tipoPedido: formData.infoVenta.tipoPedido,
         hacerPedido: formData.infoVenta.hacerPedido,
         tipoDescuento: formData.infoVenta.tipoDescuento,
@@ -410,10 +425,10 @@ function DatosExtraVenta(props) {
         iva: formData.infoVenta.iva,
         atendido: formData.infoVenta.atendido,
         comision: formData.infoVenta.comision,
-        año: formData.infoVenta.año,
-        mes: formData.infoVenta.mes,
-        semana: formData.infoVenta.semana,
-        fecha: formData.infoVenta.fecha,
+        año: formData.infoVenta.año || fecha.añoVenta,
+        mes: formData.infoVenta.mes || fecha.mes,
+        semana: formData.infoVenta.semana || fecha.weekNumber,
+        fecha: formData.infoVenta.fecha || fecha.formattedDate,
         metodosPago: formData.infoMetodosPago,
       };
       console.log(dataTemp);

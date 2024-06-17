@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { withRouter } from "../../utils/withRouter";
-import Menu from "../../components/TerminalPV/Menu";
+import Menu from "./components/Menu";
 import Tiquet from "./components/Tiquet/Tiquet";
 import "../../scss/styles.scss";
 import { listarProductosCategoria } from "../../api/productos";

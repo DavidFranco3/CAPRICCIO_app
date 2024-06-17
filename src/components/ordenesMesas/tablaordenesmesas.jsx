@@ -11,7 +11,7 @@ const Tablaordenesmesas = () => {
       obtenerMesaOcupadas()
         .then((response) => {
           const { data } = response;
-          //console.log("mesas", data);
+          console.log("mesas", data);
           setListMesasocupadas(data);
         })
         .catch((e) => {

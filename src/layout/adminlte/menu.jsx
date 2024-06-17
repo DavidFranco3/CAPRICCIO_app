@@ -41,7 +41,7 @@ const Menu = ({ datosUsuario }) => {
               <img
                 src="dist/img/user2-160x160.jpg"
                 className="img-circle elevation-2"
-                alt="User Image"
+                alt="User"
               />
             </div>
             <div className="info">
@@ -74,8 +74,8 @@ const Menu = ({ datosUsuario }) => {
                     />
                     <ItemCard
                       path={"/Ordenes"}
-                      logo={"fa-hamburger"}
-                      title={"Ordenes Mesa"}
+                      logo={"fa-clipboard"}
+                      title={"Pedidos"}
                     />
                     <ItemCard
                       path={"/Productos"}
