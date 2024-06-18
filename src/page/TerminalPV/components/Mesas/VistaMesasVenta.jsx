@@ -57,16 +57,13 @@ const VistaMesasVenta = () => {
 
     return (
         <>
-        <div className="card card-outline card-danger m-3">
-            <div className="card-header align-items-center align-items-center">
-                <div className="">
-                    <div className="row">
-                        <div className="col-md-10 align-middle">
-                            <h4 className="align-middle">Mesas del establecimiento</h4>
-                        </div>
+        <div className="card card-outline border-warning m-3">
+            <div className=" card-header text-bg-warning ">
+                    <div className="d-flex justify-content-between align-items-center">
+                        <h4 className="align-middle">Mesas del establecimiento</h4>
                         <div className="col-md-2">
                             <button
-                                className="btn btn-danger"
+                                className="btn bg-green"
                                 onClick={() =>
                                     actVenta(<TerminalPVprev 
                                         setShow={setShowModal}
@@ -80,7 +77,6 @@ const VistaMesasVenta = () => {
                             </button>
                         </div>
                     </div>
-                </div>
             </div>
             <div className="card-body">
                 <div className="divMesasView">
@@ -106,7 +102,7 @@ const VistaMesasVenta = () => {
                         <span
                         class={
                             "info-box-icon " +
-                            (mesa.estado === "libre" ? "mesaDisponible" : "bg-secondary")
+                            (mesa.estado === "libre" ? "bg-green" : "bg-secondary")
                         }
                         >
                         <i class="fas fa-utensils"></i>
