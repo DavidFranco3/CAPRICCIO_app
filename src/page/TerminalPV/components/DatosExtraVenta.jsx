@@ -595,7 +595,8 @@ function DatosExtraVenta(props) {
                       <option>Elige una opción</option>
                       <option value="WhatsApp">WhatsApp</option>
                       <option value="Llamada">Llamada</option>
-                      {props.mesaClick && <option value="Presencial">Presencial</option>}
+                      {props.mesaClick ? (<option value="Presencial">Presencial</option>) :
+                        (<option value="Presencial">Presencial</option>)}
                       <option value="Rappi">Rappi</option>
                       <option value="Uber">Uber</option>
                     </Form.Control>
