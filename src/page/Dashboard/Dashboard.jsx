@@ -91,7 +91,7 @@ function Dashboard(props) {
         estadoUsuario === "true" &&
         (
           <>
-            <div className="grid grid-cols-5 gap-5">
+            <div className="m-3 grid grid-cols-5 gap-5">
               <ItemCard
                 path={'/TerminalPV'}
                 logo={LogoVentas}
@@ -151,7 +151,7 @@ function Dashboard(props) {
         estadoUsuario === "false" && rolUsuario === "vendedor" && tipoUsuario === "interno" &&
         (
           <>
-            <div className="grid grid-cols-5 gap-5">
+            <div className="m-3 grid grid-cols-5 gap-5">
               <ItemCard
                 path={'/TerminalPV'}
                 logo={LogoVentas}

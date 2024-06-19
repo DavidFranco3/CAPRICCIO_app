@@ -211,19 +211,14 @@ function Categorias(props) {
 
   return (
     <>
-      <Alert
-        className="fondoPrincipalAlert"
-        style={{ backgroundColor: "transparent", borderColor: "transparent" }}
-      >
-        <Row>
-          <Col xs={12} md={4} className="titulo">
-            <h1 className="font-bold">Categorías</h1>
-          </Col>
-          <Col xs={6} md={8}>
-            <div style={{ float: "right" }}>
-              <Button
+      <div className="card card-outline m-3">
+        <div className="card-header bg-gray">
+          <div className="d-flex justify-content-between align-items-center">
+            <h4 className="font-bold mb-0">Estado de las categorías</h4>
+            <div className="d-flex align-items-center">
+              <button
                 title="Registrar una nueva categoría"
-                className="btnRegistro"
+                className="btn btn-outline-light"
                 style={{ marginRight: "10px" }}
                 onClick={() => {
                   registroCategorias(
@@ -236,68 +231,59 @@ function Categorias(props) {
                 }}
               >
                 <FontAwesomeIcon icon={faCirclePlus} /> Registrar
-              </Button>
+              </button>
+              <Switch
+                title={
+                  estadoSwitch === true
+                    ? "Ver categorías canceladas"
+                    : "Ver categorías activas"
+                }
+                checked={estadoSwitch}
+                onChange={setEstadoSwitch}
+                className={`${estadoSwitch ? "bg-teal-900" : "bg-red-600"}
+              relative inline-flex flex-shrink-0 h-[38px] w-[74px] border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75 float-end`}
+              >
+                <span className="sr-only">Use setting</span>
+                <span
+                  aria-hidden="true"
+                  className={`${
+                    estadoSwitch ? "translate-x-9" : "translate-x-0"
+                  }
+                pointer-events-none inline-block h-[34px] w-[34px] rounded-full bg-white shadow-lg transform ring-0 transition ease-in-out duration-200`}
+                />
+              </Switch>
             </div>
-          </Col>
-        </Row>
-      </Alert>
-
-      
-
-      <div className="card card-outline card-danger m-3">
-        <div className="card-header">
-        <Row>
-        <Col xs={10} md={10}>
-          <h3 className="tituloSwitch">Estado de las categorías</h3>
-        </Col>
-        <Col xs={2} md={2}>
-          <Switch
-            title={
-              estadoSwitch === true
-                ? "Ver categorías canceladas"
-                : "Ver categorías activas"
-            }
-            checked={estadoSwitch}
-            onChange={setEstadoSwitch}
-            className={`${estadoSwitch ? "bg-teal-900" : "bg-red-600"}
-          relative inline-flex flex-shrink-0 h-[38px] w-[74px] border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75 float-end`}
-          >
-            <span className="sr-only">Use setting</span>
-            <span
-              aria-hidden="true"
-              className={`${estadoSwitch ? "translate-x-9" : "translate-x-0"}
-            pointer-events-none inline-block h-[34px] w-[34px] rounded-full bg-white shadow-lg transform ring-0 transition ease-in-out duration-200`}
-            />
-          </Switch>
-        </Col>
-      </Row>
+          </div>
         </div>
         <div className="card-body">
-        {listCategorias ? (
-        <>
-          <Suspense fallback={<Spinner />}>
-            <ListCategorias
-              setRefreshCheckLogin={setRefreshCheckLogin}
-              listCategorias={listCategorias}
-              location={location}
-              navigate={navigate}
-              setRowsPerPage={setRowsPerPage}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              setPage={setPage}
-              noTotalCategorias={noTotalCategorias}
-            />
-          </Suspense>
-        </>
-      ) : (
-        <>
-          <Lottie loop={true} play={true} animationData={AnimacionLoading} />
-        </>
-      )}
+          {listCategorias ? (
+            <>
+              <Suspense fallback={<Spinner />}>
+                <ListCategorias
+                  setRefreshCheckLogin={setRefreshCheckLogin}
+                  listCategorias={listCategorias}
+                  location={location}
+                  navigate={navigate}
+                  setRowsPerPage={setRowsPerPage}
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                  setPage={setPage}
+                  noTotalCategorias={noTotalCategorias}
+                />
+              </Suspense>
+            </>
+          ) : (
+            <>
+              <Lottie
+                loop={true}
+                play={true}
+                animationData={AnimacionLoading}
+              />
+            </>
+          )}
         </div>
       </div>
 
-      
       <BasicModal show={showModal} setShow={setShowModal} title={titulosModal}>
         {contentModal}
       </BasicModal>

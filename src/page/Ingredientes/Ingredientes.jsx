@@ -8,7 +8,7 @@ import {
 import { withRouter } from "../../utils/withRouter";
 import "../../scss/styles.scss";
 import BasicModal from "../../components/Modal/BasicModal";
-import ListIngredientes from "../../components/Ingredientes/ListIngredientes";
+import ListIngredientes from "./components/ListIngredientes";
 import {
   getTokenApi,
   isExpiredToken,
@@ -19,7 +19,7 @@ import { obtenerUsuario } from "../../api/usuarios";
 import { LogsInformativosLogout } from "../../components/Logs/LogsSistema/LogsSistema";
 import { toast } from "react-toastify";
 import { Spinner, Button, Col, Row, Alert } from "react-bootstrap";
-import RegistroIngredientes from "../../components/Ingredientes/RegistroIngredientes";
+import RegistroIngredientes from "./components/RegistroIngredientes";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCirclePlus,
@@ -208,18 +208,14 @@ function Ingredientes(props) {
 
   return (
     <>
-      <Alert
-        style={{ backgroundColor: "transparent", borderColor: "transparent" }}
-      >
-        <Row>
-          <Col xs={12} md={4} className="titulo">
-            <h1 className="font-bold">Ingredientes</h1>
-          </Col>
-          <Col xs={6} md={8}>
-            <div style={{ float: "right" }}>
-              <Button
+      <div className="card card-outline m-3">
+        <div className="card-header bg-gray">
+          <div className="d-flex justify-content-between align-items-center">
+            <h3 className="font-bold mb-0">Ingredientes</h3>
+            <div className="d-flex align-items-center">
+              <button
                 title="Registrar un nuevo ingrediente"
-                className="btnRegistro"
+                className="btn btn-outline-light"
                 style={{ marginRight: "10px" }}
                 onClick={() => {
                   registroIngredientes(
@@ -232,19 +228,7 @@ function Ingredientes(props) {
                 }}
               >
                 <FontAwesomeIcon icon={faCirclePlus} /> Registrar
-              </Button>
-            </div>
-          </Col>
-        </Row>
-      </Alert>
-
-      <div className="card card-outline card-danger m-3">
-        <div className="card-header">
-          <Row>
-            <Col xs={12} md={8}>
-              <h3 className="tituloSwitch">Estado de los ingredientes</h3>
-            </Col>
-            <Col xs={6} md={4}>
+              </button>
               <Switch
                 title={
                   estadoSwitch === true
@@ -265,8 +249,8 @@ function Ingredientes(props) {
             pointer-events-none inline-block h-[34px] w-[34px] rounded-full bg-white shadow-lg transform ring-0 transition ease-in-out duration-200`}
                 />
               </Switch>
-            </Col>
-          </Row>
+            </div>
+          </div>
         </div>
         <div className="card-body">
           {listIngredientes ? (

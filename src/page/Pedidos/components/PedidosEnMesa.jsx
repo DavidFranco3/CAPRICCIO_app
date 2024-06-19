@@ -97,7 +97,11 @@ function PedidosEnMesa() {
                             <tr key={index} >
                                 <td>{row.ventas_mesa.numeroTiquet}</td>
                                 <td>{row.ventas_mesa.mesa}</td>
-                                <td>{row.ventas_mesa.subtotal}</td>
+                                <td>$ {new Intl.NumberFormat("es-MX", {
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2,
+                                      }).format(row.ventas_mesa.subtotal)}{" "}
+                                </td>
                                 <td>
                                     <button
                                         type="button"

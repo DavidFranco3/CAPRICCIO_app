@@ -15,7 +15,7 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/es';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 
-import RegistroMovimientosCajasVentas from '../../MovimientosCajas/RegistroMovimientosCajasVentas';
+import RegistroMovimientosCajasVentas from '../../../page/Cajas/components/MovimientosCajas/RegistroMovimientosCajasVentas';
 import { useNavigate } from "react-router-dom";
 import { LogsInformativos } from "../../Logs/LogsSistema/LogsSistema";
 import { toast } from "react-toastify";

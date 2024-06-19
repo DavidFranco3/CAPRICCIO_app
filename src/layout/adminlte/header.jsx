@@ -65,8 +65,8 @@ const Header = ({ datosUsuario }) => {
 
 
   return (
-    <div>
-      <nav className="main-header navbar navbar-expand navbar-white navbar-light">
+    <div className="bg-secondary">
+      <nav className="main-header navbar navbar-expand navbar-dark">
         {/* Left navbar links */}
         <ul className="navbar-nav">
           <li className="nav-item">
@@ -125,7 +125,7 @@ const Header = ({ datosUsuario }) => {
           <li className="nav-item dropdown">
             <span className="nav-link" data-toggle="dropdown" href="#">
               <i className="far fa-bell" />
-              <span className="badge badge-warning navbar-badge">
+              <span className="badge badge-warning navbar-badge cursor-pointer">
                 <i className="fa fa-user"></i>
               </span>
             </span>

@@ -48,20 +48,21 @@ const VistaMesas = () => {
 
   return (
     <>
-      <div className="card card-outline card-danger m-3">
-        <div className="card-header d-flex justify-content-between">
-          <div className="col-md-10 align-self-center">
-            <h4>Mesas del establecimiento</h4>
-          </div>
-          <div className="col-md-2">
-            <button
-              className="btn btn-danger"
-              onClick={() =>
-                registroUsuarios(<RegistoMesas setShow={setShowModal} />)
-              }
-            >
-              <i class="fa fa-solid fa-plus" /> Agregar
-            </button>
+      <div className="card card-outline m-3">
+        <div className="card-header bg-gray">
+         <div className="d-flex justify-content-between align-items-center">
+          <h4 className="mb-0 font-bold">Mesas del establecimiento</h4>
+            
+            <div className="col-md-2">
+              <button
+                  className="btn btn-outline-light"
+                  onClick={() =>
+                    registroUsuarios(<RegistoMesas setShow={setShowModal} />)
+                  }
+                >
+                  <i class="fa fa-plus" /> Agregar
+              </button>
+            </div>
           </div>
         </div>
         <div className="card-body">
@@ -70,7 +71,7 @@ const VistaMesas = () => {
               <div
                 class="info-box"
               >
-                <span class= "info-box-icon bg-primary">
+                <span class= "info-box-icon bg-blue">
                   <i class="fas fa-utensils"></i>
                 </span>
                 <div class="info-box-content">

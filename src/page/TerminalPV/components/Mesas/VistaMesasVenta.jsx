@@ -57,13 +57,13 @@ const VistaMesasVenta = () => {
 
     return (
         <>
-        <div className="card card-outline border-warning m-3">
-            <div className=" card-header text-bg-warning ">
+        <div className="card card-outline m-3">
+            <div className=" card-header py-3 bg-gray">
                     <div className="d-flex justify-content-between align-items-center">
-                        <h4 className="align-middle">Mesas del establecimiento</h4>
+                        <h4 className="mb-0 font-bold">Ordenes</h4>
                         <div className="col-md-2">
                             <button
-                                className="btn bg-green"
+                                className="btn btn-outline-light"
                                 onClick={() =>
                                     actVenta(<TerminalPVprev 
                                         setShow={setShowModal}
@@ -73,7 +73,8 @@ const VistaMesasVenta = () => {
                                     />)
                                 }
                             >
-                                🧾 Hacer Venta
+                                <i className="fas fa-receipt me-1 "></i>
+                                 Hacer Venta
                             </button>
                         </div>
                     </div>
@@ -82,7 +83,7 @@ const VistaMesasVenta = () => {
                 <div className="divMesasView">
                     {listMesas.map((mesa, index) => (
                     <div
-                        class="info-box"
+                        class="info-box border-2"
                         onClick={() =>
                             clicMesa(
                                 <TerminalPVprev

@@ -17,7 +17,7 @@ function BasicModal(props) {
             size={size || "lg"} // Si size no se pasa, por defecto es "lg"
             
         >
-            <ModalHeader>
+            <ModalHeader className="bg-dark">
                 <Modal.Title>{title}</Modal.Title>
                 <FontAwesomeIcon
                     title="Cerrar ventana"

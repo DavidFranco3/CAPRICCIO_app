@@ -5,7 +5,7 @@ import { listarUsuariosCajeros } from "../../api/usuarios";
 import { withRouter } from "../../utils/withRouter";
 import "../../scss/styles.scss";
 import BasicModal from "../../components/Modal/BasicModal";
-import ListCajas from "../../components/Cajas/ListCajas";
+import ListCajas from "./components/ListCajas/ListCajas";
 import {
   getTokenApi,
   isExpiredToken,
@@ -16,7 +16,7 @@ import { obtenerUsuario } from "../../api/usuarios";
 import { LogsInformativosLogout } from "../../components/Logs/LogsSistema/LogsSistema";
 import { toast } from "react-toastify";
 import { Spinner, Button, Col, Row, Alert } from "react-bootstrap";
-import RegistroCajas from "../../components/Cajas/RegistroCajas";
+import RegistroCajas from "./components/RegistroCajas";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCirclePlus,

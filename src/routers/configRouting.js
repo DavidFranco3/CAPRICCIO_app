@@ -11,7 +11,7 @@ import Ingredientes from "../page/Ingredientes";
 import Historiales from "../page/Historiales";
 import HistorialesNoAdmin from "../page/HistorialesNoAdmin/HistorialesNoAdmin";
 import Cajas from "../page/Cajas";
-import MovimientosCajas from "../page/MovimientosCajas";
+import MovimientosCajas from "../page/Cajas/MovimientosCajas";
 import PedidosClientes from "../page/PedidosClientes";
 import TerminalPedidos from "../page/TerminalPedidos";
 import Clientes from "../page/Clientes";
@@ -19,11 +19,12 @@ import MovimientosIngredientes from "../page/MovimientosIngredientes";
 import Pedidos from "../page/Pedidos/Pedidos";
 
 // Importaciones de productos
-import RegistraProductos from "../components/Productos/RegistraProductos";
-import ModificaProductos from "../components/Productos/ModificaProductos";
+import RegistraProductos from "../page/Productos/components/RegistraProductos/RegistraProductos";
+import ModificaProductos from "../page/Productos/components/ModificaProductos/ModificaProductos";
 import LayoutAdminLTE from "../layout/adminlte/layout";
 import VistaMesas from "../page/Mesas/VistaMesas/VistaMesas";
 import OrdenesMesas from "../components/ordenesMesas/ordeneMesas";
+import Historial from "../page/Historiales/Historial";
 
 
 const configRouting = [
@@ -104,7 +105,7 @@ const configRouting = [
     },
     {
         path: "/Historiales",
-        page: Historiales,
+        page: Historial,
         roles: ["administrador", "vendedor", "mesero"]
     },
     {

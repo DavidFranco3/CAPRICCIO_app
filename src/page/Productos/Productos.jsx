@@ -15,7 +15,7 @@ import {
   listarPaginacionProductosCancelados,
   totalProductosCancelados,
 } from "../../api/productos";
-import ListProductos from "../../components/Productos/ListProductos";
+import ListProductos from "./components/ListProductos";
 import { listarCategorias } from "../../api/categorias";
 import { Spinner, Button, Col, Row, Alert } from "react-bootstrap";
 import BasicModal from "../../components/Modal/BasicModal";
@@ -237,72 +237,40 @@ function Productos(props) {
 
   return (
     <>
-      <Alert style={{ backgroundColor: 'transparent', borderColor: 'transparent'}}>
-
-        <Row>
-          <Col xs={12} md={8} className="titulo">
-            <h1 className="font-bold">Productos</h1>
-          </Col>
-          <Col xs={6} md={4}>
-            <div style={{ float: "right" }}>
-              <Button
+      <div className="card card-outline m-3">
+        <div className="card-header bg-gray">
+          <div className="d-flex justify-content-between align-items-center">
+            <h4 className="font-bold mb-0">Productos</h4>
+            <div className="d-flex align-items-center">
+              <button
                 title="Registrar un nuevo producto"
-                className="btnRegistro"
-                style={{ marginRight: "10px" }}
-                onClick={() => {
-                  registroProductos();
-                }}
+                className="btn btn-outline-light me-2"
+                onClick={registroProductos}
               >
                 <FontAwesomeIcon icon={faCirclePlus} /> Registrar
-              </Button>
-
-              {/** 
-                            <Button
-                                title="Regresar a la pagina anterior"
-                                className="btnRegistro"
-                                style={{ marginRight: '10px' }}
-                                onClick={() => {
-                                    rutaRegreso();
-                                }}
-                            >
-                                <FontAwesomeIcon icon={faArrowCircleLeft} /> Regresar
-                            </Button>*/}
-            </div>
-          </Col>
-        </Row>
-      </Alert>
-
-      <div className="card card-outline card-danger m-3">
-        <div className="card-header">
-          
-            <Row>
-              <Col xs={10} md={10}>
-                <h3 className="tituloSwitch">Estado de los productos</h3>
-              </Col>
-              <Col xs={2} md={2}>
-                <Switch
-                  title={
-                    estadoSwitch === true
-                      ? "Ver productos cancelados"
-                      : "Ver productos activos"
+              </button>
+              <Switch
+                title={
+                  estadoSwitch === true
+                    ? "Ver productos cancelados"
+                    : "Ver productos activos"
+                }
+                checked={estadoSwitch}
+                onChange={() => setEstadoSwitch(!estadoSwitch)}
+                className={`${estadoSwitch ? "bg-teal-900" : "bg-red-600"}
+              relative inline-flex flex-shrink-0 h-[38px] w-[74px] border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75`}
+              >
+                <span className="sr-only">Use setting</span>
+                <span
+                  aria-hidden="true"
+                  className={`${
+                    estadoSwitch ? "translate-x-9" : "translate-x-0"
                   }
-                  checked={estadoSwitch}
-                  onChange={setEstadoSwitch}
-                  className={`${estadoSwitch ? "bg-teal-900" : "bg-red-600"}
-          relative inline-flex flex-shrink-0 h-[38px] w-[74px] border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75 float-end`}
-                >
-                  <span className="sr-only">Use setting</span>
-                  <span
-                    aria-hidden="true"
-                    className={`${
-                      estadoSwitch ? "translate-x-9" : "translate-x-0"
-                    }
-            pointer-events-none inline-block h-[34px] w-[34px] rounded-full bg-white shadow-lg transform ring-0 transition ease-in-out duration-200`}
-                  />
-                </Switch>
-              </Col>
-            </Row>
-          
+                pointer-events-none inline-block h-[34px] w-[34px] rounded-full bg-white shadow-lg transform ring-0 transition ease-in-out duration-200`}
+                />
+              </Switch>
+            </div>
+          </div>
         </div>
         <div className="card-body">
           {listProductos ? (

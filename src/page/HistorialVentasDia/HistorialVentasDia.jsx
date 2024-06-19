@@ -1,7 +1,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { listarDetallesVentasPorDia, listarPaginacionVentasDia, listarConsumoIngredientesDiario } from "../../api/ventas";
 import ListHistorialVentasDia from "../../components/HistorialVentasDia/ListHistorialVentasDia";
-import ListIngredientesConsumidosDia from '../../components/Ingredientes/ListIngredientesConsumidosDia';
+import ListIngredientesConsumidosDia from '../Ingredientes/components/ListIngredientes';
 import 'dayjs/locale/es';
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';

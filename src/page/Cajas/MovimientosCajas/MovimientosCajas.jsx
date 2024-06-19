@@ -1,9 +1,9 @@
 import { useState, useEffect, Suspense } from 'react';
 import { listarPaginacionMovimientos, totalMovimientos } from "../../../api/movimientosCajas";
 import { withRouter } from "../../../utils/withRouter";
-import "../../scss/styles.scss";
+import "../../../scss/styles.scss";
 import BasicModal from "../../../components/Modal/BasicModal";
-import ListMovimientosCajas from "../../../components/MovimientosCajas/ListMovimientosCajas";
+import ListMovimientosCajas from "../components/MovimientosCajas/ListMovimientosCajas";
 import { getTokenApi, isExpiredToken, logoutApi, obtenidusuarioLogueado } from "../../../api/auth";
 import { obtenerUsuario } from "../../../api/usuarios";
 import { LogsInformativosLogout } from '../../../components/Logs/LogsSistema/LogsSistema';
