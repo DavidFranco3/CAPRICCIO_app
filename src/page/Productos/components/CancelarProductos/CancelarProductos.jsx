@@ -10,7 +10,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import 'dayjs/locale/es';
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
-import { LogsInformativos } from "../../../../components/Logs/LogsSistema/LogsSistema";
+import { LogsInformativos } from '../../../Logs/components/LogsSistema/LogsSistema';
 
 function CancelarProductos(props) {
     const { datosProducto, listCategorias, navigate, setShowModal } = props;

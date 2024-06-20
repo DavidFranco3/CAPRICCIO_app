@@ -111,7 +111,7 @@ function ListCajas(props) {
                         <Badge
                             title="Movimientos"
                             bg="primary"
-                            className="editar"
+                            className="editar cursor-pointer"
                             onClick={() => {
                                 movimientos(row.id);
                             }}>

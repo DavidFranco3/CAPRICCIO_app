@@ -1,12 +1,12 @@
 import { useState, useEffect, Suspense } from 'react';
 import { listarDetallesVentasPorSemana, listarPaginacionVentasSemana } from "../../api/ventas";
-import ListHistorialVentasSemana from "../../components/HistorialVentasSemana/ListHistorialVentasSemana";
+import ListHistorialVentasSemana from "./components";
 import 'dayjs/locale/es';
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import { getTokenApi, isExpiredToken, logoutApi, obtenidusuarioLogueado } from "../../api/auth";
 import { obtenerUsuario } from "../../api/usuarios";
-import { LogsInformativosLogout } from '../../components/Logs/LogsSistema/LogsSistema';
+import { LogsInformativosLogout } from '../Logs/components/LogsSistema/LogsSistema';
 import { toast } from "react-toastify";
 import "../../scss/styles.scss";
 import { Spinner } from "react-bootstrap";

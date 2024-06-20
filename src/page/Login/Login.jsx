@@ -8,9 +8,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import LogoLANENA from "../../assets/png/nena1.png";
 import "../../scss/styles.scss";
-import RegistroClientes from '../../components/Usuarios/RegistroClientes';
+import RegistroClientes from '../Usuarios/components/RegistroClientes';
 import BasicModal from "../../components/Modal/BasicModal";
-import { LogsInformativos } from "../../components/Logs/LogsSistema/LogsSistema";
+import { LogsInformativos } from '../Logs/components/LogsSistema/LogsSistema';
 
 function Login({ setRefreshCheckLogin }) {
   const [formData, setFormData] = useState(initialFormValue)

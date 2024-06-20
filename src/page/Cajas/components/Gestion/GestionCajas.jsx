@@ -1,4 +1,4 @@
-import { LogsInformativos } from "../../../../components/Logs/LogsSistema/LogsSistema";
+import { LogsInformativos } from "../../../Logs/components/LogsSistema/LogsSistema";
 import { obtenerCaja, actualizaCaja, cancelarCaja } from "../../../../api/cajas"
 
 // Realiza la modificación de saldos al realizar un movimiento

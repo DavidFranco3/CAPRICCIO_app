@@ -6,7 +6,7 @@ import BasicModal from "../../../components/Modal/BasicModal";
 import ListMovimientosCajas from "../components/MovimientosCajas/ListMovimientosCajas";
 import { getTokenApi, isExpiredToken, logoutApi, obtenidusuarioLogueado } from "../../../api/auth";
 import { obtenerUsuario } from "../../../api/usuarios";
-import { LogsInformativosLogout } from '../../../components/Logs/LogsSistema/LogsSistema';
+import { LogsInformativosLogout } from '../../Logs/components/LogsSistema/LogsSistema';
 import { toast } from "react-toastify";
 import { Spinner, Button, Col, Row, Alert } from "react-bootstrap";
 import RegistroMovimientosCajas from "../components/MovimientosCajas/RegistroMovimientosCajas";

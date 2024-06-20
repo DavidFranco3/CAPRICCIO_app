@@ -19,7 +19,7 @@ import "dayjs/locale/es";
 import localizedFormat from "dayjs/plugin/localizedFormat";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
-import { LogsInformativos } from "../../../../components/Logs/LogsSistema/LogsSistema";
+import { LogsInformativos } from "../../../Logs/components/LogsSistema/LogsSistema";
 import { ocuparDesocuparMesas } from "../../../../api/mesas";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { obtenerComisiones } from "../../../../api/comision";

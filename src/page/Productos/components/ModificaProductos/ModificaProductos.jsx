@@ -11,7 +11,7 @@ import queryString from "query-string";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faX, faSave, faArrowCircleLeft, faCirclePlus, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import "../../../../scss/styles.scss";
-import { LogsInformativos } from '../../../../components/Logs/LogsSistema/LogsSistema';
+import { LogsInformativos } from '../../../Logs/components/LogsSistema/LogsSistema';
 import { useNavigate, useParams } from "react-router-dom";
 
 function ModificaProductos(props) {

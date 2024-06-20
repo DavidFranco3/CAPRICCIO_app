@@ -1,14 +1,10 @@
 import { useState, useEffect, Suspense } from 'react';
 import { listarDetallesVentasPorDia, listarPaginacionVentasDia, listarConsumoIngredientesDiario } from "../../api/ventas";
-import ListHistorialVentasDia from "../../components/HistorialVentasDia/ListHistorialVentasDia";
+import ListHistorialVentasDia from "./components";
 import ListIngredientesConsumidosDia from '../Ingredientes/components/ListIngredientes';
 import 'dayjs/locale/es';
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
-import { getTokenApi, isExpiredToken, logoutApi, obtenidusuarioLogueado } from "../../api/auth";
-import { obtenerUsuario } from "../../api/usuarios";
-import { LogsInformativosLogout } from '../../components/Logs/LogsSistema/LogsSistema';
-import { toast } from "react-toastify";
 import "../../scss/styles.scss";
 import { Spinner, Tabs, Tab, } from "react-bootstrap";
 import Lottie from "react-lottie-player";

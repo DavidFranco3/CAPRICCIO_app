@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import queryString from "query-string";
 import { faX, faSave } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { LogsInformativos } from "../../../../../components/Logs/LogsSistema/LogsSistema";
+import { LogsInformativos } from '../../../../Logs/components/LogsSistema/LogsSistema';
 import { LogCajaActualizacion } from '../Gestion/GestionMovimientos';
 import { getTokenApi, isExpiredToken, logoutApi, obtenidusuarioLogueado } from "../../../../../api/auth";
 import { obtenerUsuario } from "../../../../../api/usuarios";

@@ -10,7 +10,7 @@ import { subeArchivosCloudinary } from "../../../../api/cloudinary";
 import "../../../../scss/styles.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faX, faSave, faArrowCircleLeft, faCirclePlus, faTrashCan } from "@fortawesome/free-solid-svg-icons";
-import { LogsInformativos } from '../../../../components/Logs/LogsSistema/LogsSistema';
+import { LogsInformativos } from '../../../Logs/components/LogsSistema/LogsSistema';
 import { useNavigate } from "react-router-dom";
 
 function RegistraProductos(props) {

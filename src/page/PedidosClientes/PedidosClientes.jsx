@@ -8,7 +8,7 @@ import {
 import { withRouter } from "../../utils/withRouter";
 import "../../scss/styles.scss";
 import { Alert, Col, Row, Button, Spinner } from "react-bootstrap";
-import ListPedidos from "../../components/PedidosClientes/ListPedidos";
+import ListPedidos from "./components/ListPedidos";
 import {
   getTokenApi,
   isExpiredToken,
@@ -16,7 +16,7 @@ import {
   obtenidusuarioLogueado,
 } from "../../api/auth";
 import { obtenerUsuario } from "../../api/usuarios";
-import { LogsInformativosLogout } from "../../components/Logs/LogsSistema/LogsSistema";
+import { LogsInformativosLogout } from "../Logs/components/LogsSistema/LogsSistema";
 import { toast } from "react-toastify";
 import Lottie from "react-lottie-player";
 import AnimacionLoading from "../../assets/json/loading.json";
@@ -28,7 +28,7 @@ import {
   faArrowCircleLeft,
   faQuestion,
 } from "@fortawesome/free-solid-svg-icons";
-import Slider from "../../components/PedidosClientes/Slider";
+import Slider from "./components/Slider";
 import BasicModal from "../../components/Modal/BasicModal";
 
 function PedidosClientes(props) {
@@ -223,56 +223,47 @@ function PedidosClientes(props) {
 
   return (
     <>
-      <div className="card card-outline card-danger m-3">
-        <div className="card-header">
-          <Alert
-            style={{
-              backgroundColor: "transparent",
-              borderColor: "transparent",
-            }}
-          >
-            <Row>
-              <Col xs={12} md={4} className="titulo">
-                <h4 className="font-bold">Pedidos de clientes</h4>
-              </Col>
-              <Col xs={6} md={8}>
-                <div style={{ float: "right" }}>
-                  {estadoUsuario === "false" && tipoUsuario === "externo" && (
-                    <>
-                      <Button
-                        title="Ir a la terminal de pedidos"
-                        className="btnRegistro"
-                        style={{ marginRight: "10px" }}
-                        onClick={() => {
-                          rutaRegistroVenta();
-                        }}
-                      >
-                        <FontAwesomeIcon icon={faCirclePlus} /> Nuevo pedido
-                      </Button>
-                      <Button
-                        title="Ver ayuda"
-                        className="btnRegistro"
-                        style={{ marginRight: "10px" }}
-                        onClick={() => ayuda(<Slider />)}
-                      >
-                        <FontAwesomeIcon icon={faQuestion} /> Ayuda
-                      </Button>
-                    </>
-                  )}
-                  <Button
-                    title="Regresar a la pagina anterior"
-                    className="btnRegistro"
-                    style={{ marginRight: "10px" }}
-                    onClick={() => {
-                      rutaRegreso();
-                    }}
-                  >
-                    <FontAwesomeIcon icon={faArrowCircleLeft} /> Regresar
-                  </Button>
-                </div>
-              </Col>
-            </Row>
-          </Alert>
+      <div className="card card-outline m-3">
+        <div className="card-header bg-gray">
+          <div className="d-flex justify-content-between align-items-center">
+            <h4 className="font-bold mb-0">Pedidos de clientes</h4>
+            <div className="d-flex align-items-center">
+              <div style={{ float: "right" }}>
+                {estadoUsuario === "false" && tipoUsuario === "externo" && (
+                  <>
+                    <button
+                      title="Ir a la terminal de pedidos"
+                      className="btn btn-outline-light "
+                      style={{ marginRight: "10px" }}
+                      onClick={() => {
+                        rutaRegistroVenta();
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faCirclePlus} /> Nuevo pedido
+                    </button>
+                    <button
+                      title="Ver ayuda"
+                      className="btn btn-outline-light"
+                      style={{ marginRight: "10px" }}
+                      onClick={() => ayuda(<Slider />)}
+                    >
+                      <FontAwesomeIcon icon={faQuestion} /> Ayuda
+                    </button>
+                  </>
+                )}
+                <button
+                  title="Regresar a la pagina anterior"
+                  className="btn btn-outline-light"
+                  style={{ marginRight: "10px" }}
+                  onClick={() => {
+                    rutaRegreso();
+                  }}
+                >
+                  <FontAwesomeIcon icon={faArrowCircleLeft} /> Regresar
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
         <div className="card-body">
           {listPedidos ? (

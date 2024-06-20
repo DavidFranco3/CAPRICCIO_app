@@ -8,8 +8,8 @@ import {
 import { withRouter } from "../../utils/withRouter";
 import "../../scss/styles.scss";
 import { Alert, Col, Row, Button, Spinner } from "react-bootstrap";
-import RegistrarUsuario from "../../components/Usuarios/RegistroUsuarios";
-import ListUsuarios from "../../components/Usuarios/ListUsuarios";
+import RegistrarUsuario from "./components/RegistroUsuarios";
+import ListUsuarios from "./components/ListUsuarios";
 import BasicModal from "../../components/Modal/BasicModal";
 import {
   getTokenApi,
@@ -18,7 +18,7 @@ import {
   obtenidusuarioLogueado,
 } from "../../api/auth";
 import { obtenerUsuario } from "../../api/usuarios";
-import { LogsInformativosLogout } from "../../components/Logs/LogsSistema/LogsSistema";
+import { LogsInformativosLogout } from "../Logs/components/LogsSistema/LogsSistema";
 import { toast } from "react-toastify";
 import Lottie from "react-lottie-player";
 import AnimacionLoading from "../../assets/json/loading.json";
@@ -208,18 +208,14 @@ function Usuarios(props) {
 
   return (
     <>
-      <Alert
-        style={{ backgroundColor: "transparent", borderColor: "transparent" }}
-      >
-        <Row>
-          <Col xs={12} md={4} className="titulo">
-            <h1 className="font-bold">Usuarios</h1>
-          </Col>
-          <Col xs={6} md={8}>
-            <div style={{ float: "right" }}>
-              <Button
+      <div className="card card-outline m-3">
+        <div className="card-header bg-gray">
+          <div className="d-flex justify-content-between align-items-center">
+            <h4 className="mb-0 font-bold">Usuarios</h4>
+            <div className="d-flex align-items-center">
+              <button
                 title="Registrar un nuevo usuario"
-                className="btnRegistro"
+                className="btn btn-outline-light"
                 style={{ marginRight: "10px" }}
                 onClick={() => {
                   registroUsuarios(
@@ -232,19 +228,7 @@ function Usuarios(props) {
                 }}
               >
                 <FontAwesomeIcon icon={faCirclePlus} /> Registrar
-              </Button>
-            </div>
-          </Col>
-        </Row>
-      </Alert>
-
-      <div className="card card-outline card-danger m-3">
-        <div className="card-header">
-          <Row>
-            <Col xs={12} md={8}>
-              <h3 className="tituloSwitch">Estado de los usuarios</h3>
-            </Col>
-            <Col xs={6} md={4}>
+              </button>
               <Switch
                 title={
                   estadoSwitch === true
@@ -265,8 +249,8 @@ function Usuarios(props) {
             pointer-events-none inline-block h-[34px] w-[34px] rounded-full bg-white shadow-lg transform ring-0 transition ease-in-out duration-200`}
                 />
               </Switch>
-            </Col>
-          </Row>
+            </div>
+          </div>
         </div>
         <div className="card-body">
           {listUsuarios ? (

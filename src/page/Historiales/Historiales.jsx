@@ -6,7 +6,7 @@ import { faArrowCircleLeft } from "@fortawesome/free-solid-svg-icons";
 import { withRouter } from "../../utils/withRouter";
 import { getTokenApi, isExpiredToken, logoutApi, obtenidusuarioLogueado } from "../../api/auth";
 import { obtenerUsuario } from "../../api/usuarios";
-import { LogsInformativosLogout } from '../../components/Logs/LogsSistema/LogsSistema';
+import { LogsInformativosLogout } from '../Logs/components/LogsSistema/LogsSistema';
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import Ventas from '../Ventas';

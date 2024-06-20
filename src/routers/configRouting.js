@@ -4,7 +4,7 @@ import Productos from "../page/Productos";
 import Categorias from "../page/Categorias";
 import Error404 from "../page/Error404";
 import TerminalPV from "../page/TerminalPV";
-import ModificarTerminalPV from "../page/ModificarTerminalPV";
+// import ModificarTerminalPV from "../page/ModificarTerminalPV";
 import Usuarios from "../page/Usuarios";
 import Logs from "../page/Logs";
 import Ingredientes from "../page/Ingredientes";
@@ -13,7 +13,7 @@ import HistorialesNoAdmin from "../page/HistorialesNoAdmin/HistorialesNoAdmin";
 import Cajas from "../page/Cajas";
 import MovimientosCajas from "../page/Cajas/MovimientosCajas";
 import PedidosClientes from "../page/PedidosClientes";
-import TerminalPedidos from "../page/TerminalPedidos";
+// import TerminalPedidos from "../page/TerminalPedidos";
 import Clientes from "../page/Clientes";
 import MovimientosIngredientes from "../page/MovimientosIngredientes";
 import Pedidos from "../page/Pedidos/Pedidos";
@@ -23,7 +23,6 @@ import RegistraProductos from "../page/Productos/components/RegistraProductos/Re
 import ModificaProductos from "../page/Productos/components/ModificaProductos/ModificaProductos";
 import LayoutAdminLTE from "../layout/adminlte/layout";
 import VistaMesas from "../page/Mesas/VistaMesas/VistaMesas";
-import OrdenesMesas from "../components/ordenesMesas/ordeneMesas";
 import Historial from "../page/Historiales/Historial";
 
 
@@ -43,11 +42,11 @@ const configRouting = [
         page: Clientes,
         roles: ["administrador", "vendedor"]
     },
-    {
-        path: "/TerminalPedidos",
-        page: TerminalPedidos,
-        roles: ["cliente"]
-    },
+    // {
+    //     path: "/TerminalPedidos",
+    //     page: TerminalPedidos,
+    //     roles: ["cliente"]
+    // },
     {
         path: "/Cajas",
         page: Cajas,
@@ -78,11 +77,11 @@ const configRouting = [
         page: TerminalPV,
         roles: ["administrador", "vendedor", "mesero"]
     },
-    {
-        path: "/ModificarTerminalPV/:id",
-        page: ModificarTerminalPV,
-        roles: ["administrador", "vendedor", "mesero"]
-    },
+    // {
+    //     path: "/ModificarTerminalPV/:id",
+    //     page: ModificarTerminalPV,
+    //     roles: ["administrador", "vendedor", "mesero"]
+    // },
     {
         path: "/Usuarios",
         page: Usuarios,

@@ -1,13 +1,13 @@
 import { useState, useEffect, Suspense } from 'react';
 import { listarVentasDia } from "../../api/ventas";
-import GraficaVentasDia from "../../components/HistoricoVentasDia/GraficaVentasDia";
-import GraficaProductosDia from '../../components/HistoricoVentasDia/GraficaProductosDia';
+import GraficaVentasDia from "../HistoricoVentasDia/components/GraficaVentasDia";
+import GraficaProductosDia from '../HistoricoVentasDia/components/GraficaProductosDia';
 import 'dayjs/locale/es';
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import { getTokenApi, isExpiredToken, logoutApi, obtenidusuarioLogueado } from "../../api/auth";
 import { obtenerUsuario } from "../../api/usuarios";
-import { LogsInformativosLogout } from '../../components/Logs/LogsSistema/LogsSistema';
+import { LogsInformativosLogout } from '../Logs/components/LogsSistema/LogsSistema';
 import { toast } from "react-toastify";
 import "../../scss/styles.scss";
 import { Spinner, Tabs, Tab, Alert, Row, Col } from "react-bootstrap";

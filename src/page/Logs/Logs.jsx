@@ -2,7 +2,7 @@ import { useState, useEffect, Suspense } from "react";
 import { Alert, Col, Row, Button, Spinner } from "react-bootstrap";
 import { withRouter } from "../../utils/withRouter";
 import { listarLogsPaginacion, totalLogs } from "../../api/logsGenerales";
-import ListLogs from "../../components/Logs/ListLogs";
+import ListLogs from "./components/ListLogs";
 import "../../scss/styles.scss";
 import {
   getTokenApi,
@@ -11,7 +11,7 @@ import {
   obtenidusuarioLogueado,
 } from "../../api/auth";
 import { obtenerUsuario } from "../../api/usuarios";
-import { LogsInformativosLogout } from "../../components/Logs/LogsSistema/LogsSistema";
+import { LogsInformativosLogout } from "./components/LogsSistema/LogsSistema";
 import { toast } from "react-toastify";
 import Lottie from "react-lottie-player";
 import AnimacionLoading from "../../assets/json/loading.json";
@@ -143,9 +143,9 @@ function Logs(props) {
   return (
     <>
       
-      <div className="card card-outline card-danger m-3">
-        <div className="card-header">
-          <h3 className="font-bold">Logs del sistema</h3>
+      <div className="card card-outline  m-3">
+        <div className="card-header bg-gray">
+          <h4 className="font-bold mb-0">Logs del sistema</h4>
         </div>
         <div className="card-body">
           {listLog ? (

@@ -6,7 +6,7 @@ import "../../../scss/styles.scss";
 import { toast } from "react-toastify";
 import { ocuparDesocuparMesas } from "../../../api/mesas";
 import { cobrarTicket, listarVentas, obtenerVentas, registraVentas } from "../../../api/ventas";
-import { LogsInformativos } from "../../../components/Logs/LogsSistema/LogsSistema";
+import { LogsInformativos } from "../../Logs/components/LogsSistema/LogsSistema";
 
 function DatosExtraVenta(props) {
   const { setShowModal, isVenta, comision } = props;

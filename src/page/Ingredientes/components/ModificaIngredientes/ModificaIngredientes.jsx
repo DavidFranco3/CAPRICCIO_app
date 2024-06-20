@@ -7,7 +7,7 @@ import { actualizaIngrediente } from '../../../../api/ingredientes';
 import queryString from "query-string";
 import { faX, faSave } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { LogsInformativos } from '../../../../components/Logs/LogsSistema/LogsSistema';
+import { LogsInformativos } from '../../../Logs/components/LogsSistema/LogsSistema';
 
 function ModificaIngredientes(props) {
     const { datosIngredientes, navigate, setShowModal } = props;

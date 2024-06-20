@@ -3,8 +3,7 @@ import { listarPaginacionClientes, totalClientes } from "../../api/usuarios";
 import { withRouter } from "../../utils/withRouter";
 import "../../scss/styles.scss";
 import { Alert, Col, Row, Button, Spinner } from "react-bootstrap";
-import ListClientes from "../../components/Clientes/ListClientes";
-import BasicModal from "../../components/Modal/BasicModal";
+import ListClientes from "./components/ListClientes";
 import {
   getTokenApi,
   isExpiredToken,
@@ -12,7 +11,7 @@ import {
   obtenidusuarioLogueado,
 } from "../../api/auth";
 import { obtenerUsuario } from "../../api/usuarios";
-import { LogsInformativosLogout } from "../../components/Logs/LogsSistema/LogsSistema";
+import { LogsInformativosLogout } from "../Logs/components/LogsSistema/LogsSistema";
 import { toast } from "react-toastify";
 import Lottie from "react-lottie-player";
 import AnimacionLoading from "../../assets/json/loading.json";
@@ -144,9 +143,9 @@ function Clientes(props) {
   return (
     <>
       
-      <div className="card card-outline card-danger m-3">
-        <div className="card-header">
-        <h3 className="font-bold">Clientes</h3>
+      <div className="card card-outline m-3">
+        <div className="card-header bg-gray">
+          <h4 className="mb-0 font-bold">Clientes</h4>
         </div>
         <div className="card-body">
           {listClientes ? (

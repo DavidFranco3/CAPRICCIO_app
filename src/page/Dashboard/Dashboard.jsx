@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { Card, Image } from 'react-bootstrap';
 import { obtenerUsuario } from "../../api/usuarios";
 import "../../scss/styles.scss";
-import { LogsInformativosLogout } from '../../components/Logs/LogsSistema/LogsSistema';
+import { LogsInformativosLogout } from '../Logs/components/LogsSistema/LogsSistema';
 // Importaciones de imagenes del dashboard
 import LogoVentas from '../../assets/png/ventas.png';
 import LogoHistorial from '../../assets/png/facturas.png';

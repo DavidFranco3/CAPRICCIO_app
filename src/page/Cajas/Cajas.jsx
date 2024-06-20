@@ -13,7 +13,6 @@ import {
   obtenidusuarioLogueado,
 } from "../../api/auth";
 import { obtenerUsuario } from "../../api/usuarios";
-import { LogsInformativosLogout } from "../../components/Logs/LogsSistema/LogsSistema";
 import { toast } from "react-toastify";
 import { Spinner, Button, Col, Row, Alert } from "react-bootstrap";
 import RegistroCajas from "./components/RegistroCajas";
@@ -174,44 +173,30 @@ function Cajas(props) {
 
   return (
     <>
-      <Alert
-        style={{ backgroundColor: "transparent", borderColor: "transparent" }}
-      >
-        <Row>
-          <Col xs={12} md={4} className="titulo">
-            <h1 className="font-bold">Cajas</h1>
-          </Col>
-          <Col xs={6} md={8}>
-            <div style={{ float: "right" }}>
-              {
-                <>
-                  <Button
-                    title="Registrar una nueva cajaa"
-                    className="btnRegistro"
-                    style={{ marginRight: "10px" }}
-                    onClick={() => {
-                      registroCajas(
-                        <RegistroCajas
-                          setShowModal={setShowModal}
-                          listUsuarios={listUsuarios}
-                          location={location}
-                          navigate={navigate}
-                        />
-                      );
-                    }}
-                  >
-                    <FontAwesomeIcon icon={faCirclePlus} /> Registrar
-                  </Button>
-                </>
-              }
+      <div className="card card-outline m-3">
+        <div className="card-header bg-gray">
+          <div className="d-flex justify-content-between align-items-center">
+            <h4 className="mb-0 font-bold">Cajas</h4>
+            <div className="d-flex align-items-center">
+              <button
+                title="Registrar una nueva cajaa"
+                className="btn btn-outline-light"
+                style={{ marginRight: "10px" }}
+                onClick={() => {
+                  registroCajas(
+                    <RegistroCajas
+                      setShowModal={setShowModal}
+                      listUsuarios={listUsuarios}
+                      location={location}
+                      navigate={navigate}
+                    />
+                  );
+                }}
+              >
+                <FontAwesomeIcon icon={faCirclePlus} /> Registrar
+              </button>
             </div>
-          </Col>
-        </Row>
-      </Alert>
-
-      <div className="card card-outline card-danger m-3">
-        <div className="card-header">
-        Cajas
+          </div>
         </div>
         <div className="card-body">
           {listCajas ? (

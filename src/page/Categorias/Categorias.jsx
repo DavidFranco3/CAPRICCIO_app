@@ -8,7 +8,7 @@ import {
 import { withRouter } from "../../utils/withRouter";
 import "../../scss/styles.scss";
 import BasicModal from "../../components/Modal/BasicModal";
-import ListCategorias from "../../components/Categorias/ListCategorias";
+import ListCategorias from "./components/ListCategorias";
 import {
   getTokenApi,
   isExpiredToken,
@@ -16,10 +16,10 @@ import {
   obtenidusuarioLogueado,
 } from "../../api/auth";
 import { obtenerUsuario } from "../../api/usuarios";
-import { LogsInformativosLogout } from "../../components/Logs/LogsSistema/LogsSistema";
+import { LogsInformativosLogout } from "../Logs/components/LogsSistema/LogsSistema";
 import { toast } from "react-toastify";
 import { Spinner, Button, Col, Row, Alert } from "react-bootstrap";
-import RegistroCategorias from "../../components/Categorias/RegistroCategorias";
+import RegistroCategorias from "./components/RegistroCategorias";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCirclePlus,

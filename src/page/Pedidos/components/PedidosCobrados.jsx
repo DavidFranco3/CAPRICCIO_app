@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { listarVentasDia } from "../../../api/ventas";
 import DataTable from "react-data-table-component";
 import BasicModal from "../../../components/Modal/BasicModal";
-import ModalProductos from "../../../components/ordenesMesas/modalProductos";
+import ModalProductos from "./modalProductos";
 import dayjs from "dayjs";
 import TicketView from "../../TerminalPV/components/Tiquet/TicketView";
 

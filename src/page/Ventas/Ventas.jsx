@@ -3,10 +3,10 @@ import { listarPaginacionVentasActivas, totalVentasActivas, listarPaginacionVent
 import { withRouter } from "../../utils/withRouter";
 import "../../scss/styles.scss";
 import { Alert, Col, Row, Button, Spinner, Form } from "react-bootstrap";
-import ListVentas from "../../components/Ventas/ListVentas";
+import ListVentas from "./components/ListVentas";
 import { getTokenApi, isExpiredToken, logoutApi, obtenidusuarioLogueado } from "../../api/auth";
 import { obtenerUsuario } from "../../api/usuarios";
-import { LogsInformativosLogout } from '../../components/Logs/LogsSistema/LogsSistema';
+import { LogsInformativosLogout } from '../Logs/components/LogsSistema/LogsSistema';
 import { toast } from "react-toastify";
 import Lottie from "react-lottie-player";
 import AnimacionLoading from "../../assets/json/loading.json";

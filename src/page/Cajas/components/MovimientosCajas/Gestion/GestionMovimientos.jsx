@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { LogsInformativos } from "../../../../../components/Logs/LogsSistema/LogsSistema";
+import { LogsInformativos } from '../../../../Logs/components/LogsSistema/LogsSistema';
 import { registraMovimientos } from "../../../../../api/movimientosCajas";
 import { getTokenApi, isExpiredToken, logoutApi, obtenidusuarioLogueado } from "../../../../../api/auth";
 import { obtenerUsuario } from "../../../../../api/usuarios";
