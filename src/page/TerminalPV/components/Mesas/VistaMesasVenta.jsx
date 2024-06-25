@@ -58,7 +58,7 @@ const VistaMesasVenta = () => {
     return (
         <>
         <div className="card card-outline m-3">
-            <div className=" card-header py-3 bg-gray">
+            <div className=" card-header bg-gray">
                     <div className="d-flex justify-content-between align-items-center">
                         <h4 className="mb-0 font-bold">Ordenes</h4>
                         <div className="col-md-2">
@@ -83,7 +83,7 @@ const VistaMesasVenta = () => {
                 <div className="divMesasView">
                     {listMesas.map((mesa, index) => (
                     <div
-                        class="info-box border-2"
+                        class="info-box border-2 cursor-pointer"
                         onClick={() =>
                             clicMesa(
                                 <TerminalPVprev

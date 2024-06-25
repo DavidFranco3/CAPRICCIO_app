@@ -44,7 +44,8 @@ import {
     ENDPOINTObtenerVentasTotalesDelDia,
     ENDPOINTActualizarProdsTicket,
     ENDPOINTCobrarTicket,
-    ENDPOINTListarPedidosPendientes
+    ENDPOINTListarPedidosPendientes,
+    ENDPOINTListarVentasRangoDeFechas
 } from "./endpoints";
 import axios from 'axios';
 import { getTokenApi } from "./auth";
@@ -312,6 +313,18 @@ export async function listarPaginacionVentasDia(pagina, limite, dia) {
         }
     };
     return await axios.get(API_HOST + ENDPOINTListarPaginandoVentasDia + `/?pagina=${pagina}&&limite=${limite}&&dia=${dia}`, config);
+}
+
+// ventas por rango de  ENDPOINTListarVentasRangoDeFechas
+export async function listarVentasRangoFechas(fechaInicial, fechaFinal) {
+    const config = {
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${getTokenApi()}`
+        }
+    };
+    return await axios.get(API_HOST + ENDPOINTListarVentasRangoDeFechas + `/?fechaInicial=${fechaInicial}&&fechaFinal=${fechaFinal}`, config);
 }
 
 // Listar las ventas de un dia especifico paginandolas

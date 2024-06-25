@@ -58,7 +58,7 @@ const Menu = ({ datosUsuario }) => {
           {/* Sidebar Menu */}
           <nav className="mt-2">
             <ul
-              className="nav nav-pills nav-sidebar flex-column"
+              className="nav nav-pills nav-sidebar flex-column cursor-pointer"
               data-widget="treeview"
               role="menu"
               data-accordion="false"

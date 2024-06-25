@@ -5,6 +5,8 @@ import RegistoMesas from "../RegistroMesas/RegistoMesas";
 import { obtenerMesas } from "../../../api/mesas";
 import { toast } from "react-toastify";
 import TerminalPVprev from "../../TerminalPV/TerminalPVprev";
+import { Badge } from "react-bootstrap";
+import EditarMesa from "../EditarMesas/EditarMesa";
 
 const VistaMesas = () => {
 
@@ -46,6 +48,12 @@ const VistaMesas = () => {
     setShowModal(true);
   };
 
+  const editarMesa = (content) => {
+    setTitulosModal("Editar mesa");
+    setContentModal(content);
+    setShowModal(true);
+  }
+
   return (
     <>
       <div className="card card-outline m-3">
@@ -69,7 +77,13 @@ const VistaMesas = () => {
         <div className="divMesasView">
             {listMesas.map((mesa, index) => (
               <div
-                class="info-box"
+                className="info-box cursor-pointer"
+                onClick={() => editarMesa(
+                  <EditarMesa 
+                    setShow={setShowModal}
+                    mesaId={mesa.id}
+                  />)
+                }
               >
                 <span class= "info-box-icon bg-blue">
                   <i class="fas fa-utensils"></i>

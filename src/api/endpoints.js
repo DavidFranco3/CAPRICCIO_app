@@ -56,6 +56,7 @@ export const ENDPOINTListarVentas = "/ventas/listar";
 export const ENDPOINTListarVentasDia = "/ventas/listarVentasDia";
 export const ENDPOINTListarVentasMes = "/ventas/listarVentasMes";
 export const ENDPOINTListarVentasSemana = "/ventas/listarVentasSemana";
+export const ENDPOINTListarVentasRangoDeFechas = "/ventas/listarVentasRangoFechas"
 export const ENDPOINTListarPaginandoVentas = "/ventas/listarPaginando";
 export const ENDPOINTTotalVentas = "/ventas/totalVentas";
 export const ENDPOINTListarPaginandoVentasActivas = "/ventas/listarPaginandoActivas";
@@ -186,5 +187,7 @@ export const ENDPOINTCancelarMovimientosCajas = "/movimientosCajas/cancelar";
 // Mesas
 export const ENDPOINTRegistroMesas = "/mesas/registro";
 export const ENDPOINTObtenerMesas = "/mesas/listar";
+export const ENDPOINTOBtenerMesa = "/mesas/obtener";
 export const ENDPOINTOcuparDesocuparMesas = "/mesas/ocuparDesocupar";
-
+export const ENDPOINTEditarMesa = "/mesas/actualizar";
+export const ENDPOINTEliminarMesa = "/mesas/eliminar";
