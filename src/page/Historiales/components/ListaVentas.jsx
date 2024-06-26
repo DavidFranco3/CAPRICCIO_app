@@ -8,8 +8,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 import BasicModal from "../../../components/Modal/BasicModal";
 import DetallesListaVentas from "./DetallesListaVentas";
-import ReportePDF from "./GenerarDocs/ReportePDF";
 import { listarCategorias } from "../../../api/categorias";
+import ReporteCSV from "./GenerarDocs/ReportePDF";
 
 function ListVentas(props) {
   console.log(props);
@@ -217,7 +217,7 @@ function ListVentas(props) {
         <Col>
           <Container className="p-0" text="black" border="0">
             <div className="d-flex justify-content-around">
-              <ReportePDF
+              <ReporteCSV
                 listCategorias={listCategorias}
                 listVentas={listVentas}
                 fechaInicial={fechaInicial}

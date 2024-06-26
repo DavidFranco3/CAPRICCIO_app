@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect } from "react";
+import { toast } from "react-toastify";
 
-function ReportePDF(params) {
+function ReporteCSV(params) {
   const { listCategorias, listVentas, fechaInicial, fechaFinal } = params;
   const [categoriasContadas, setCategoriasContadas] = useState([]);
 
@@ -44,52 +45,56 @@ function ReportePDF(params) {
   };
 
   const generateCSV = () => {
-    const headerKeys = Object.keys(headers);
-    const headerLabels = headerKeys.map((key) => headers[key]);
+    if (listVentas.length === 0) {
+      toast.warning("No hay lista para descargar");
+    } else {
+      const headerKeys = Object.keys(headers);
+      const headerLabels = headerKeys.map((key) => headers[key]);
 
-    const csvContent = [
-      headerLabels.join(","),
-      ...listVentas.flatMap((venta) =>
-        venta.productos.map((producto) => {
-          return headerKeys
-            .map((key) => {
-              if (key in producto) {
-                return producto[key];
-              }
-              return venta[key];
-            })
-            .join(",");
-        })
-      ),
-    ];
+      const csvContent = [
+        headerLabels.join(","),
+        ...listVentas.flatMap((venta) =>
+          venta.productos.map((producto) => {
+            return headerKeys
+              .map((key) => {
+                if (key in producto) {
+                  return producto[key];
+                }
+                return venta[key];
+              })
+              .join(",");
+          })
+        ),
+      ];
 
-    // Agregar totales por categoría al final del CSV
-    csvContent.push("\nTotales por categoría:");
-    categoriasContadas.forEach((categoria) => {
-      csvContent.push(`${categoria.nombre}, ${categoria.cantProds}`);
-    });
+      // Agregar totales por categoría al final del CSV
+      csvContent.push("\nTotales por categoría:");
+      categoriasContadas.forEach((categoria) => {
+        csvContent.push(`${categoria.nombre}, ${categoria.cantProds}`);
+      });
 
-    // Sumar el total de todas las ventas y agregarlo al final del CSV
-    const totalVentas = listVentas.reduce(
-      (total, venta) => total + venta.total,
-      0
-    );
-    csvContent.push(`\nTotal de todas las ventas:, ${totalVentas}`);
+      // Sumar el total de todas las ventas y agregarlo al final del CSV
+      const totalVentas = listVentas.reduce(
+        (total, venta) => total + venta.total,
+        0
+      );
+      csvContent.push(`\nTotal de todas las ventas:, ${totalVentas}`);
 
-    const blob = new Blob([csvContent.join("\n")], {
-      type: "text/csv;charset=utf-8;",
-    });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute(
-      "download",
-      `reporte_ventas_${fechaInicial}_a_${fechaFinal}.csv`
-    );
-    link.style.visibility = "hidden";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+      const blob = new Blob([csvContent.join("\n")], {
+        type: "text/csv;charset=utf-8;",
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute(
+        "download",
+        `reporte_ventas_${fechaInicial}_a_${fechaFinal}.csv`
+      );
+      link.style.visibility = "hidden";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   };
 
   return (
@@ -100,4 +105,4 @@ function ReportePDF(params) {
     </div>
   );
 }
-export default ReportePDF;
+export default ReporteCSV;
