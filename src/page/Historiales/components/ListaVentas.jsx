@@ -186,7 +186,7 @@ function ListVentas(props) {
       cantProds: 0, // Reiniciar el conteo antes de sumar los productos
     }));
 
-    listVentas.forEach((venta) => {
+    ventasFiltradas.forEach((venta) => {
       venta.productos.forEach((producto) => {
         const encontrado = categoriasActualizadas.find(
           (cat) => cat.id === producto.categoria
