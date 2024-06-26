@@ -10,6 +10,7 @@ import BasicModal from "../../../components/Modal/BasicModal";
 import DetallesListaVentas from "./DetallesListaVentas";
 import { listarCategorias } from "../../../api/categorias";
 import ReporteCSV from "./GenerarDocs/ReportePDF";
+import { Bar } from "react-chartjs-2";
 
 function ListVentas(props) {
   console.log(props);
@@ -179,6 +180,53 @@ function ListVentas(props) {
     },
   ];
 
+  const contarProds = () => {
+    const categoriasActualizadas = listCategorias.map((categoria) => ({
+      ...categoria,
+      cantProds: 0, // Reiniciar el conteo antes de sumar los productos
+    }));
+
+    listVentas.forEach((venta) => {
+      venta.productos.forEach((producto) => {
+        const encontrado = categoriasActualizadas.find(
+          (cat) => cat.id === producto.categoria
+        );
+        if (encontrado) {
+          encontrado.cantProds += 1;
+        }
+      });
+    });
+
+    return categoriasActualizadas;
+  };
+
+  const [categoriasContadas, setCategoriasContadas] = useState([]);
+
+  useEffect(() => {
+    setCategoriasContadas(contarProds());
+  }, [listCategorias, listVentas]);
+
+  const chartData = {
+    labels: categoriasContadas.map((cat) => cat.nombre),
+    datasets: [
+      {
+        label: "Productos Vendidos",
+        data: categoriasContadas.map((cat) => cat.cantProds),
+        backgroundColor: "rgba(75, 192, 192, 0.2)",
+        borderColor: "rgba(75, 192, 192, 1)",
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const chartOptions = {
+    scales: {
+      y: {
+        beginAtZero: true,
+      },
+    },
+  };
+
   return (
     <>
       <Row>
@@ -231,7 +279,7 @@ function ListVentas(props) {
                 onClick={() =>
                   detallesListaVentas(
                     <DetallesListaVentas
-                      listCategorias={listCategorias}
+                      listCategorias={categoriasContadas}
                       listVentas={listVentas}
                       setShow={setShowModal}
                       fechaInicial={fechaInicial}
@@ -246,12 +294,23 @@ function ListVentas(props) {
           </Container>
         </Col>
       </Row>
+      <Row>
+        <DataTable
+          columns={columns}
+          data={ventasFiltradas}
+          customStyles={estilos}
+          pagination
+          paginationPerPage={10} // Cambia este número según tus necesidades
+          paginationRowsPerPageOptions={[5, 10, 20, 30]} // Opciones para filas por página
+        />
+      </Row>
 
-      <DataTable
-        columns={columns} // Cambia content a columns
-        data={ventasFiltradas}
-        customStyles={estilos}
-      />
+      <hr className="mt-0" />
+      <Row className="d-flex justify-content-center">
+        <div className="d-flex justify-content-center w-50">
+          <Bar data={chartData} options={chartOptions} />
+        </div>
+      </Row>
 
       <BasicModal show={showModal} setShow={setShowModal} title={titulosModal}>
         {contentModal}
