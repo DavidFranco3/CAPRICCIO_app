@@ -31,6 +31,7 @@ function TerminalPv(props) {
   const tipoPedido = props.tipoPedido;
   const hacerPedido = props.hacerPedido;
   const mesaClick = props.mesaClick;
+  const tpv = props.tpv;
 
   const enrutamiento = useNavigate();
 
@@ -113,13 +114,14 @@ function TerminalPv(props) {
   const cargarVentaPorTicket = (idTicket) => {
     try {
       obtenerVentas(idTicket)
-      .then((response) => {
-        const { data } = response;
-        console.log(response);
-        setTicketItems(data[0].productos);
-      }).catch((e) => {
-        console.log(e);
-      });
+        .then((response) => {
+          const { data } = response;
+          console.log(response);
+          setTicketItems(data[0].productos);
+        })
+        .catch((e) => {
+          console.log(e);
+        });
     } catch (e) {
       console.log(e);
     }
@@ -277,9 +279,10 @@ function TerminalPv(props) {
                       mesaId={props.mesaId}
                       idTicket={idTicket}
                       setShow={props.setShow}
-                      tipoPedido = {tipoPedido}
-                      hacerPedido = {hacerPedido}
-                      mesaClick = {mesaClick}
+                      tipoPedido={tipoPedido}
+                      hacerPedido={hacerPedido}
+                      mesaClick={mesaClick}
+                      tpv={tpv}
                     />
                   </div>
                 </div>

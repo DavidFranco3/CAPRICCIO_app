@@ -14,7 +14,6 @@ import dayjs from "dayjs";
 import {
   Dropdown,
   DropdownButton,
-  DropdownItem,
   FormControl,
   InputGroup,
 } from "react-bootstrap";
@@ -24,8 +23,8 @@ function Historial(props) {
   const hoy = dayjs();
 
   const [datosUsuario, setDatosUsuario] = useState("");
-  const [fechaInicial, setFechaInicial] = useState(hoy.format('YYYY-MM-DD'));
-  const [fechaFinal, setFechaFinal] = useState(hoy.format('YYYY-MM-DD'));
+  const [fechaInicial, setFechaInicial] = useState(hoy.format("YYYY-MM-DD"));
+  const [fechaFinal, setFechaFinal] = useState(hoy.format("YYYY-MM-DD"));
 
   const obtenerDatosUsuario = () => {
     try {
@@ -70,35 +69,41 @@ function Historial(props) {
 
   const [filtros, setFiltros] = useState({
     efectivo: false,
-    tdcTransf: false,
+    tdc: false,
+    transferencia: false,
   });
 
-  const handleSelectMes = () => {
+  const handleFiltroChange = (e) => {
+    const { id, checked } = e.target;
+    setFiltros((prevFiltros) => ({
+      ...prevFiltros,
+      [id]: checked,
+    }));
+  };
 
+  const handleSelectMes = () => {
     // Obtener el primer y ultimo día del mes
-    const iniDate = hoy.startOf('month').format('YYYY-MM-DD');
-    const finDate = hoy.endOf('month').format('YYYY-MM-DD');
-    
+    const iniDate = hoy.startOf("month").format("YYYY-MM-DD");
+    const finDate = hoy.endOf("month").format("YYYY-MM-DD");
+
     setFechaInicial(iniDate);
     setFechaFinal(finDate);
   };
 
   const handleSelectSemana = () => {
-      
     // Obtener el primer y ultimo día de la semana
-    const iniDate = hoy.startOf('week').format('YYYY-MM-DD');
-    const finDate = hoy.endOf('week').format('YYYY-MM-DD');
-    
+    const iniDate = hoy.startOf("week").format("YYYY-MM-DD");
+    const finDate = hoy.endOf("week").format("YYYY-MM-DD");
+
     setFechaInicial(iniDate);
     setFechaFinal(finDate);
   };
 
   const handleSelectDia = () => {
-    
     // Obtener el primer y ultimo día de la semana
-    const iniDate = hoy.format('YYYY-MM-DD');
-    const finDate = hoy.format('YYYY-MM-DD');
-    
+    const iniDate = hoy.format("YYYY-MM-DD");
+    const finDate = hoy.format("YYYY-MM-DD");
+
     setFechaInicial(iniDate);
     setFechaFinal(finDate);
   };
@@ -160,20 +165,39 @@ function Historial(props) {
                         className="form-check-input"
                         type="checkbox"
                         role="switch"
-                        id="flexSwitchCheckEfectivo"
+                        id="efectivo"
+                        checked={filtros.efectivo}
+                        onChange={handleFiltroChange}
                       />
                     </div>
                   </div>
                 </div>
                 <div className="col">
-                  <label htmlFor="tdc">TDC / Transferencia</label>
+                  <label htmlFor="tdc">TDC</label>
                   <div>
                     <div className="form-check form-switch">
                       <input
                         className="form-check-input"
                         type="checkbox"
                         role="switch"
-                        id="flexSwitchCheckTdc"
+                        id="tdc"
+                        checked={filtros.tdc}
+                        onChange={handleFiltroChange}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="col">
+                  <label htmlFor="transferencia">Transferencia</label>
+                  <div>
+                    <div className="form-check form-switch">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        role="switch"
+                        id="transferencia"
+                        checked={filtros.transferencia}
+                        onChange={handleFiltroChange}
                       />
                     </div>
                   </div>
@@ -183,9 +207,12 @@ function Historial(props) {
           </div>
         </li>
         <li className="list-group-item">
-          <ListVentas fechaInicial={fechaInicial} fechaFinal={fechaFinal} />
+          <ListVentas
+            fechaInicial={fechaInicial}
+            fechaFinal={fechaFinal}
+            filtros={filtros}
+          />
         </li>
-        <li className="list-group-item">A third item</li>
       </ul>
     </div>
   );

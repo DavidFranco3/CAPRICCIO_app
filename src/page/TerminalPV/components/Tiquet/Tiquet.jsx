@@ -9,7 +9,7 @@ import {
   actualizaTicket,
   listarVentas,
   obtenerVentas,
-  actualizarProdsTicket
+  actualizarProdsTicket,
 } from "../../../../api/ventas";
 import { Col, Row, Image, Table, Form } from "react-bootstrap";
 import DatosExtraVenta from "../DatosExtraVenta";
@@ -23,9 +23,9 @@ import { LogsInformativos } from "../../../Logs/components/LogsSistema/LogsSiste
 import { ocuparDesocuparMesas } from "../../../../api/mesas";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { obtenerComisiones } from "../../../../api/comision";
+import TicketCocina from "./Imprimir/TicketCocina";
 
 function Tiquet(props) {
-
   console.log(props);
 
   const { idUsuario, products, empty, remove } = props;
@@ -39,6 +39,7 @@ function Tiquet(props) {
   const mesaClick = props.mesaClick;
 
   const [numeroTiquet, setNumeroTiquet] = useState("");
+  const [cliente, setCliente] = useState("");
   const [formData, setFormData] = useState(initialFormData());
   const [comision, setComision] = useState(0);
   const [agregado, setAgregado] = useState(false);
@@ -73,27 +74,28 @@ function Tiquet(props) {
     try {
       const response = await listarVentas();
       const { data } = response;
-  
+
       let baseNumero = 1;
       let nuevoNumeroTiquet;
       let existe;
       let intentos = 0;
-  
+
       do {
         const letrasAleatorias = generarLetrasAleatorias();
         nuevoNumeroTiquet = baseNumero + "-" + letrasAleatorias;
         existe = verificarNumeroTiquetUnico(data, nuevoNumeroTiquet);
         intentos++;
-  
+
         if (intentos >= MAX_INTENTOS_GENERACION) {
           baseNumero++;
           intentos = 0; // Resetear intentos para el siguiente número base
         }
-  
       } while (existe && baseNumero < 100); // Ajusta el límite de baseNumero si es necesario
-  
+
       if (baseNumero >= 100) {
-        console.error("No se pudo generar un número de ticket único después de varios intentos.");
+        console.error(
+          "No se pudo generar un número de ticket único después de varios intentos."
+        );
         setNumeroTiquet("ERROR");
       } else {
         setNumeroTiquet(nuevoNumeroTiquet);
@@ -130,11 +132,18 @@ function Tiquet(props) {
     }
   };
 
+  const handleCliente = (e) => {
+    setCliente(e.target.value);
+  };
+
   useEffect(() => {
     cargarComision();
   }, []);
 
-  const total = products.reduce((amount, item) => amount + parseFloat(item.precio), 0);
+  const total = products.reduce(
+    (amount, item) => amount + parseFloat(item.precio),
+    0
+  );
 
   useEffect(() => {
     setFormData((prevFormData) => ({
@@ -170,12 +179,8 @@ function Tiquet(props) {
     setFechayHoraSinFormato(adjustedDate);
   }, []);
 
-
-
-
-
   // FUNCIÓN PARA OCUPAR MESA
-  const ocuparMesa =  async () => {
+  const ocuparMesa = async () => {
     try {
       const dataTemp = {
         estado: "ocupado",
@@ -194,6 +199,13 @@ function Tiquet(props) {
   dayjs.extend(utc);
   dayjs.extend(timezone);
   dayjs.extend(localizedFormat);
+
+  // Para el modal de las observaciones
+  const ticketCocina = (content) => {
+    setTitulosModal("Cobro");
+    setContentModal(content);
+    setShowModal(true);
+  };
 
   const handlePrint = () => {
     if (products.length === 0) {
@@ -241,21 +253,21 @@ function Tiquet(props) {
       mes,
       añoVenta,
       weekNumber,
-      formattedDate
-    }
-  }
+      formattedDate,
+    };
+  };
 
   const ponerOrden = async () => {
-
     const fecha = calcularFecha();
     setAgregado(true);
 
-    if (products.length === 0 ) {
+    if (products.length === 0) {
       toast.warning("Debe cargar productos al ticket");
     } else {
       try {
         const dataTemp = {
           ...formData,
+          cliente: formData.cliente,
           numeroTiquet: formData.numeroTiquet,
           mesa: props.numMesa,
           usuario: props.idUsuario,
@@ -268,27 +280,27 @@ function Tiquet(props) {
           año: fecha.añoVenta,
           semana: fecha.weekNumber,
           fecha: fecha.formattedDate,
-        }
+        };
         console.log(dataTemp);
-        await registraVentas(dataTemp).then( async (response) => {
+        await registraVentas(dataTemp).then(async (response) => {
           const { data } = response;
           LogsInformativos(
-            "Se ha puesto la orden " + numeroTiquet + " en la  mesa " + props.numMesa,
+            "Se ha puesto la orden " +
+              numeroTiquet +
+              " en la  mesa " +
+              props.numMesa,
             data.datos
           );
           await ocuparMesa();
           toast.success("Se ha puesto la orden en mesa con éxito");
-          
         });
-      } catch (e) {
-
-      }
+      } catch (e) {}
     }
   };
 
   // FUNCIÓN PARA ACTUALIZAR LA ORDEN
   const actualizarOrden = async () => {
-    if (products.length === 0 ) {
+    if (products.length === 0) {
       toast.warning("Debe cargar productos al ticket");
     } else {
       try {
@@ -296,21 +308,24 @@ function Tiquet(props) {
           productos: props.products,
           detalles: formData.detalles,
           subtotal: total,
-        }
+        };
         console.log(dataTemp);
-        await actualizarProdsTicket(formData.numeroTiquet, dataTemp).then( async (response) => {
-          const { data } = response;
-          LogsInformativos(
-            "Se ha actualizado la orden " + numeroTiquet + " en la  mesa " + props.numMesa,
-            data.datos
-          );
-          toast.success("Se ha actualizado la orden con éxito");
-        });
-      } catch (e) {
-
-      }
+        await actualizarProdsTicket(formData.numeroTiquet, dataTemp).then(
+          async (response) => {
+            const { data } = response;
+            LogsInformativos(
+              "Se ha actualizado la orden " +
+                numeroTiquet +
+                " en la  mesa " +
+                props.numMesa,
+              data.datos
+            );
+            toast.success("Se ha actualizado la orden con éxito");
+          }
+        );
+      } catch (e) {}
     }
-  }
+  };
 
   // Función para verificar funcion de botón
   const ponerOrdenActualizarOrden = () => {
@@ -327,24 +342,16 @@ function Tiquet(props) {
     }
   };
 
-  const Encabezado = ({
-    logo,
-    tipoPedido,
-    fechayHora,
-  }) => {
+  const Encabezado = ({ logo, tipoPedido, fechayHora }) => {
     return (
       <div className="cafe">
         {/**/}
         <div id="logoFinal" className="logotipo">
           <Image src={logo} alt="logo" />
         </div>
+
         <div className="card card-widget widget-user">
           <div className="card-body">
-            <div>
-              <button>
-                
-              </button>
-            </div>
             <div className="row">
               <div className="col-sm-4 border-right">
                 <div className="description-block">
@@ -355,7 +362,9 @@ function Tiquet(props) {
               <div className="col-sm-4 border-right">
                 <div className="description-block">
                   <h5 className="description-header">Ticket</h5>
-                  <span className="description-text">#{formData.numeroTiquet}</span>
+                  <span className="description-text">
+                    #{formData.numeroTiquet}
+                  </span>
                 </div>
               </div>
               <div className="col-sm-4">
@@ -434,7 +443,8 @@ function Tiquet(props) {
               {new Intl.NumberFormat("es-MX", {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
-              }).format(total)}{" "}MXN
+              }).format(total)}{" "}
+              MXN
             </div>
           </Col>
         </Row>
@@ -449,7 +459,7 @@ function Tiquet(props) {
         <button
           title="Cobrar"
           onClick={() => {
-            if (products.length >= 1 ) {
+            if (products.length >= 1) {
               if (mesaClick) {
                 datosExtraVenta(
                   <DatosExtraVenta
@@ -460,7 +470,7 @@ function Tiquet(props) {
                     isVenta={agregado}
                     comision={comision}
                   />
-                )
+                );
               } else {
                 datosExtraVenta(
                   <DatosExtraVenta
@@ -471,9 +481,8 @@ function Tiquet(props) {
                     isVenta={agregado}
                     comision={comision}
                   />
-                )
+                );
               }
-
             } else {
               toast.error("Debes agregar productos al ticket");
             }
@@ -484,6 +493,17 @@ function Tiquet(props) {
 
         <button title="Añadir" onClick={() => ponerOrdenActualizarOrden()}>
           <i className="fas fa-plus"></i>
+        </button>
+
+        <button
+          title="Imprimir"
+          onClick={() =>
+            ticketCocina(
+              <TicketCocina formData={formData} fecha={fechayHora} />
+            )
+          }
+        >
+          <i className="fas fa-receipt"></i>
         </button>
 
         <button title="Limpiar el ticket" /*PENDIENTE*/>
@@ -498,13 +518,22 @@ function Tiquet(props) {
       <div id="ticketGenerado" className="ticket">
         <div className="ticket__information">
           {/**/}
+
           <Encabezado
             logo={logoTiquetGris}
             numeroTiquet={numeroTiquet}
             mesa={numMesa}
             fechayHora={fechayHora}
           />
-
+          <div className="d-flex align-items-center mb-2">
+            <Form.Control
+              type="text"
+              value={formData.cliente}
+              onChange={(e) => {
+                setFormData({ ...formData, cliente: e.target.value });
+              }}
+            />
+          </div>
           {/**/}
           <Cuerpo products={products} onClick={handleDeleteProduct} />
           <Row>
@@ -517,8 +546,8 @@ function Tiquet(props) {
                     placeholder="Ingrese los detalles de la orden"
                     defaultValue={formData.detalles}
                     rows={3}
-                    style={{overflow:'hidden', resize:'none'}}
-                    onChange={(e) =>{
+                    style={{ overflow: "hidden", resize: "none" }}
+                    onChange={(e) => {
                       setFormData({ ...formData, detalles: e.target.value });
                     }}
                   />
@@ -528,9 +557,7 @@ function Tiquet(props) {
           </Row>
 
           {/**/}
-          <Pie
-            total={formData.subtotal}
-          />
+          <Pie total={formData.subtotal} />
         </div>
         <Opciones icon={faCircleInfo} />
       </div>
@@ -544,7 +571,7 @@ function Tiquet(props) {
 
 export default Tiquet;
 
-function initialFormData () {
+function initialFormData() {
   return {
     numeroTiquet: "",
     cliente: "",
@@ -584,17 +611,17 @@ function initialFormData () {
         estado: false,
         cantidad: 0,
       },
-    }
-  }
+    },
+  };
 }
 
-  // Función para generar letras aleatorias
-  const generarLetrasAleatorias = () => {
-    const letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    let letrasAleatorias = "";
-    for (let i = 0; i < 4; i++) {
-      const indice = Math.floor(Math.random() * letras.length);
-      letrasAleatorias += letras.charAt(indice);
-    }
-    return letrasAleatorias;
-  };
+// Función para generar letras aleatorias
+const generarLetrasAleatorias = () => {
+  const letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  let letrasAleatorias = "";
+  for (let i = 0; i < 4; i++) {
+    const indice = Math.floor(Math.random() * letras.length);
+    letrasAleatorias += letras.charAt(indice);
+  }
+  return letrasAleatorias;
+};
