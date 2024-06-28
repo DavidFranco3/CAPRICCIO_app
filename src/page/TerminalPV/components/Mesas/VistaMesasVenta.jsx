@@ -60,17 +60,21 @@ const VistaMesasVenta = () => {
       <div className="card card-outline m-3">
         <div className=" card-header bg-gray">
           <div className="d-flex justify-content-between align-items-center">
-            <h4 className="mb-0 font-bold">Ordenes</h4>
+            <div>
+              {" "}
+              <h4 className="mb-0 font-bold">Ordenes</h4>
+              <span>Pedidos para comer aquí dar clic en la mesa </span>
+            </div>
+
             <div className="col-md-2">
               <button
-                className="btn btn-outline-light"
+                className="btn btn-outline-light btn-lg"
                 onClick={() =>
                   actVenta(
                     <TerminalPVprev
                       setShow={setShowModal}
                       idTicket={""}
                       idmesa={""}
-                      // PENDIENTE
                       tpv={true}
                     />
                   )
@@ -79,6 +83,9 @@ const VistaMesasVenta = () => {
                 <i className="fas fa-receipt me-1 "></i>
                 Hacer Venta
               </button>
+              <span className="d-block mt-2">
+                Para ventas de uber o mostrador dar clic al botón
+              </span>
             </div>
           </div>
         </div>

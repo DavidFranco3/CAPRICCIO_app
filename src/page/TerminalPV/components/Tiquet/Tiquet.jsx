@@ -526,12 +526,15 @@ function Tiquet(props) {
             fechayHora={fechayHora}
           />
           <div className="d-flex align-items-center mb-2">
+            <Form.Label className="mb-0 mr-2">Cliente:</Form.Label>
             <Form.Control
               type="text"
               value={formData.cliente}
+              placeholder="Ingrese el nombre del cliente"
               onChange={(e) => {
                 setFormData({ ...formData, cliente: e.target.value });
               }}
+              className="ml-2"
             />
           </div>
           {/**/}

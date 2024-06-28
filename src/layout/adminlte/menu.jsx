@@ -78,6 +78,11 @@ const Menu = ({ datosUsuario }) => {
                       title={"Pedidos"}
                     />
                     <ItemCard
+                      path={"/Historiales"}
+                      logo={"fa-history"}
+                      title={"Historiales"}
+                    />
+                    <ItemCard
                       path={"/Productos"}
                       logo={"fa-box-open"}
                       title={"Productos"}
@@ -116,11 +121,6 @@ const Menu = ({ datosUsuario }) => {
                       path={"/PedidosClientes"}
                       logo={"fa-shopping-cart"}
                       title={"Pedidos en línea"}
-                    />
-                    <ItemCard
-                      path={"/Historiales"}
-                      logo={"fa-history"}
-                      title={"Historiales"}
                     />
                     <ItemCard
                       path={"/Logs"}

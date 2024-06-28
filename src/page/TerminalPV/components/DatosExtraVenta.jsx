@@ -30,7 +30,10 @@ function DatosExtraVenta(props) {
   const [totalPagado, setTotalPagado] = useState(0);
 
   const [iva, setIva] = useState(false);
-  const [nombreCliente, setNombreCliente] = useState("");
+  const [formaPedido, setFormaPedido] = useState({
+    hacerPedido: "",
+    tipoPedido: "",
+  });
 
   const [fechayHora, setFechayHora] = useState("");
   const [fechayHoraSinFormato, setFechayHoraSinFormato] = useState("");
@@ -144,10 +147,12 @@ function DatosExtraVenta(props) {
         infoVenta: {
           ...prevFormData.infoVenta,
           tipoDescuento: newTipoDescuento,
+          hacerPedido: prevFormData.infoVenta.hacerPedido, // Asegúrate de mantener estas propiedades
+          tipoPedido: prevFormData.infoVenta.tipoPedido, // Asegúrate de mantener estas propiedades
         },
       }));
     },
-    [descuento, subtotal]
+    [descuento, subtotal, iva]
   );
 
   const handleIvaChange = useCallback(
@@ -279,6 +284,10 @@ function DatosExtraVenta(props) {
 
   const handleSelectChange = (e) => {
     const { name, value } = e.target;
+    setFormaPedido((prevFormaPedido) => ({
+      ...prevFormaPedido,
+      [name]: value,
+    }));
     setFormData((prevFormData) => ({
       ...prevFormData,
       infoVenta: {
@@ -303,6 +312,37 @@ function DatosExtraVenta(props) {
       }
     }
   };
+
+  useEffect(() => {
+    if (
+      formaPedido.hacerPedido === "Uber" ||
+      formaPedido.hacerPedido === "Rappi"
+    ) {
+      setFormaPedido((prevFormaPedido) => ({
+        ...prevFormaPedido,
+        tipoPedido: "A domicilio",
+      }));
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        infoVenta: {
+          ...prevFormData.infoVenta,
+          tipoPedido: "A domicilio",
+        },
+      }));
+    } else {
+      setFormaPedido((prevFormaPedido) => ({
+        ...prevFormaPedido,
+        tipoPedido: "",
+      }));
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        infoVenta: {
+          ...prevFormData.infoVenta,
+          tipoPedido: "",
+        },
+      }));
+    }
+  }, [formaPedido.hacerPedido]);
 
   const calcularFecha = () => {
     const hoy = new Date();
@@ -430,6 +470,7 @@ function DatosExtraVenta(props) {
             }
             toast.success("Se ha creado y cobrado la orden en mesa con éxito");
           });
+          window.location.reload();
         } else {
           await imprimirTicketFinal(<TicketFinal formData={dataTemp} />);
           await cobrarTicket(formData.infoVenta.numeroTiquet, dataTemp).then(
@@ -460,6 +501,7 @@ function DatosExtraVenta(props) {
               );
             }
           );
+          window.location.reload();
         }
       } catch (error) {
         console.error("Error al enviar los datos:", error);
@@ -573,6 +615,7 @@ function DatosExtraVenta(props) {
           }
         );
       }
+      window.location.reload();
     } catch (error) {
       console.error("Error al enviar los datos:", error);
     }
@@ -607,8 +650,8 @@ function DatosExtraVenta(props) {
                       checked={tipoDescuento === "cantidad"}
                       onChange={handleTipoDescuentoChange}
                       disabled={
-                        formData.infoVenta.hacerPedido === "Uber" &&
-                        formData.infoVenta.hacerPedido === "Rappi"
+                        formaPedido.hacerPedido === "Uber" &&
+                        formaPedido.hacerPedido === "Rappi"
                       }
                     />
                     <Form.Check
@@ -665,7 +708,7 @@ function DatosExtraVenta(props) {
                     <Form.Control
                       as="select"
                       name="hacerPedido"
-                      value={formData.infoVenta.hacerPedido}
+                      value={formaPedido.hacerPedido}
                       onChange={handleSelectChange}
                       disabled={props.mesaClick}
                     >
@@ -688,9 +731,13 @@ function DatosExtraVenta(props) {
                     <Form.Control
                       as="select"
                       name="tipoPedido"
-                      value={formData.infoVenta.tipoPedido}
+                      value={formaPedido.tipoPedido}
                       onChange={handleSelectChange}
-                      disabled={props.mesaClick}
+                      disabled={
+                        props.mesaClick ||
+                        formaPedido.hacerPedido === "Uber" ||
+                        formaPedido.hacerPedido === "Rappi"
+                      }
                     >
                       <option>Elige una opción</option>
                       {props.mesaClick && (
@@ -754,8 +801,8 @@ function DatosExtraVenta(props) {
             </Col>
           </Row>
 
-          {formData.infoVenta.hacerPedido !== "Rappi" &&
-            formData.infoVenta.hacerPedido !== "Uber" &&
+          {formaPedido.hacerPedido !== "Rappi" &&
+            formaPedido.hacerPedido !== "Uber" &&
             !tpv && (
               <Row className="mx-1 p-1 border rounded">
                 <Col className="">
