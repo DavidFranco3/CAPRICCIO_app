@@ -18,10 +18,12 @@ function Menu(props) {
     categoriaActual,
   } = props;
 
+  console.log(listProductos);
+
   // Estado para manejar el término de búsqueda
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Cerrado de sesión automatico
+  // Cerrado de sesión automático
   useEffect(() => {
     if (getTokenApi()) {
       if (isExpiredToken(getTokenApi())) {
@@ -85,11 +87,6 @@ function Menu(props) {
     product.nombre.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Filtrar las categorías basadas en el término de búsqueda
-  const filteredCategorias = listCategorias.filter((categoria) =>
-    categoria.nombre.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   return (
     <>
       <div className="menu">
@@ -101,39 +98,29 @@ function Menu(props) {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </InputGroup>
-        {!categoriaActual ? (
-          filteredCategorias &&
-          filteredCategorias.map((categoria, index) => {
-            return (
-              <MenuCategorias
-                index={index}
-                nombre={categoria?.nombre}
-                imagen={categoria?.imagen}
-                onClick={() => setCategoriaActual(categoria?.id)}
+        {searchTerm ? (
+          filteredProductos.length > 0 ? (
+            filteredProductos.map((product, index) => (
+              <MenuProductos
+                key={index}
+                nombre={product?.nombre}
+                imagen={product?.imagen}
+                precio={product?.precio}
+                onClick={() => clickHandler(product)}
               />
-            );
-          })
+            ))
+          ) : (
+            <p>No se encontraron productos.</p>
+          )
         ) : (
-          <>
-            <ButtonBack
-              icon={faHouse}
-              onClick={() => {
-                clickHomeHandler();
-              }}
+          listCategorias.map((categoria, index) => (
+            <MenuCategorias
+              key={index}
+              nombre={categoria?.nombre}
+              imagen={categoria?.imagen}
+              onClick={() => setCategoriaActual(categoria?.id)}
             />
-            {filteredProductos &&
-              filteredProductos.map((product, index) => {
-                return (
-                  <MenuProductos
-                    index={index}
-                    nombre={product?.nombre}
-                    imagen={product?.imagen}
-                    precio={product?.precio}
-                    onClick={() => clickHandler(product)}
-                  />
-                );
-              })}
-          </>
+          ))
         )}
       </div>
     </>

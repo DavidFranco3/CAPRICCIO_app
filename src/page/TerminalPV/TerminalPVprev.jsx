@@ -3,7 +3,7 @@ import { withRouter } from "../../utils/withRouter";
 import Menu from "./components/Menu";
 import Tiquet from "./components/Tiquet/Tiquet";
 import "../../scss/styles.scss";
-import { listarProductosCategoria } from "../../api/productos";
+import { listarProductos, listarProductosCategoria } from "../../api/productos";
 import { listarCategorias } from "../../api/categorias";
 import {
   getTokenApi,
@@ -146,25 +146,40 @@ function TerminalPv(props) {
   // obtener el listado de productos
   const cargarDatosProductos = () => {
     try {
-      listarProductosCategoria(categoriaActual)
-        .then((response) => {
-          const { data } = response;
-          if (!listProductos && data) {
-            const sortedProductos = formatModelProductos(data).sort((a, b) =>
-              a.nombre.localeCompare(b.nombre)
-            );
-            setListProductos(sortedProductos);
-          } else {
+      if (categoriaActual) {
+        listarProductosCategoria(categoriaActual)
+          .then((response) => {
+            const { data } = response;
+            if (!listProductos && data) {
+              const sortedProductos = formatModelProductos(data).sort((a, b) =>
+                a.nombre.localeCompare(b.nombre)
+              );
+              setListProductos(sortedProductos);
+            } else {
+              const datosProductos = formatModelProductos(data);
+              const sortedProductos = datosProductos.sort((a, b) =>
+                a.nombre.localeCompare(b.nombre)
+              );
+              setListProductos(sortedProductos);
+            }
+          })
+          .catch((e) => {
+            console.log(e);
+          });
+      } else {
+        listarProductos()
+          .then((response) => {
+            const { data } = response;
             const datosProductos = formatModelProductos(data);
             const sortedProductos = datosProductos.sort((a, b) =>
               a.nombre.localeCompare(b.nombre)
             );
             setListProductos(sortedProductos);
-          }
-        })
-        .catch((e) => {
-          console.log(e);
-        });
+          })
+          .catch((e) => {
+            console.log(e);
+          });
+      }
     } catch (e) {
       console.log(e);
     }
