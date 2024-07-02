@@ -1,8 +1,9 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-const Menu = ({ datosUsuario }) => {
+const Menu = ({ datosUsuario, turno }) => {
   //console.log("datos usuario menu", datosUsuario);
+  console.log(turno);
   const enrutamiento = useNavigate();
 
   const goTo = (ruta) => enrutamiento(ruta);
@@ -20,6 +21,7 @@ const Menu = ({ datosUsuario }) => {
       </a>
     </li>
   );
+
   return (
     <div>
       <aside className="main-sidebar sidebar-dark-primary elevation-4">

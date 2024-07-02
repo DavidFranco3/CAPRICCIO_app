@@ -22,7 +22,7 @@ import { obtenerVentas } from "../../api/ventas";
 function TerminalPv(props) {
   console.log(props);
 
-  const { setRefreshCheckLogin } = props;
+  const { setRefreshCheckLogin, turno } = props;
 
   const estadoticket = props.estado;
   const mesaticket = props.mesaticket;

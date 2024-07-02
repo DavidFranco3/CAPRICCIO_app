@@ -1,9 +1,4 @@
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { map } from "lodash";
 
 import configRouting from "./configRouting";
@@ -25,59 +20,39 @@ const waitersRoutes = configRouting.filter((route) =>
   route.roles.includes("mesero")
 );
 
-const Routing = ({ setRefreshCheckLogin, userRole, turno, setTurno }) => {
-  const routes =
-    userRole === "administrador"
-      ? adminRoutes
-      : userRole === "vendedor"
-      ? sellerRoutes
-      : userRole === "mesero"
-      ? waitersRoutes
-      : clientRoutes;
-
-  return (
-    <Router>
-      <Routes>
-        {map(routes, (route, index) => (
+const Routing = ({ setRefreshCheckLogin, userRole, turno, setTurno }) => (
+  <Router>
+    <Routes>
+      {map(
+        userRole === "administrador"
+          ? adminRoutes
+          : userRole === "vendedor"
+          ? sellerRoutes
+          : userRole === "mesero"
+          ? waitersRoutes
+          : clientRoutes,
+        (route, index) => (
           <Route
             key={index}
             path={route.path}
             element={
-              route.path === "/TerminalPV" ? (
-                turno ? (
-                  <LayoutAdminLTE
-                    setRefreshCheckLogin={setRefreshCheckLogin}
-                    turno={turno}
-                    setTurno={setTurno}
-                  >
-                    <route.page
-                      setRefreshCheckLogin={setRefreshCheckLogin}
-                      turno={turno}
-                      setTurno={setTurno}
-                    />
-                  </LayoutAdminLTE>
-                ) : (
-                  <Navigate to="/otro-lugar" />
-                )
-              ) : (
-                <LayoutAdminLTE
+              <LayoutAdminLTE
+                setRefreshCheckLogin={setRefreshCheckLogin}
+                turno={turno}
+                setTurno={setTurno}
+              >
+                <route.page
                   setRefreshCheckLogin={setRefreshCheckLogin}
                   turno={turno}
                   setTurno={setTurno}
-                >
-                  <route.page
-                    setRefreshCheckLogin={setRefreshCheckLogin}
-                    turno={turno}
-                    setTurno={setTurno}
-                  />
-                </LayoutAdminLTE>
-              )
+                />
+              </LayoutAdminLTE>
             }
           ></Route>
-        ))}
-      </Routes>
-    </Router>
-  );
-};
+        )
+      )}
+    </Routes>
+  </Router>
+);
 
 export default Routing;

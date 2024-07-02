@@ -137,7 +137,7 @@ function Turno(params) {
               name="empleado"
               value={formData.empleado}
               onChange={handleChange}
-              disabled={!!turno}
+              disabled={turno}
             />
           </Form.Group>
           <Form.Group className="mt-2 d-flex align-items-center">
@@ -147,7 +147,7 @@ function Turno(params) {
               name="caja"
               value={formData.caja}
               onChange={handleChange}
-              disabled={!!turno}
+              disabled={turno}
             >
               <option value="">Seleccione una caja</option>
               {listCajas.map((caja) => (
@@ -165,7 +165,7 @@ function Turno(params) {
               name="fondoCaja"
               value={formData.fondoCaja}
               onChange={handleChange}
-              disabled={!!turno}
+              disabled={turno}
             />
           </Form.Group>
           <Form.Group className="mt-2 d-flex align-items-center">
@@ -177,7 +177,7 @@ function Turno(params) {
               name="observaciones"
               value={formData.observaciones}
               onChange={handleChange}
-              disabled={!!turno}
+              disabled={turno}
             />
           </Form.Group>
           <Container className="mt-3 d-flex justify-content-center">
