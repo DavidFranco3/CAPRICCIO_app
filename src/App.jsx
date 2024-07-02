@@ -61,7 +61,7 @@ function App() {
       if (data.estado === "abierto" && !data.fechaFinal) {
         setTurno(data);
       } else {
-        setTurno({});
+        setTurno(null);
       }
     } catch (e) {
       console.log(e);
