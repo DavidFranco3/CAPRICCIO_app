@@ -5,8 +5,10 @@ import { toast } from "react-toastify";
 import { getTokenApi, isExpiredToken, logoutApi } from "../../api/auth";
 import BasicModal from "../../components/Modal/BasicModal";
 import Comision from "../../page/Comision/RegistroComision";
+import Turno from "../../components/Turno/Turno";
 
-const Header = ({ datosUsuario }) => {
+const Header = (props) => {
+  const { datosUsuario, turno, setTurno } = props;
 
   // Para el modal
   const [showModal, setShowModal] = useState(false);
@@ -15,6 +17,14 @@ const Header = ({ datosUsuario }) => {
 
   const editarComision = (content) => {
     setTitulosModal("Comisión bancaria");
+    setContentModal(content);
+    setShowModal(true);
+  };
+
+  const verTurno = (content) => {
+    let titulo = "Registro turno";
+    if (turno) titulo = "Ver turno";
+    setTitulosModal(titulo);
     setContentModal(content);
     setShowModal(true);
   };
@@ -48,7 +58,6 @@ const Header = ({ datosUsuario }) => {
     //setRefreshCheckLogin(true);
     toast.success("Sesión cerrada");
     window.location.reload();
-
   };
 
   // Cerrado de sesión automatico
@@ -62,19 +71,13 @@ const Header = ({ datosUsuario }) => {
     redirecciona("/");
   };
 
-
-
   return (
     <div className="bg-secondary">
       <nav className="main-header navbar navbar-expand navbar-dark">
         {/* Left navbar links */}
         <ul className="navbar-nav">
           <li className="nav-item">
-            <span
-              className="nav-link"
-              data-widget="pushmenu"
-              role="button"
-            >
+            <span className="nav-link" data-widget="pushmenu" role="button">
               <i className="fas fa-bars" />
             </span>
           </li>
@@ -86,6 +89,22 @@ const Header = ({ datosUsuario }) => {
         </ul>
         {/* Right navbar links */}
         <ul className="navbar-nav ml-auto">
+          <li className="nav-item d-flex align-items-center">
+            <button
+              className="btn btn-primary btn-sm"
+              onClick={() =>
+                verTurno(
+                  <Turno
+                    turno={turno}
+                    setTurno={setTurno}
+                    setShow={setShowModal}
+                  />
+                )
+              }
+            >
+              Turno
+            </button>
+          </li>
           {/* Navbar Search */}
           <li className="nav-item">
             <span
@@ -134,52 +153,48 @@ const Header = ({ datosUsuario }) => {
                 Usuario: {datosUsuario.nombre}
               </span>
               <div className="dropdown-divider" />
+              <span className="dropdown-item">
+                <button
+                  className="btn btn-block text-left"
+                  onClick={() => {
+                    cerrarSesion();
+                  }}
+                >
+                  <i className="fas fa-sign-out-alt mr-2"></i>
+                  Cerrar sesión
+                </button>
+              </span>
+              {datosUsuario.rol === "administrador" && (
                 <span className="dropdown-item">
                   <button
-                    className="btn btn-block text-left"
                     onClick={() => {
-                      cerrarSesion();
+                      editarComision(<Comision setShowModal={setShowModal} />);
                     }}
                   >
-                    <i className="fas fa-sign-out-alt mr-2"></i>
-                    Cerrar sesión
+                    <i className="fas fa-landmark mr-2"></i>
+                    Comision bancaria
                   </button>
                 </span>
-                {datosUsuario.rol === "administrador" && (
-                  <span className="dropdown-item">
-                    <button 
-                      onClick={() => {
-                        editarComision(
-                          <Comision
-                            setShowModal={setShowModal}
-                          />
-                        )
-                      }}
-                    >
-                      <i className="fas fa-landmark mr-2"></i>
-                      Comision bancaria
-                    </button>
-                  </span>
-                )}
+              )}
               <div className="dropdown-divider" />
             </div>
           </li>
           <li className="nav-item">
-            <span
-              className="nav-link"
-              data-widget="fullscreen"
-              role="button"
-            >
+            <span className="nav-link" data-widget="fullscreen" role="button">
               <i className="fas fa-expand-arrows-alt" />
             </span>
           </li>
         </ul>
       </nav>
 
-      <BasicModal show={showModal} setShow={setShowModal} title={titulosModal} size={"md"}>
+      <BasicModal
+        show={showModal}
+        setShow={setShowModal}
+        title={titulosModal}
+        size={"md"}
+      >
         {contentModal}
       </BasicModal>
-
     </div>
   );
 };
