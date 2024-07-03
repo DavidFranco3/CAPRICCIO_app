@@ -28,7 +28,7 @@ import TicketCocina from "./Imprimir/TicketCocina";
 function Tiquet(props) {
   console.log(props);
 
-  const { idUsuario, products, empty, remove } = props;
+  const { setShow, idUsuario, products, empty, remove, turno } = props;
 
   const estadoticket = props.estadoticket;
   const mesaticket = props.mesaticket;
@@ -269,6 +269,7 @@ function Tiquet(props) {
           ...formData,
           cliente: formData.cliente,
           numeroTiquet: formData.numeroTiquet,
+          turno: turno.idTurno,
           mesa: props.numMesa,
           usuario: props.idUsuario,
           estado: props.mesaClick ? "OEM" /* Orden En Mesa */ : "PP",
@@ -465,10 +466,12 @@ function Tiquet(props) {
                   <DatosExtraVenta
                     formData={formData}
                     setShowModal={setShowModal}
+                    setShow={setShow}
                     mesaId={mesaId}
                     mesaClick={mesaClick}
                     isVenta={agregado}
                     comision={comision}
+                    turno={turno}
                   />
                 );
               } else {
@@ -476,10 +479,12 @@ function Tiquet(props) {
                   <DatosExtraVenta
                     formData={formData}
                     mesaId={mesaId}
+                    setShow={setShow}
                     setShowModal={setShowModal}
                     mesaClick={mesaClick}
                     isVenta={agregado}
                     comision={comision}
+                    turno={turno}
                   />
                 );
               }

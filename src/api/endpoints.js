@@ -130,6 +130,7 @@ export const ENDPOINTTotalIngredientesConsumidosDiarios =
 export const ENDPOINTObtenerVentasenMesasConTicket =
   "/ventas/obtenerVentasenMesasConTicket";
 export const ENDPOINTObtenerVentasTotalesDelDia = "/ventas/ventasTotalesDelDia";
+export const ENDPOINTListarVentasPorTurno = "/ventas/listarVentasPorTurno";
 //ventasTotalesDelDia
 
 // Pedidos de clientes
@@ -254,3 +255,7 @@ export const ENDPOINTRegistroTurnos = "/turno/registro";
 export const ENDPOINTListarTurnos = "/turno/listar";
 export const ENDPOINTObtenerUltimoTurno = "/turno/ultimo";
 export const ENDPOINTCerrarTurno = "/turno/cerrar";
+
+// Movmientos Turno Caja
+export const ENDPOINTRegistrarMovimientoTurno = "/movTurnoCaja/registro";
+export const ENDPOINTListarMovimientoTurno = "/movTurnoCaja/listar";

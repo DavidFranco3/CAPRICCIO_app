@@ -4,7 +4,9 @@ import BasicModal from "../../../../components/Modal/BasicModal";
 import { obtenerMesas } from "../../../../api/mesas";
 import TerminalPVprev from "../../TerminalPVprev";
 
-const VistaMesasVenta = () => {
+const VistaMesasVenta = (props) => {
+  const { turno } = props;
+
   // Para guardar el listado de categorias
   const [listMesas, setListMesas] = useState([]);
 
@@ -76,6 +78,7 @@ const VistaMesasVenta = () => {
                       idTicket={""}
                       idmesa={""}
                       tpv={true}
+                      turno={turno}
                     />
                   )
                 }
@@ -107,26 +110,29 @@ const VistaMesasVenta = () => {
                       hacerPedido={"Presencial"}
                       mesaClick={true}
                       tpv={true}
+                      turno={turno}
                     />
                   )
                 }
               >
                 <span
-                  class={
+                  className={
                     "info-box-icon " +
                     (mesa.estado === "libre" ? "bg-green" : "bg-secondary")
                   }
                 >
-                  <i class="fas fa-utensils"></i>
+                  <i className="fas fa-utensils"></i>
                 </span>
-                <div class="info-box-content">
-                  <span class="info-box-number titMesa">
+                <div className="info-box-content">
+                  <span className="info-box-number titMesa">
                     N. Mesa: {mesa.numeroMesa}
                   </span>
-                  <span class="info-box-text">
+                  <span className="info-box-text">
                     N. Personas: {mesa.numeroPersonas}
                   </span>
-                  <span class="info-box-text descMesa">{mesa.descripcion}</span>
+                  <span className="info-box-text descMesa">
+                    {mesa.descripcion}
+                  </span>
                 </div>
               </div>
             ))}

@@ -21,7 +21,7 @@ const TerminalVenta = (props) => {
 
   return (
     <>
-      <VistaMesasVenta />
+      <VistaMesasVenta turno={turno} />
     </>
   );
 };

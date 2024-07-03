@@ -49,7 +49,7 @@ function Turno(params) {
     }
   }, [turno]);
 
-  const añadirDineroACaja = async (nombreCaja, saldo) => {
+  const añadirDineroACaja = async (nombreCaja, saldo, listCajas) => {
     // Buscar la caja en listCajas por nombre
     let idCaja = "";
     const cajaEncontrada = listCajas.find(
@@ -57,11 +57,23 @@ function Turno(params) {
     );
 
     // Verificar si se encontró la caja
-    if (cajaEncontrada) idCaja = cajaEncontrada.id;
+    if (cajaEncontrada) {
+      idCaja = cajaEncontrada._id;
 
-    const response = await actualizaCaja(idCaja, saldo);
-    const { data } = response;
-    toast.success(data.mensaje);
+      // Actualizar el saldo de la caja
+      try {
+        const response = await actualizaCaja(idCaja, { saldo });
+        const { data } = response;
+        console.log(data);
+        toast.success(data.mensaje);
+      } catch (error) {
+        console.error("Error al actualizar la caja:", error);
+        toast.error("No se pudo actualizar la caja.");
+      }
+    } else {
+      console.error("Caja no encontrada");
+      toast.error("Caja no encontrada.");
+    }
   };
 
   const handleChange = (e) => {
@@ -80,6 +92,7 @@ function Turno(params) {
       fechaFinal: null,
       observaciones: formData.observaciones,
       fondoCaja: formData.fondoCaja,
+      totalEfectivo: formData.totalEfectivo,
       estado: "abierto",
     };
 
@@ -87,33 +100,7 @@ function Turno(params) {
       const response = await registrarTurno(dataTemp);
       const { data } = response;
       setTurno(dataTemp);
-      await añadirDineroACaja(dataTemp.caja, dataTemp.fondoCaja);
-      toast.success(data.mensaje);
-      setShow(false);
-    } catch (error) {
-      console.error(error);
-      // Manejar errores aquí, por ejemplo, mostrar una notificación de error.
-    }
-  };
-
-  const terminarTurno = async (e) => {
-    e.preventDefault();
-
-    const dataTemp = {
-      idTurno: formData.idTurno,
-      empleado: formData.empleado,
-      caja: formData.caja,
-      fechaInicio: formData.fechaInicio, // Usar la función para obtener la fecha y hora de México
-      fechaFinal: obtenerFechaHoraMexico(),
-      observaciones: formData.observaciones,
-      fondoCaja: formData.fondoCaja,
-      estado: "cerrado",
-    };
-
-    try {
-      const response = await cerrarTurno(turno._id, dataTemp);
-      const { data } = response;
-      await añadirDineroACaja(dataTemp.caja, 0);
+      await añadirDineroACaja(dataTemp.caja, dataTemp.fondoCaja, listCajas);
       toast.success(data.mensaje);
       setShow(false);
     } catch (error) {
@@ -181,19 +168,12 @@ function Turno(params) {
             />
           </Form.Group>
           <Container className="mt-3 d-flex justify-content-center">
-            {!turno ? (
+            {!turno && (
               <button
                 className="btn btn-primary"
                 onClick={handleSubmit} // Cambiado aquí
               >
                 Añadir turno
-              </button>
-            ) : (
-              <button
-                className="btn btn-danger"
-                onClick={terminarTurno} // Cambiado aquí
-              >
-                Cerrar turno
               </button>
             )}
           </Container>
@@ -214,6 +194,7 @@ function initialFormData() {
     fechaFinal: "",
     observaciones: "",
     fondoCaja: 0,
+    totalEfectivo: 0,
     estado: "abierto",
   };
 }

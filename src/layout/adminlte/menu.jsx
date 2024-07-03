@@ -100,9 +100,9 @@ const Menu = ({ datosUsuario, turno }) => {
                       title={"Ingredientes"}
                     />
                     <ItemCard
-                      path={"/Cajas"}
+                      path={"/Turnos"}
                       logo={"fa-cash-register"}
-                      title={"Cajas"}
+                      title={"Turnos y Cajas"}
                     />
                     <ItemCard
                       path={"/Mesas"}
@@ -146,9 +146,9 @@ const Menu = ({ datosUsuario, turno }) => {
                       title={"Historiales"}
                     />
                     <ItemCard
-                      path={"/Cajas"}
+                      path={"/Turnos"}
                       logo={"fa-cash-register"}
-                      title={"Cajas"}
+                      title={"Turnos y Cajas"}
                     />
                     <ItemCard
                       path={"/Clientes"}

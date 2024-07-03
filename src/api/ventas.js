@@ -46,6 +46,7 @@ import {
   ENDPOINTCobrarTicket,
   ENDPOINTListarPedidosPendientes,
   ENDPOINTListarVentasRangoDeFechas,
+  ENDPOINTListarVentasPorTurno,
 } from "./endpoints";
 import axios from "axios";
 import { getTokenApi } from "./auth";
@@ -411,6 +412,21 @@ export async function listarVentasRangoFechas(fechaInicial, fechaFinal) {
     API_HOST +
       ENDPOINTListarVentasRangoDeFechas +
       `/?fechaInicial=${fechaInicial}&&fechaFinal=${fechaFinal}`,
+    config
+  );
+}
+
+// Listar ventas por turno
+export async function listarVentasTurno(turno) {
+  const config = {
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${getTokenApi()}`,
+    },
+  };
+  return await axios.get(
+    API_HOST + ENDPOINTListarVentasPorTurno + `/?turno=${turno}`,
     config
   );
 }

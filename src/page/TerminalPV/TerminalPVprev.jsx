@@ -282,6 +282,7 @@ function TerminalPv(props) {
                   </div>
                   <div className="card-body">
                     <Tiquet
+                      turno={turno}
                       agregar={estadov}
                       products={ticketItems}
                       empty={emptyTicket}

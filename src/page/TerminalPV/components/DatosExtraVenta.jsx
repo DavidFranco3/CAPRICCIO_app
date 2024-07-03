@@ -16,7 +16,7 @@ import BasicModal from "../../../components/Modal/BasicModal";
 import TicketFinal from "./Tiquet/Imprimir/TicketFinal";
 
 function DatosExtraVenta(props) {
-  const { setShowModal, isVenta, comision, tpv } = props;
+  const { setShowModal, setShow, isVenta, comision, tpv, turno } = props;
 
   console.log(props);
 
@@ -412,6 +412,7 @@ function DatosExtraVenta(props) {
       try {
         const dataTemp = {
           numeroTiquet: formData.infoVenta.numeroTiquet,
+          turno: turno.idTurno,
           cliente: formData.infoVenta.cliente,
           tipo: props.mesaClick ? "Orden de mesa" : "Pedido de mostrador",
           mesa: formData.infoVenta.mesa,
@@ -461,7 +462,7 @@ function DatosExtraVenta(props) {
             } catch (error) {
               console.error("Error al cerrar el modal principal:", error);
               try {
-                props.setShow(false);
+                setShow(false);
               } catch (error) {
                 console.error("Error al cerrar el modal secundario:", error);
                 // Mostrar un mensaje de error general aquí
@@ -489,7 +490,7 @@ function DatosExtraVenta(props) {
               } catch (error) {
                 console.error("Error al cerrar el modal principal:", error);
                 try {
-                  props.setShow(false);
+                  setShow(false);
                 } catch (error) {
                   console.error("Error al cerrar el modal secundario:", error);
                   // Mostrar un mensaje de error general aquí
@@ -537,6 +538,7 @@ function DatosExtraVenta(props) {
     try {
       const dataTemp = {
         numeroTiquet: formData.infoVenta.numeroTiquet,
+        turno: turno.idTurno,
         cliente: formData.infoVenta.cliente,
         tipo: props.mesaClick ? "Orden de mesa" : "Pedido de mostrador",
         mesa: formData.infoVenta.mesa,
@@ -579,7 +581,7 @@ function DatosExtraVenta(props) {
           } catch (error) {
             console.error("Error al cerrar el modal principal:", error);
             try {
-              props.setShow(false);
+              setShow(false);
             } catch (error) {
               console.error("Error al cerrar el modal secundario:", error);
               // Mostrar un mensaje de error general aquí
@@ -604,7 +606,7 @@ function DatosExtraVenta(props) {
             } catch (error) {
               console.error("Error al cerrar el modal principal:", error);
               try {
-                props.setShow(false);
+                setShow(false);
               } catch (error) {
                 console.error("Error al cerrar el modal secundario:", error);
                 // Mostrar un mensaje de error general aquí
@@ -615,7 +617,6 @@ function DatosExtraVenta(props) {
           }
         );
       }
-      window.location.reload();
     } catch (error) {
       console.error("Error al enviar los datos:", error);
     }

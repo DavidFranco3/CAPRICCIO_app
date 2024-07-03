@@ -113,14 +113,41 @@ function Menu(props) {
             <p>No se encontraron productos.</p>
           )
         ) : (
-          listCategorias.map((categoria, index) => (
-            <MenuCategorias
-              key={index}
-              nombre={categoria?.nombre}
-              imagen={categoria?.imagen}
-              onClick={() => setCategoriaActual(categoria?.id)}
-            />
-          ))
+          <>
+            {!categoriaActual ? (
+              <>
+                {listCategorias.map((categoria, index) => (
+                  <MenuCategorias
+                    key={index}
+                    nombre={categoria?.nombre}
+                    imagen={categoria?.imagen}
+                    onClick={() => setCategoriaActual(categoria?.id)}
+                  />
+                ))}
+              </>
+            ) : (
+              <>
+                <ButtonBack
+                  icon={faHouse}
+                  onClick={() => {
+                    clickHomeHandler();
+                  }}
+                />
+                {listProductos &&
+                  listProductos.map((product, index) => {
+                    return (
+                      <MenuProductos
+                        index={index}
+                        nombre={product?.nombre}
+                        imagen={product?.imagen}
+                        precio={product?.precio}
+                        onClick={() => clickHandler(product)}
+                      />
+                    );
+                  })}
+              </>
+            )}
+          </>
         )}
       </div>
     </>
