@@ -25,6 +25,7 @@ import LayoutAdminLTE from "../layout/adminlte/layout";
 import VistaMesas from "../page/Mesas/VistaMesas/VistaMesas";
 import Historial from "../page/Historiales/Historial";
 import VistaTurnos from "../page/Turno/Turno";
+import Insumos from "../page/Insumos/Insumos";
 
 const configRouting = [
   {
@@ -52,6 +53,11 @@ const configRouting = [
   //     page: TerminalPedidos,
   //     roles: ["cliente"]
   // },
+  {
+    path: "/Insumos",
+    page: Insumos,
+    roles: ["administrador", "vendedor", "mesero"],
+  },
   {
     path: "/Cajas",
     page: Cajas,

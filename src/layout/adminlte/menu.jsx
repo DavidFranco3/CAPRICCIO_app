@@ -2,7 +2,6 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 const Menu = ({ datosUsuario, turno }) => {
-  //console.log("datos usuario menu", datosUsuario);
   console.log(turno);
   const enrutamiento = useNavigate();
 
@@ -100,6 +99,11 @@ const Menu = ({ datosUsuario, turno }) => {
                       title={"Ingredientes"}
                     />
                     <ItemCard
+                      path={"/Insumos"}
+                      logo={"fa-warehouse"}
+                      title={"Insumos"}
+                    />
+                    <ItemCard
                       path={"/Turnos"}
                       logo={"fa-cash-register"}
                       title={"Turnos y Cajas"}
@@ -168,7 +172,7 @@ const Menu = ({ datosUsuario, turno }) => {
                   <>
                     <ItemCard
                       path={"/TerminalPV"}
-                      logo={"fa-char-line"}
+                      logo={"fa-chart-line"}
                       title={"Ventas"}
                     />
                     <ItemCard

@@ -259,3 +259,10 @@ export const ENDPOINTCerrarTurno = "/turno/cerrar";
 // Movmientos Turno Caja
 export const ENDPOINTRegistrarMovimientoTurno = "/movTurnoCaja/registro";
 export const ENDPOINTListarMovimientoTurno = "/movTurnoCaja/listar";
+
+// Insumos
+export const ENDPOINTRegistrarInsumo = "/insumos/registro";
+export const ENDPOINTListarInsumos = "/insumos/listar";
+export const ENDPOINTActualizarInsumo = "/insumos/actualizar";
+export const ENDPOINTCancelarInsumo = "/insumos/cancelar";
+export const ENDPOINTEliminarInsumo = "/insumos/eliminar";
