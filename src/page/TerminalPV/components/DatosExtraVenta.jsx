@@ -14,6 +14,7 @@ import {
 import { LogsInformativos } from "../../Logs/components/LogsSistema/LogsSistema";
 import BasicModal from "../../../components/Modal/BasicModal";
 import TicketFinal from "./Tiquet/Imprimir/TicketFinal";
+import { actualizaCaja, listarCajas } from "../../../api/cajas";
 
 function DatosExtraVenta(props) {
   const { setShowModal, setShow, isVenta, comision, tpv, turno } = props;
@@ -26,6 +27,8 @@ function DatosExtraVenta(props) {
   const [descuentoCalculado, setDescuentoCalculado] = useState(0);
   const [subtotal, setSubtotal] = useState(props.formData.subtotal);
   const [total, setTotal] = useState(subtotal);
+  const [caja, setCaja] = useState(null);
+  const [listCajas, setListCajas] = useState(null);
   const [cambio, setCambio] = useState(0);
   const [totalPagado, setTotalPagado] = useState(0);
 
@@ -37,6 +40,36 @@ function DatosExtraVenta(props) {
 
   const [fechayHora, setFechayHora] = useState("");
   const [fechayHoraSinFormato, setFechayHoraSinFormato] = useState("");
+
+  const cargarCajas = async () => {
+    const response = await listarCajas();
+    const { data } = response;
+    setListCajas(data);
+  };
+
+  console.log(listCajas);
+
+  useEffect(() => {
+    cargarCajas();
+  }, []);
+
+  useEffect(() => {
+    if (turno && listCajas) {
+      obtenerCaja(turno.caja);
+    }
+  }, [turno, listCajas]);
+
+  const obtenerCaja = (nombreCaja) => {
+    const cajaEncontrada = listCajas.find(
+      (caja) => caja.nombreCaja === nombreCaja
+    );
+
+    console.log(cajaEncontrada);
+    // Verificar si se encontró la caja
+    if (cajaEncontrada) {
+      setCaja(cajaEncontrada);
+    }
+  };
 
   const verificarNumeroTiquetUnico = (data, numeroTiquet) => {
     return data.some((venta) => venta.numeroTiquet === numeroTiquet);
@@ -383,6 +416,18 @@ function DatosExtraVenta(props) {
     }
   };
 
+  const agregarDineroCaja = async (total, tipoPago) => {
+    let saldoAgregar = caja.saldo + total;
+
+    const dataTemp = {
+      saldo: saldoAgregar,
+    };
+
+    if (tipoPago === "Efectivo") {
+      await actualizaCaja(caja._id, dataTemp);
+    }
+  };
+
   const cambiarOrdenAVenta = async () => {
     const fecha = calcularFecha();
     formData.infoVenta.total = total;
@@ -456,6 +501,7 @@ function DatosExtraVenta(props) {
                 props.numMesa,
               data.datos
             );
+            await agregarDineroCaja(dataTemp.total, dataTemp.tipoPago);
             await desocuparMesa();
             try {
               setShowModal(false);
@@ -484,6 +530,7 @@ function DatosExtraVenta(props) {
                   formData.infoVenta.mesa,
                 data.datos
               );
+              await agregarDineroCaja(dataTemp.total, dataTemp.tipoPago);
               await desocuparMesa();
               try {
                 setShowModal(false);
