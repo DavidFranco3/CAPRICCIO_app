@@ -326,7 +326,7 @@ function formatModelProductos(productos) {
       costoProduccion: parseFloat(producto.costoProduccion)
         ? parseFloat(producto.costoProduccion)
         : 0,
-      ingredientes: producto.ingredientes,
+      ingredientes: producto.insumos,
       precio: parseFloat(producto.precio),
       imagen: producto.imagen,
       estado: producto.estado,

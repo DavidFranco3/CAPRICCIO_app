@@ -124,7 +124,7 @@ function RegistraProductos(props) {
               imagen: data.secure_url,
               negocio: "LA NENA",
               costoProduccion: totalSinIVA,
-              ingredientes: listProductosCargados,
+              insumos: listProductosCargados,
               estado: "true",
             };
             registraProductos(dataTemp).then((response) => {

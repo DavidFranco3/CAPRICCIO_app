@@ -15,6 +15,7 @@ import { LogsInformativos } from "../../Logs/components/LogsSistema/LogsSistema"
 import BasicModal from "../../../components/Modal/BasicModal";
 import TicketFinal from "./Tiquet/Imprimir/TicketFinal";
 import { actualizaCaja, listarCajas } from "../../../api/cajas";
+import { actualizaInsumo, listarInsumos } from "../../../api/insumos";
 
 function DatosExtraVenta(props) {
   const { setShowModal, setShow, isVenta, comision, tpv, turno } = props;
@@ -31,7 +32,7 @@ function DatosExtraVenta(props) {
   const [listCajas, setListCajas] = useState(null);
   const [cambio, setCambio] = useState(0);
   const [totalPagado, setTotalPagado] = useState(0);
-
+  const [listInsumos, setListInsumos] = useState(null);
   const [iva, setIva] = useState(false);
   const [formaPedido, setFormaPedido] = useState({
     hacerPedido: "",
@@ -47,10 +48,18 @@ function DatosExtraVenta(props) {
     setListCajas(data);
   };
 
+  const cargarListInsumos = async () => {
+    const response = await listarInsumos();
+    const { data } = response;
+    setListInsumos(data);
+  };
+
   console.log(listCajas);
+  console.log(listInsumos);
 
   useEffect(() => {
     cargarCajas();
+    cargarListInsumos();
   }, []);
 
   useEffect(() => {
@@ -428,6 +437,43 @@ function DatosExtraVenta(props) {
     }
   };
 
+  // Función para actualizar el stock de insumos
+  const actualizarStockInsumos = async (productosVendidos) => {
+    try {
+      // Obtener la lista actual de insumos
+      const response = await listarInsumos();
+      const insumos = response.data;
+
+      // Crear un diccionario para acceder rápidamente a los insumos por su ID
+      const insumosMap = {};
+      insumos.forEach((insumo) => {
+        insumosMap[insumo._id] = insumo;
+      });
+
+      // Recorrer los productos vendidos para actualizar el stock de los insumos
+      productosVendidos.forEach((producto) => {
+        producto.insumos.forEach((insumoUtilizado) => {
+          const insumo = insumosMap[insumoUtilizado.idInsumo];
+          if (insumo) {
+            // Restar la cantidad utilizada del stock actual
+            insumo.stock -= insumoUtilizado.cantidad;
+          }
+        });
+      });
+
+      // Actualizar el stock de los insumos en la base de datos
+      await Promise.all(
+        insumos.map(async (insumo) => {
+          await actualizaInsumo(insumo._id, { stock: insumo.stock });
+        })
+      );
+
+      console.log("Stock de insumos actualizado correctamente");
+    } catch (error) {
+      console.error("Error al actualizar el stock de insumos:", error);
+    }
+  };
+
   const cambiarOrdenAVenta = async () => {
     const fecha = calcularFecha();
     formData.infoVenta.total = total;
@@ -501,6 +547,7 @@ function DatosExtraVenta(props) {
                 props.numMesa,
               data.datos
             );
+            await actualizarStockInsumos(dataTemp.productos);
             await agregarDineroCaja(dataTemp.total, dataTemp.tipoPago);
             await desocuparMesa();
             try {
@@ -530,6 +577,7 @@ function DatosExtraVenta(props) {
                   formData.infoVenta.mesa,
                 data.datos
               );
+              await actualizarStockInsumos(dataTemp.productos);
               await agregarDineroCaja(dataTemp.total, dataTemp.tipoPago);
               await desocuparMesa();
               try {
