@@ -11,6 +11,7 @@ import DetallesListaVentas from "./DetallesListaVentas";
 import { listarCategorias } from "../../../api/categorias";
 import ReporteCSV from "./GenerarDocs/ReportePDF";
 import { Bar } from "react-chartjs-2";
+import Utilidades from "./Utilidades";
 
 function ListVentas(props) {
   console.log(props);
@@ -164,7 +165,7 @@ function ListVentas(props) {
       name: "Total",
       selector: (row) => (
         <>
-          <Badge bg="success">
+          <Badge className="text-sm" bg="success">
             $
             {new Intl.NumberFormat("es-MX", {
               minimumFractionDigits: 2,
@@ -307,9 +308,19 @@ function ListVentas(props) {
 
       <hr className="mt-0" />
       <Row className="d-flex justify-content-center">
-        <div className="d-flex justify-content-center w-50">
-          <Bar data={chartData} options={chartOptions} />
-        </div>
+        <Col md={6}>
+          {" "}
+          {/* Ajusta el tamaño de la columna */}
+          <div className="d-flex justify-content-center">
+            <Bar data={chartData} options={chartOptions} />
+          </div>
+        </Col>
+        <Col
+          md={6}
+          className="d-flex align-items-center justify-content-center"
+        >
+          <Utilidades listVentas={ventasFiltradas} totalVentas={totalTotal} />
+        </Col>
       </Row>
 
       <BasicModal show={showModal} setShow={setShowModal} title={titulosModal}>
