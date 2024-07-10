@@ -18,7 +18,15 @@ import { actualizaCaja, listarCajas } from "../../../api/cajas";
 import { actualizaInsumo, listarInsumos } from "../../../api/insumos";
 
 function DatosExtraVenta(props) {
-  const { setShowModal, setShow, isVenta, comision, tpv, turno } = props;
+  const {
+    setShowTicket,
+    setShowTerminalPV,
+    setShow,
+    isVenta,
+    comision,
+    tpv,
+    turno,
+  } = props;
 
   console.log(props);
 
@@ -342,7 +350,7 @@ function DatosExtraVenta(props) {
   // Para cancelar el registro
   const cancelarRegistro = () => {
     try {
-      setShowModal(false);
+      setShowTicket(false);
     } catch (error) {
       console.error("Error al cerrar el modal principal:", error);
       try {
@@ -438,40 +446,56 @@ function DatosExtraVenta(props) {
   };
 
   // Función para actualizar el stock de insumos
-  const actualizarStockInsumos = async (productosVendidos) => {
-    try {
-      // Obtener la lista actual de insumos
-      const response = await listarInsumos();
-      const insumos = response.data;
+  // Función para convertir unidades de medida
+  const convertirUnidades = (cantidad, umTrabajo, umCompra) => {
+    if (umTrabajo === umCompra) return cantidad;
+    if (umCompra === "Kilogramos" && umTrabajo === "Gramos")
+      return cantidad / 1000;
+    if (umCompra === "Litros" && umTrabajo === "Mililitros")
+      return cantidad / 1000;
+    if (umCompra === "Gramos" && umTrabajo === "Kilogramos")
+      return cantidad * 1000;
+    if (umCompra === "Mililitros" && umTrabajo === "Litros")
+      return cantidad * 1000;
+    return cantidad; // Caso por defecto si no hay conversión
+  };
 
-      // Crear un diccionario para acceder rápidamente a los insumos por su ID
-      const insumosMap = {};
-      insumos.forEach((insumo) => {
-        insumosMap[insumo._id] = insumo;
+  // Función para actualizar el stock de los insumos
+  const actualizarStockInsumos = (prodsVendidos) => {
+    console.log(prodsVendidos);
+
+    prodsVendidos.forEach((producto) => {
+      const listaInsumos = producto.insumos;
+      listaInsumos.forEach(async (insumo) => {
+        let cantidadRestar = 0;
+        if (insumo.umCompra !== insumo.umTrabajo) {
+          if (insumo.umCompra === "Kilogramos" && insumo.umTrabajo === "Gramos")
+            cantidadRestar = insumo.cantidad / 1000;
+          if (insumo.umCompra === "Litros" && insumo.umTrabajo === "Mililitros")
+            cantidadRestar = insumo.cantidad / 1000;
+          if (insumo.umCompra === "Gramos" && insumo.umTrabajo === "Kilogramos")
+            cantidadRestar = insumo.cantidad * 1000;
+          if (insumo.umCompra === "Mililitros" && insumo.umTrabajo === "Litros")
+            cantidadRestar = insumo.cantidad * 1000;
+        }
+
+        const insumoModificar = listInsumos.find(
+          (insumoCambiar) => insumoCambiar._id === insumo.id
+        );
+
+        try {
+          const stockRestar = insumoModificar.stock - cantidadRestar;
+
+          const response = await actualizaInsumo(insumo.id, {
+            stock: stockRestar,
+          });
+          const { data } = response;
+          console.log(data);
+        } catch (error) {
+          console.log(error);
+        }
       });
-
-      // Recorrer los productos vendidos para actualizar el stock de los insumos
-      productosVendidos.forEach((producto) => {
-        producto.insumos.forEach((insumoUtilizado) => {
-          const insumo = insumosMap[insumoUtilizado.idInsumo];
-          if (insumo) {
-            // Restar la cantidad utilizada del stock actual
-            insumo.stock -= insumoUtilizado.cantidad;
-          }
-        });
-      });
-
-      // Actualizar el stock de los insumos en la base de datos
-      await Promise.all(
-        insumos.map(async (insumo) => {
-          await actualizaInsumo(insumo._id, { stock: insumo.stock });
-        })
-      );
-
-      console.log("Stock de insumos actualizado correctamente");
-    } catch (error) {
-      console.error("Error al actualizar el stock de insumos:", error);
-    }
+    });
   };
 
   const cambiarOrdenAVenta = async () => {
@@ -537,7 +561,14 @@ function DatosExtraVenta(props) {
         console.log(dataTemp);
 
         if (!isVenta) {
-          await imprimirTicketFinal(<TicketFinal formData={dataTemp} />);
+          await imprimirTicketFinal(
+            <TicketFinal
+              formData={dataTemp}
+              setShowMod={setShowMod}
+              setShowTerminalPV={setShowTerminalPV}
+              setShowTicket={setShowTicket}
+            />
+          );
           await registraVentas(dataTemp).then(async (response) => {
             const { data } = response;
             LogsInformativos(
@@ -550,23 +581,17 @@ function DatosExtraVenta(props) {
             await actualizarStockInsumos(dataTemp.productos);
             await agregarDineroCaja(dataTemp.total, dataTemp.tipoPago);
             await desocuparMesa();
-            try {
-              setShowModal(false);
-            } catch (error) {
-              console.error("Error al cerrar el modal principal:", error);
-              try {
-                setShow(false);
-              } catch (error) {
-                console.error("Error al cerrar el modal secundario:", error);
-                // Mostrar un mensaje de error general aquí
-                alert("Error al cerrar los modales");
-              }
-            }
             toast.success("Se ha creado y cobrado la orden en mesa con éxito");
           });
-          window.location.reload();
         } else {
-          await imprimirTicketFinal(<TicketFinal formData={dataTemp} />);
+          await imprimirTicketFinal(
+            <TicketFinal
+              formData={dataTemp}
+              setShowMod={setShowMod}
+              setShowTerminalPV={setShowTerminalPV}
+              setShowTicket={setShowTicket}
+            />
+          );
           await cobrarTicket(formData.infoVenta.numeroTiquet, dataTemp).then(
             async (response) => {
               const { data } = response;
@@ -580,24 +605,11 @@ function DatosExtraVenta(props) {
               await actualizarStockInsumos(dataTemp.productos);
               await agregarDineroCaja(dataTemp.total, dataTemp.tipoPago);
               await desocuparMesa();
-              try {
-                setShowModal(false);
-              } catch (error) {
-                console.error("Error al cerrar el modal principal:", error);
-                try {
-                  setShow(false);
-                } catch (error) {
-                  console.error("Error al cerrar el modal secundario:", error);
-                  // Mostrar un mensaje de error general aquí
-                  alert("Error al cerrar los modales");
-                }
-              }
               toast.success(
                 `Se ha cobrado la orden de la mesa ${dataTemp.mesa} con éxito`
               );
             }
           );
-          window.location.reload();
         }
       } catch (error) {
         console.error("Error al enviar los datos:", error);
@@ -672,7 +684,7 @@ function DatosExtraVenta(props) {
             data.datos
           );
           try {
-            setShowModal(false);
+            setShowTicket(false);
           } catch (error) {
             console.error("Error al cerrar el modal principal:", error);
             try {
@@ -697,7 +709,7 @@ function DatosExtraVenta(props) {
               data.datos
             );
             try {
-              setShowModal(false);
+              setShowTicket(false);
             } catch (error) {
               console.error("Error al cerrar el modal principal:", error);
               try {
@@ -1043,7 +1055,14 @@ function DatosExtraVenta(props) {
         </button>
         <button
           onClick={() =>
-            imprimirTicketFinal(<TicketFinal formData={formData.infoVenta} />)
+            imprimirTicketFinal(
+              <TicketFinal
+                formData={formData.infoVenta}
+                setShowMod={setShowMod}
+                setShowTerminalPV={setShowTerminalPV}
+                setShowTicket={setShowTicket}
+              />
+            )
           }
         >
           Imp

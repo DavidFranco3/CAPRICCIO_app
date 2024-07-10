@@ -78,7 +78,7 @@ function ListTurnos(params) {
             bg="primary"
             onClick={() => detallesMovsTurno(<MovimientosTurnos turno={row} />)}
           >
-            <FontAwesomeIcon icon={faCircleInfo} />
+            <FontAwesomeIcon className="text-lg" icon={faCircleInfo} />
           </Badge>
         </>
       ),

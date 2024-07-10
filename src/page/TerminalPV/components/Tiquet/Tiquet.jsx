@@ -28,7 +28,15 @@ import TicketCocina from "./Imprimir/TicketCocina";
 function Tiquet(props) {
   console.log(props);
 
-  const { setShow, idUsuario, products, empty, remove, turno } = props;
+  const {
+    setShow,
+    setShowTerminalPV,
+    idUsuario,
+    products,
+    empty,
+    remove,
+    turno,
+  } = props;
 
   const estadoticket = props.estadoticket;
   const mesaticket = props.mesaticket;
@@ -479,8 +487,9 @@ function Tiquet(props) {
                   <DatosExtraVenta
                     formData={formData}
                     mesaId={mesaId}
+                    setShowTerminalPV={setShowTerminalPV}
                     setShow={setShow}
-                    setShowModal={setShowModal}
+                    setShowTicket={setShowModal}
                     mesaClick={mesaClick}
                     isVenta={agregado}
                     comision={comision}

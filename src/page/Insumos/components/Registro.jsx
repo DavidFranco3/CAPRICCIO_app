@@ -5,35 +5,64 @@ import { Col, Container, Form, Row } from "react-bootstrap";
 import { registraInsumo } from "../../../api/insumos";
 import { toast } from "react-toastify";
 
-function RegistroInsumo() {
+function RegistroInsumo(props) {
+  const { setShow } = props;
+
   const [formData, setFormData] = useState({
     nombre: "",
-    precioCompra: "",
+    precioCompra: 0,
+    precioUnitario: 0,
     categoria: "",
     umCompra: "",
     umTrabajo: "",
-    stock: "",
+    stock: 0,
     estado: "true",
   });
 
   const [formValid, setFormValid] = useState(false);
 
+  const calcularPrecioUnitario = (precioCompra, umCompra, umTrabajo) => {
+    if (umCompra === umTrabajo) return precioCompra;
+    if (umCompra === "Kilogramos" && umTrabajo === "Gramos")
+      return precioCompra / 1000;
+    if (umCompra === "Litros" && umTrabajo === "Mililitros")
+      return precioCompra / 1000;
+    if (umCompra === "Gramos" && umTrabajo === "Kilogramos")
+      return precioCompra * 1000;
+    if (umCompra === "Mililitros" && umTrabajo === "Litros")
+      return precioCompra * 1000;
+    return precioCompra; // Default case
+  };
+
   const onSubmit = async (event) => {
     event.preventDefault();
+
+    const precioUnitario = calcularPrecioUnitario(
+      formData.precioCompra,
+      formData.umCompra,
+      formData.umTrabajo
+    );
+
     if (formValid) {
       try {
-        const dataTemp = formData;
+        const dataTemp = {
+          ...formData,
+          precioUnitario: precioUnitario,
+        };
         const response = await registraInsumo(dataTemp);
         const { data } = response;
         toast.success(data.mensaje);
+        setShow(false);
       } catch (error) {
         console.log(error);
+        toast.error("Error al registrar el insumo");
       }
 
       // Aquí puedes manejar el envío del formulario
       console.log("Formulario enviado:", formData);
     } else {
       console.log("Formulario incompleto");
+      toast.error("Formulario incompleto");
     }
   };
 
@@ -44,11 +73,11 @@ function RegistroInsumo() {
     setFormData(updatedFormData);
     setFormValid(
       updatedFormData.nombre &&
-        updatedFormData.precioCompra &&
+        updatedFormData.precioCompra > 0 &&
         updatedFormData.categoria &&
         updatedFormData.umCompra &&
         updatedFormData.umTrabajo &&
-        updatedFormData.stock
+        updatedFormData.stock > 0
     );
   };
 
@@ -68,7 +97,7 @@ function RegistroInsumo() {
               />
             </Col>
             <Col>
-              <Form.Label>Precio de compra</Form.Label>
+              <Form.Label>Precio de compra (Unitario)</Form.Label>
               <Form.Control
                 type="number"
                 placeholder="Precio de compra"

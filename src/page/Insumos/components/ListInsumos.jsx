@@ -3,6 +3,15 @@ import { listarInsumos } from "../../../api/insumos";
 import { Badge, FormControl } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import { estilos } from "../../../utils/tableStyled";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faEye,
+  faPen,
+  faTrashCan,
+  faX,
+} from "@fortawesome/free-solid-svg-icons";
+import BasicModal from "../../../components/Modal/BasicModal";
+import ModificarInsumos from "./Modificar";
 
 function ListInsumos(props) {
   const [listInsumos, setListInsumos] = useState([]);
@@ -50,6 +59,9 @@ function ListInsumos(props) {
           </Badge>
         </>
       ),
+      sortable: false,
+      center: true,
+      reorder: false,
     },
     {
       name: "Stock",
@@ -65,7 +77,62 @@ function ListInsumos(props) {
       center: true,
       reorder: false,
     },
+    {
+      name: "Dinero en stock",
+      selector: (row) => (
+        <>
+          <Badge bg="info">
+            ${" "}
+            {new Intl.NumberFormat("es-MX", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            }).format(row.precioCompra * row.stock)}{" "}
+            MXN
+          </Badge>
+        </>
+      ),
+      sortable: false,
+      center: true,
+      reorder: false,
+    },
+    {
+      name: "Acciones",
+      selector: (row) => (
+        <>
+          <div className="flex justify-end items-center space-x-4">
+            <Badge
+              className="cursor-pointer"
+              bg="success"
+              onClick={() =>
+                modificarInsumos(
+                  <ModificarInsumos datosInsumos={row} setShow={setShowModal} />
+                )
+              }
+            >
+              <FontAwesomeIcon icon={faPen} className="text-lg" />
+            </Badge>
+            <Badge className="cursor-pointer" bg="danger">
+              <FontAwesomeIcon icon={faTrashCan} className="text-lg" />
+            </Badge>
+          </div>
+        </>
+      ),
+      sortable: false,
+      center: true,
+      reorder: false,
+    },
   ];
+
+  // Para el modal
+  const [showModal, setShowModal] = useState(false);
+  const [contentModal, setContentModal] = useState(null);
+  const [titulosModal, setTitulosModal] = useState(null);
+
+  const modificarInsumos = (content) => {
+    setTitulosModal("Modificar el insumo");
+    setContentModal(content);
+    setShowModal(true);
+  };
 
   return (
     <>
@@ -86,6 +153,10 @@ function ListInsumos(props) {
         paginationPerPage={10}
         paginationRowsPerPageOptions={[5, 10]}
       />
+
+      <BasicModal show={showModal} setShow={setShowModal} title={titulosModal}>
+        {contentModal}
+      </BasicModal>
     </>
   );
 }

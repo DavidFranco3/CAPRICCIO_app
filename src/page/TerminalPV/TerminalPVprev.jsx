@@ -22,7 +22,7 @@ import { obtenerVentas } from "../../api/ventas";
 function TerminalPv(props) {
   console.log(props);
 
-  const { setRefreshCheckLogin, turno } = props;
+  const { setRefreshCheckLogin, turno, setShowTerminalPV } = props;
 
   const estadoticket = props.estado;
   const mesaticket = props.mesaticket;
@@ -294,7 +294,7 @@ function TerminalPv(props) {
                       numMesa={numMesa}
                       mesaId={props.mesaId}
                       idTicket={idTicket}
-                      setShow={props.setShow}
+                      setShowTerminalPV={setShowTerminalPV}
                       tipoPedido={tipoPedido}
                       hacerPedido={hacerPedido}
                       mesaClick={mesaClick}
@@ -326,7 +326,7 @@ function formatModelProductos(productos) {
       costoProduccion: parseFloat(producto.costoProduccion)
         ? parseFloat(producto.costoProduccion)
         : 0,
-      ingredientes: producto.insumos,
+      insumos: producto.insumos,
       precio: parseFloat(producto.precio),
       imagen: producto.imagen,
       estado: producto.estado,

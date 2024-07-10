@@ -74,7 +74,7 @@ const VistaMesasVenta = (props) => {
                 onClick={() =>
                   actVenta(
                     <TerminalPVprev
-                      setShow={setShowModal}
+                      setShowTerminalPV={setShowModal}
                       idTicket={""}
                       idmesa={""}
                       tpv={true}
@@ -101,7 +101,7 @@ const VistaMesasVenta = (props) => {
                   clicMesa(
                     <TerminalPVprev
                       agregar={"true"}
-                      setShow={setShowModal}
+                      setShowTerminalPV={setShowModal}
                       estado={"abierto"}
                       numMesa={mesa.numeroMesa}
                       mesaId={mesa.id}

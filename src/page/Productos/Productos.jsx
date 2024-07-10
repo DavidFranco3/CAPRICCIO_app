@@ -29,6 +29,7 @@ import AnimacionLoading from "../../assets/json/loading.json";
 import "../../scss/styles.scss";
 import { Switch } from "@headlessui/react";
 import { useNavigate } from "react-router-dom";
+import RegsitroProds from "./components/RegistraProductos/Registro";
 
 function Productos(props) {
   const { setRefreshCheckLogin, location, navigate } = props;
@@ -48,10 +49,17 @@ function Productos(props) {
   const [contentModal, setContentModal] = useState(null);
   const [titulosModal, setTitulosModal] = useState(null);
 
-  // Para la lista de abonos
-  const registroProductos = () => {
-    enrutamiento("/RegistraProductos");
+  // Para el registro de productos
+  const registroProductos = (content) => {
+    setShowModal(true);
+    setContentModal(content);
+    setTitulosModal("Registro producto");
   };
+
+  // Para la lista de abonos
+  // const registroProductos = () => {
+  //   enrutamiento("/RegistraProductos");
+  // };
 
   const [datosUsuario, setDatosUsuario] = useState("");
 
@@ -245,7 +253,9 @@ function Productos(props) {
               <button
                 title="Registrar un nuevo producto"
                 className="btn btn-outline-light me-2"
-                onClick={registroProductos}
+                onClick={() =>
+                  registroProductos(<RegsitroProds setShow={setShowModal} />)
+                }
               >
                 <FontAwesomeIcon icon={faCirclePlus} /> Registrar
               </button>
@@ -320,7 +330,7 @@ function formatModelProductos(productos) {
       costoProduccion: parseFloat(producto.costoProduccion)
         ? parseFloat(producto.costoProduccion)
         : 0,
-      ingredientes: producto.ingredientes,
+      insumos: producto.insumos,
       precio: parseFloat(producto.precio),
       imagen: producto.imagen,
       estado: producto.estado,

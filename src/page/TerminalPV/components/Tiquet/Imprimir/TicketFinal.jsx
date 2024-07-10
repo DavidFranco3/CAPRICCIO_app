@@ -1,8 +1,10 @@
 import { useEffect } from "react";
 import { logoTiquetGris } from "../../../../../assets/base64/logo-tiquet";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faX } from "@fortawesome/free-solid-svg-icons";
 
 function TicketFinal(params) {
-  const { formData } = params;
+  const { formData, setShowTicket, setShowTerminalPV, setShowMod } = params;
 
   const handlePrint = () => {
     if (formData.productos.length === 0) {
@@ -28,11 +30,18 @@ function TicketFinal(params) {
       tiquetGenerado.print();
       tiquetGenerado.close();
     }
+
+    // setShow(false);
+    setShowMod(false);
+    setShowTicket(false);
+    setShowTerminalPV(false);
   };
 
-  useEffect(() => {
-    handlePrint();
-  }, []);
+  const cancelarImp = () => {
+    setShowMod(false);
+    setShowTicket(false);
+    setShowTerminalPV(false);
+  };
 
   return (
     <>
@@ -113,12 +122,15 @@ function TicketFinal(params) {
             <p className="mb-0">Cambio: {formData.cambio}</p>
           )}
         </div>
+      </div>
 
-        <div className="d-flex justify-content-center">
-          <button className="btn btn-primary" onClick={() => handlePrint()}>
-            <i className="fas fa-print"></i> Imp
-          </button>
-        </div>
+      <div className="d-flex justify-content-evenly">
+        <button className="btn btn-primary" onClick={() => handlePrint()}>
+          <i className="fas fa-print"></i> Imp
+        </button>
+        <button className="btn btn-danger" onClick={cancelarImp}>
+          <FontAwesomeIcon icon={faX} /> Cerrar
+        </button>
       </div>
     </>
   );
