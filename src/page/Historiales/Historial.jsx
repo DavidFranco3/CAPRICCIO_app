@@ -16,7 +16,10 @@ import {
   DropdownButton,
   FormControl,
   InputGroup,
+  Tab,
+  Tabs,
 } from "react-bootstrap";
+import ListUsoInsumos from "./components/Insumos/ListaUsoInsumos";
 
 function Historial(props) {
   const { setRefreshCheckLogin } = props;
@@ -111,7 +114,7 @@ function Historial(props) {
   return (
     <div className="card card-outline m-3">
       <div className="card-header bg-gray">
-        <h4 className="font-bold mb-0">Historial de ventas</h4>
+        <h4 className="font-bold mb-0">Historiales</h4>
       </div>
 
       <ul className="list-group list-group-flush">
@@ -207,11 +210,26 @@ function Historial(props) {
           </div>
         </li>
         <li className="list-group-item">
-          <ListVentas
-            fechaInicial={fechaInicial}
-            fechaFinal={fechaFinal}
-            filtros={filtros}
-          />
+          <Tabs
+            defaultActiveKey="ventas"
+            id="uncontrolled-tab-example"
+            className="mb-3"
+          >
+            <Tab eventKey="ventas" title="Ventas">
+              <ListVentas
+                fechaInicial={fechaInicial}
+                fechaFinal={fechaFinal}
+                filtros={filtros}
+              />
+            </Tab>
+            <Tab eventKey="insumos" title="Insumos">
+              <ListUsoInsumos
+                fechaInicial={fechaInicial}
+                fechaFinal={fechaFinal}
+                filtros={filtros}
+              />
+            </Tab>
+          </Tabs>
         </li>
       </ul>
     </div>

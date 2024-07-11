@@ -65,7 +65,7 @@ function ListInsumos(props) {
     },
     {
       name: "Stock",
-      selector: (row) => row.stock,
+      selector: (row) => row.stock.toFixed(3),
       sortable: false,
       center: true,
       reorder: false,
