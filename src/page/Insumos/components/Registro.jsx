@@ -132,6 +132,7 @@ function RegistroInsumo(props) {
                 <option value="Kilogramos">Kilogramos</option>
                 <option value="Litros">Litros</option>
                 <option value="Mililitros">Mililitros</option>
+                <option value={"Pieza"}>Pieza</option>
               </Form.Select>
             </Col>
             <Col>
@@ -141,11 +142,19 @@ function RegistroInsumo(props) {
                 value={formData.umTrabajo}
                 onChange={handleInputChange}
               >
-                <option value="">Elige una opción</option>
-                <option value="Gramos">Gramos</option>
-                <option value="Kilogramos">Kilogramos</option>
-                <option value="Litros">Litros</option>
-                <option value="Mililitros">Mililitros</option>
+                {formData.umCompra === "Pieza" ? (
+                  <>
+                    <option value="Mililitros">Pieza</option>
+                  </>
+                ) : (
+                  <>
+                    <option value="">Elige una opción</option>
+                    <option value="Gramos">Gramos</option>
+                    <option value="Kilogramos">Kilogramos</option>
+                    <option value="Litros">Litros</option>
+                    <option value="Mililitros">Mililitros</option>
+                  </>
+                )}
               </Form.Select>
             </Col>
             <Col>

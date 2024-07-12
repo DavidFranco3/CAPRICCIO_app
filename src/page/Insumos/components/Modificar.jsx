@@ -8,8 +8,15 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import { Col, Container, Form, Row, Button } from "react-bootstrap";
 import { actualizaProductos, listarProductos } from "../../../api/productos";
-import { actualizaInsumo } from "../../../api/insumos";
+import { actualizaInsumo, registrarMovInsumo } from "../../../api/insumos";
 import { toast } from "react-toastify";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+// Configuración de dayjs para usar la zona horaria de la Ciudad de México
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 function ModificarInsumos(props) {
   const { datosInsumos, setShow } = props;
@@ -17,6 +24,7 @@ function ModificarInsumos(props) {
   const [listProductos, setListProductos] = useState([]);
   const [formData, setFormData] = useState(datosInsumos);
   const [cantidadAgregar, setCantidadAgregar] = useState(0);
+  const [razon, setRazon] = useState("");
 
   const cargarProductos = async () => {
     const response = await listarProductos();
@@ -105,6 +113,43 @@ function ModificarInsumos(props) {
     return precioCompra;
   };
 
+  const mandarMovInsumo = async () => {
+    let tipoMov = "";
+    const fecha = dayjs().tz("America/Mexico_City").format();
+
+    if (formData.stock !== datosInsumos.stock) {
+      if (formData.stock < datosInsumos.stock) {
+        tipoMov = "Salida";
+      }
+      if (formData.stock > datosInsumos.stock) {
+        tipoMov = "Entrada";
+      }
+
+      const movimiento = {
+        nombreInsumo: datosInsumos.nombre,
+        movimiento: tipoMov,
+        cantidad: cantidadAgregar,
+        umInsumo: datosInsumos.umCompra,
+        razon,
+        fecha,
+      };
+
+      try {
+        const response = await registrarMovInsumo(movimiento);
+        if (response.status === 200) {
+          toast.success("Movimiento registrado con éxito");
+        } else {
+          toast.error("Error al registrar el movimiento");
+        }
+      } catch (error) {
+        console.error("Error registrando el movimiento:", error);
+        toast.error(
+          "Error registrando el movimiento. Por favor intenta de nuevo."
+        );
+      }
+    }
+  };
+
   const onSubmit = async () => {
     const precioUnitario = calcularPrecioUnitario(
       formData.precioCompra,
@@ -120,6 +165,7 @@ function ModificarInsumos(props) {
       };
 
       const response = await actualizaInsumo(dataTemp._id, dataTemp);
+      if (dataTemp.stock !== datosInsumos.stock) await mandarMovInsumo();
       if (response.status !== 200) {
         throw new Error("Failed to update insumo");
       }
@@ -190,7 +236,7 @@ function ModificarInsumos(props) {
               <Form.Control
                 className="me-2"
                 type="number"
-                value={cantidadAgregar}
+                defaultValue={cantidadAgregar}
                 onChange={(e) => setCantidadAgregar(Number(e.target.value))}
               />
               <Button
@@ -211,6 +257,19 @@ function ModificarInsumos(props) {
             </div>
           </Col>
         </Row>
+        {cantidadAgregar > 0 && (
+          <Row>
+            <Col>
+              <Form.Label>Razón del movimiento</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="¿Por qué se hizo el movimiento?"
+                value={razon}
+                onChange={(e) => setRazon(e.target.value)}
+              />
+            </Col>
+          </Row>
+        )}
         <div className="mt-2 d-flex justify-content-evenly">
           <button className="btn btn-success" onClick={onSubmit}>
             <FontAwesomeIcon icon={faPenAlt} /> Editar

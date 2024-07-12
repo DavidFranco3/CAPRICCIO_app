@@ -94,11 +94,6 @@ const Menu = ({ datosUsuario, turno }) => {
                       title={"Categorías"}
                     />
                     <ItemCard
-                      path={"/Ingredientes"}
-                      logo={"fa-flask"}
-                      title={"Ingredientes"}
-                    />
-                    <ItemCard
                       path={"/Insumos"}
                       logo={"fa-warehouse"}
                       title={"Insumos"}

@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import RegistroInsumo from "./components/Registro";
 import { Switch } from "@headlessui/react";
+import ListMovsInsumos from "./components/ListMovsInsumos";
 
 function Insumos(props) {
   // Para modal
@@ -60,6 +61,7 @@ function Insumos(props) {
         </div>
         <div className="card-body">
           <ListInsumos />
+          <ListMovsInsumos />
         </div>
       </div>
 

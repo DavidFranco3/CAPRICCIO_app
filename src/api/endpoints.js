@@ -266,3 +266,7 @@ export const ENDPOINTListarInsumos = "/insumos/listar";
 export const ENDPOINTActualizarInsumo = "/insumos/actualizar";
 export const ENDPOINTCancelarInsumo = "/insumos/cancelar";
 export const ENDPOINTEliminarInsumo = "/insumos/eliminar";
+
+// Movimientos Insumos
+export const ENDPOINTRegistroMovimientoInsumo = "/movInsumos/registro";
+export const ENDPOINTListarMovimientosInsumo = "/movInsumos/listar";

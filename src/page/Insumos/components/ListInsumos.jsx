@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { listarInsumos } from "../../../api/insumos";
-import { Badge, FormControl } from "react-bootstrap";
+import { Badge, Col, FormControl } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import { estilos } from "../../../utils/tableStyled";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -136,13 +136,16 @@ function ListInsumos(props) {
 
   return (
     <>
-      <div className="mb-3">
-        <FormControl
-          type="text"
-          placeholder="Buscar por nombre"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+      <div className="row mb-3">
+        <Col>
+          <FormControl
+            type="text"
+            placeholder="Buscar por nombre"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </Col>
+        <Col></Col>
       </div>
       <DataTable
         columns={columnsMateriaPrima}

@@ -5,7 +5,9 @@ import {
   ENDPOINTCancelarInsumo,
   ENDPOINTEliminarIngredientes,
   ENDPOINTListarInsumos,
+  ENDPOINTListarMovimientosInsumo,
   ENDPOINTRegistrarInsumo,
+  ENDPOINTRegistroMovimientoInsumo,
 } from "./endpoints";
 import { getTokenApi } from "./auth";
 
@@ -78,4 +80,32 @@ export async function eliminaInsumo(id) {
     API_HOST + ENDPOINTEliminarIngredientes + `/${id}`,
     config
   );
+}
+
+// Registrar movimiento insumo
+export async function registrarMovInsumo(data) {
+  const config = {
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${getTokenApi()}`,
+    },
+  };
+  return await axios.post(
+    API_HOST + ENDPOINTRegistroMovimientoInsumo,
+    data,
+    config
+  );
+}
+
+// Listar movimientos insumo
+export async function listarMovsInsumo() {
+  const config = {
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${getTokenApi()}`,
+    },
+  };
+  return await axios.get(API_HOST + ENDPOINTListarMovimientosInsumo, config);
 }
