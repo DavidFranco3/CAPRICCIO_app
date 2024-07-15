@@ -137,7 +137,8 @@ function ListVentas(props) {
     },
     {
       name: "Fecha",
-      selector: (row) => row.fecha,
+      selector: (row) =>
+        dayjs(row.fecha).add(6, "hour").format("DD-MM-YYYY HH:mm A"),
       sortable: true,
       center: true,
       reorder: false,

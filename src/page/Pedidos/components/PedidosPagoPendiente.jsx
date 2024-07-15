@@ -1,6 +1,6 @@
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone'
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 import { useEffect, useState } from "react";
 import { listarPedidosPendientes, obtenerVentas } from "../../../api/ventas";
 import "./styles/stylesTabla.css";
@@ -11,7 +11,9 @@ import DatosExtraVenta from "../../TerminalPV/components/DatosExtraVenta";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-function PedidosPagoPendiente() {
+function PedidosPagoPendiente(props) {
+  const { turno } = props;
+
   const [listaPedidosPendientes, setListaPedidosPendientes] = useState([]);
   const [formData, setFormData] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -24,7 +26,6 @@ function PedidosPagoPendiente() {
         .then((response) => {
           const { data } = response;
           setListaPedidosPendientes(data);
-          console.log(listaPedidosPendientes);
         })
         .catch((e) => {
           console.log(e);
@@ -87,6 +88,7 @@ function PedidosPagoPendiente() {
           setShow={setShowModal}
           formData={formData}
           isVenta={true}
+          turno={turno}
         />
       );
     }
@@ -110,13 +112,16 @@ function PedidosPagoPendiente() {
               <tr key={index}>
                 <td>{row.numeroTiquet}</td>
                 <td>{row.cliente}</td>
-                <td>$ {new Intl.NumberFormat("es-MX", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      }).format(
-                        row.total
-                      )}{" "}</td>
-                <td>{row.hacerPedido} | {row.tipoPedido}</td>
+                <td>
+                  ${" "}
+                  {new Intl.NumberFormat("es-MX", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  }).format(row.total)}{" "}
+                </td>
+                <td>
+                  {row.hacerPedido} | {row.tipoPedido}
+                </td>
                 <td>
                   <button
                     type="button"
@@ -131,16 +136,18 @@ function PedidosPagoPendiente() {
                   <button
                     type="button"
                     className="btn btn-primary btn-sm"
-                    onClick={() => clicMesa(
-                      <TerminalPVprev
-                        agregar={true}
-                        setShow={setShowModal}
-                        estado={"abierto"}
-                        mesaticket={row.mesa}
-                        idmesa={row._id}
-                        idTicket={row.numeroTiquet}
-                      />
-                    )}
+                    onClick={() =>
+                      clicMesa(
+                        <TerminalPVprev
+                          agregar={true}
+                          setShow={setShowModal}
+                          estado={"abierto"}
+                          mesaticket={row.mesa}
+                          idmesa={row._id}
+                          idTicket={row.numeroTiquet}
+                        />
+                      )
+                    }
                   >
                     <span className="icon-ticket">
                       <i className="fas fa-ticket-alt mr-1"></i>
@@ -157,7 +164,13 @@ function PedidosPagoPendiente() {
           )}
         </tbody>
       </table>
-      <BasicModal show={showModal} setShow={setShowModal} title={titulosModal} size={"xl"} fullscreen={"true"}>
+      <BasicModal
+        show={showModal}
+        setShow={setShowModal}
+        title={titulosModal}
+        size={"xl"}
+        fullscreen={"true"}
+      >
         {contentModal}
       </BasicModal>
     </>

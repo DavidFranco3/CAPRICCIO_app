@@ -63,6 +63,7 @@ function VistaTurnos(props) {
   // Convertir y formatear las fechas
   if (turno) {
     formattedFechaInicio = dayjs(turno.fechaInicio)
+      .add(6, "hour")
       .tz("America/Mexico_City")
       .format("DD/MM/YYYY h:mm A");
     formattedFechaFinal = turno.fechaFinal

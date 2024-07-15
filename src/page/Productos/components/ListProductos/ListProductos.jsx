@@ -245,9 +245,7 @@ function ListProductos(props) {
               className="eliminar cursor-pointer"
               onClick={() => {
                 ingredientes(
-                  <ListIngredientesProductos
-                    listIngredientes={row.ingredientes}
-                  />
+                  <ListIngredientesProductos listInsumos={row.insumos} />
                 );
               }}
             >

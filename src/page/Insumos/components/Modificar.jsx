@@ -141,6 +141,7 @@ function ModificarInsumos(props) {
         } else {
           toast.error("Error al registrar el movimiento");
         }
+        setShow(false);
       } catch (error) {
         console.error("Error registrando el movimiento:", error);
         toast.error(

@@ -3,7 +3,7 @@ import { API_HOST } from "../utils/constants";
 import {
   ENDPOINTActualizarInsumo,
   ENDPOINTCancelarInsumo,
-  ENDPOINTEliminarIngredientes,
+  ENDPOINTEliminarInsumo,
   ENDPOINTListarInsumos,
   ENDPOINTListarMovimientosInsumo,
   ENDPOINTRegistrarInsumo,
@@ -77,7 +77,7 @@ export async function eliminaInsumo(id) {
     },
   };
   return await axios.delete(
-    API_HOST + ENDPOINTEliminarIngredientes + `/${id}`,
+    API_HOST + ENDPOINTEliminarInsumo + `/${id}`,
     config
   );
 }

@@ -12,8 +12,11 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import BasicModal from "../../../components/Modal/BasicModal";
 import ModificarInsumos from "./Modificar";
+import EliminarInsumos from "./Eliminar";
 
 function ListInsumos(props) {
+  const { showModIns } = props;
+
   const [listInsumos, setListInsumos] = useState([]);
   const [search, setSearch] = useState("");
   const [filteredInsumos, setFilteredInsumos] = useState([]);
@@ -25,9 +28,7 @@ function ListInsumos(props) {
     setFilteredInsumos(data);
   };
 
-  useEffect(() => {
-    cargarInsumos();
-  }, []);
+  console.log(props);
 
   useEffect(() => {
     setFilteredInsumos(
@@ -111,7 +112,15 @@ function ListInsumos(props) {
             >
               <FontAwesomeIcon icon={faPen} className="text-lg" />
             </Badge>
-            <Badge className="cursor-pointer" bg="danger">
+            <Badge
+              className="cursor-pointer"
+              bg="danger"
+              onClick={() =>
+                eliminarInsumo(
+                  <EliminarInsumos datosInsumo={row} setShow={setShowModal} />
+                )
+              }
+            >
               <FontAwesomeIcon icon={faTrashCan} className="text-lg" />
             </Badge>
           </div>
@@ -133,6 +142,16 @@ function ListInsumos(props) {
     setContentModal(content);
     setShowModal(true);
   };
+
+  const eliminarInsumo = (content) => {
+    setTitulosModal("Eliminar el insumo");
+    setContentModal(content);
+    setShowModal(true);
+  };
+
+  useEffect(() => {
+    cargarInsumos();
+  }, [showModIns, showModal]);
 
   return (
     <>

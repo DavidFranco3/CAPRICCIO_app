@@ -11,7 +11,9 @@ import timezone from "dayjs/plugin/timezone";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-function ListMovsInsumos() {
+function ListMovsInsumos(props) {
+  const { showModIns } = props;
+
   const [listMovsInsumos, setListMovsInsumos] = useState([]);
   const [open, setOpen] = useState(false);
 
@@ -23,7 +25,7 @@ function ListMovsInsumos() {
 
   useEffect(() => {
     cargarListMovsInsumos();
-  }, []);
+  }, [showModIns]);
 
   const columns = [
     {

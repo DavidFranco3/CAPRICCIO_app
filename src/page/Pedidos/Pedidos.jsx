@@ -1,14 +1,20 @@
 import VentasTerminadas from "./components/PedidosCobrados";
 import PedidosEnMesa from "./components/PedidosEnMesa";
 import PedidosPagoPendiente from "./components/PedidosPagoPendiente";
-import "./styles/styles.css"
+import "./styles/styles.css";
 
-function Pedidos() {
+function Pedidos(props) {
+  const { turno } = props;
+
   return (
     <>
       <div className="card m-3">
         <div className="card-header bg-gray">
-          <ul className="nav nav-tabs card-header-tabs" id="custom-content-below-tab" role="tablist">
+          <ul
+            className="nav nav-tabs card-header-tabs"
+            id="custom-content-below-tab"
+            role="tablist"
+          >
             <li className="nav-item">
               <a
                 className="nav-link active"
@@ -39,14 +45,19 @@ function Pedidos() {
         </div>
         <div className="card-body">
           <div className="tab-content" id="custom-content-below-tabContent">
-            <div className="tab-pane fade active show" id="custom-content-below-home" role="tabpanel" aria-labelledby="custom-content-below-home-tab">
+            <div
+              className="tab-pane fade active show"
+              id="custom-content-below-home"
+              role="tabpanel"
+              aria-labelledby="custom-content-below-home-tab"
+            >
               <div className="d-flex">
                 <div className="card w-50 mt-2 mx-1 border-danger ">
                   <div className="card-header bg-red">
                     <h4 className="card-title mb-0">Pedidos por pagar</h4>
                   </div>
                   <div className="card-body">
-                    <PedidosPagoPendiente />
+                    <PedidosPagoPendiente turno={turno} />
                   </div>
                 </div>
                 <div className="card w-50 mt-2 mx-1 border-warning">
@@ -54,15 +65,22 @@ function Pedidos() {
                     <h4 className="card-title mb-0">Pedidos en mesa</h4>
                   </div>
                   <div className="card-body">
-                    <PedidosEnMesa />
+                    <PedidosEnMesa turno={turno} />
                   </div>
                 </div>
               </div>
             </div>
-            <div className="tab-pane fade" id="custom-content-below-profile" role="tabpanel" aria-labelledby="custom-content-below-profile-tab">
+            <div
+              className="tab-pane fade"
+              id="custom-content-below-profile"
+              role="tabpanel"
+              aria-labelledby="custom-content-below-profile-tab"
+            >
               <div className="d-flex">
                 <div className="mt-2 card w-100 border-success">
-                  <div className="card-header bg-success">Ventas terminadas</div>
+                  <div className="card-header bg-success">
+                    Ventas terminadas
+                  </div>
                   <div className="card-body">
                     <VentasTerminadas />
                   </div>
@@ -71,7 +89,7 @@ function Pedidos() {
             </div>
           </div>
         </div>
-      </div> 
+      </div>
     </>
   );
 }

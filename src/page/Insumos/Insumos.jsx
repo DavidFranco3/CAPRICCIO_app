@@ -21,6 +21,8 @@ function Insumos(props) {
 
   const [estadoSwitch, setEstadoSwitch] = useState(true);
 
+  console.log(showModal);
+
   return (
     <>
       <div className="card card-outline m-3">
@@ -60,8 +62,8 @@ function Insumos(props) {
           </div>
         </div>
         <div className="card-body">
-          <ListInsumos />
-          <ListMovsInsumos />
+          <ListInsumos showModIns={showModal} />
+          <ListMovsInsumos showModIns={showModal} />
         </div>
       </div>
 
