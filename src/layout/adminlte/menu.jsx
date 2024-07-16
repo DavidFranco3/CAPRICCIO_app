@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import Logo from "../../components/Logo/Logo";
 
 const Menu = ({ datosUsuario, turno }) => {
   console.log(turno);
@@ -26,12 +27,7 @@ const Menu = ({ datosUsuario, turno }) => {
       <aside className="main-sidebar sidebar-dark-primary elevation-4">
         {/* Brand Logo */}
         <a href="#" className="brand-link">
-          <img
-            src="dist/img/AdminLTELogo.png"
-            alt="AdminLTE Logo"
-            className="brand-image img-circle elevation-3"
-            style={{ opacity: ".8" }}
-          />
+          <Logo bsclass={"brand-image img-circle elevation-3"} />
           <span className="brand-text font-weight-light">Restaurante</span>
         </a>
         {/* Sidebar */}

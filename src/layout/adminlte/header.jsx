@@ -6,6 +6,9 @@ import { getTokenApi, isExpiredToken, logoutApi } from "../../api/auth";
 import BasicModal from "../../components/Modal/BasicModal";
 import Comision from "../../page/Comision/RegistroComision";
 import Turno from "../../components/Turno/Turno";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUniversalAccess } from "@fortawesome/free-solid-svg-icons";
+import ActionsLogo from "../../components/Logo/ActionsLogo";
 
 const Header = (props) => {
   const { datosUsuario, turno, setTurno } = props;
@@ -69,6 +72,12 @@ const Header = (props) => {
   // Para ir hacia el inicio
   const enrutaInicio = () => {
     redirecciona("/");
+  };
+
+  const editarLogo = (content) => {
+    setTitulosModal("Logo");
+    setContentModal(content);
+    setShowModal(true);
   };
 
   return (
@@ -164,19 +173,36 @@ const Header = (props) => {
                   Cerrar sesión
                 </button>
               </span>
+              <div className="m-0 dropdown-divider" />
               {datosUsuario.rol === "administrador" && (
-                <span className="dropdown-item">
-                  <button
-                    onClick={() => {
-                      editarComision(<Comision setShowModal={setShowModal} />);
-                    }}
+                <>
+                  <span
+                    onClick={() =>
+                      editarLogo(<ActionsLogo setShow={setShowModal} />)
+                    }
+                    className="dropdown-item cursor-pointer d-flex justify-content-center align-items-center "
                   >
-                    <i className="fas fa-landmark mr-2"></i>
-                    Comision bancaria
-                  </button>
-                </span>
+                    <FontAwesomeIcon
+                      className="mr-2"
+                      icon={faUniversalAccess}
+                    />
+                    Logo
+                  </span>
+                  <div className="m-0 dropdown-divider" />
+                  <span className="dropdown-item">
+                    <button
+                      onClick={() => {
+                        editarComision(
+                          <Comision setShowModal={setShowModal} />
+                        );
+                      }}
+                    >
+                      <i className="fas fa-landmark mr-2"></i>
+                      Comision bancaria
+                    </button>
+                  </span>
+                </>
               )}
-              <div className="dropdown-divider" />
             </div>
           </li>
           <li className="nav-item">

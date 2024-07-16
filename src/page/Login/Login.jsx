@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 import { login, setTokenApi } from "../../api/auth";
 import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
@@ -8,18 +8,18 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import LogoLANENA from "../../assets/png/nena1.png";
 import "../../scss/styles.scss";
-import RegistroClientes from '../Usuarios/components/RegistroClientes';
+import RegistroClientes from "../Usuarios/components/RegistroClientes";
 import BasicModal from "../../components/Modal/BasicModal";
-import { LogsInformativos } from '../Logs/components/LogsSistema/LogsSistema';
+import { LogsInformativos } from "../Logs/components/LogsSistema/LogsSistema";
 
 function Login({ setRefreshCheckLogin }) {
-  const [formData, setFormData] = useState(initialFormValue)
-  const [signInLoading, setSignInLoading] = useState(false)
+  const [formData, setFormData] = useState(initialFormValue);
+  const [signInLoading, setSignInLoading] = useState(false);
 
-  const [mostrarPassword, setMostrarPassword] = useState(false)
+  const [mostrarPassword, setMostrarPassword] = useState(false);
   const togglePasswordVisiblity = () => {
-    setMostrarPassword((val) => !val)
-  }
+    setMostrarPassword((val) => !val);
+  };
 
   // Para hacer uso del modal
   const [showModal, setShowModal] = useState(false);
@@ -31,58 +31,60 @@ function Login({ setRefreshCheckLogin }) {
     setTitulosModal("Crear usuario");
     setContentModal(content);
     setShowModal(true);
-  }
+  };
 
   const onSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (!formData.usuario || !formData.password) {
-      toast.warning('Completa todos los campos del formulario.')
+      toast.warning("Completa todos los campos del formulario.");
     } else {
-      setSignInLoading(true)
+      setSignInLoading(true);
       try {
         login(formData)
           .then((response) => {
             const {
               data: { token },
-            } = response
-            setTokenApi(token)
-            const { _ } = jwtDecode(token)
-            const idUdsuario = _
+            } = response;
+            setTokenApi(token);
+            const { _ } = jwtDecode(token);
+            const idUdsuario = _;
             try {
-              obtenerUsuario(idUdsuario).then(response => {
+              obtenerUsuario(idUdsuario).then((response) => {
                 const { data } = response;
-                LogsInformativos("Inicio de sesión, para su seguridad la sesión finaliza automaticamente en 1 día", data)
-                setRefreshCheckLogin(true)
-                toast.success('Bienvenido ' + data.nombre)
-              }
-              )
+                LogsInformativos(
+                  "Inicio de sesión, para su seguridad la sesión finaliza automaticamente en 1 día",
+                  data
+                );
+                setRefreshCheckLogin(true);
+                toast.success("Bienvenido " + data.nombre);
+              });
             } catch (ex) {
-              toast.error('Error al obtener el usuario')
+              toast.error("Error al obtener el usuario");
             }
           })
           .catch((ex) => {
-            if (ex.message === 'Network Error') {
-              toast.error('Conexión al servidor no disponible')
-              setSignInLoading(false)
+            if (ex.message === "Network Error") {
+              toast.error("Conexión al servidor no disponible");
+              setSignInLoading(false);
             } else {
               if (ex.response && ex.response.status === 401) {
-                const { mensaje } = ex.response.data
-                toast.error(mensaje)
-                setSignInLoading(false)
+                const { mensaje } = ex.response.data;
+                toast.error(mensaje);
+                setSignInLoading(false);
               }
             }
-          })
+          });
       } catch (ex) {
-        toast.error('Error al iniciar sesión')
-        setSignInLoading(false)
+        toast.error("Error al iniciar sesión");
+        setSignInLoading(false);
       }
     }
-  }
+  };
 
   const onChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
-  }
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   return (
     <section className="h-screen">
@@ -110,7 +112,7 @@ function Login({ setRefreshCheckLogin }) {
 
               <div className="flex items-center mb-6">
                 <Form.Control
-                  type={mostrarPassword ? 'text' : 'password'}
+                  type={mostrarPassword ? "text" : "password"}
                   name="password"
                   defaultValue={formData.password}
                   className="form-control block w-full px-4 py-2 text-xl font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
@@ -133,7 +135,7 @@ function Login({ setRefreshCheckLogin }) {
                   disabled={signInLoading}
                 >
                   {!signInLoading ? (
-                    'Iniciar Sesión'
+                    "Iniciar Sesión"
                   ) : (
                     <Spinner animation="border" />
                   )}
@@ -148,10 +150,8 @@ function Login({ setRefreshCheckLogin }) {
                     className="registrar"
                     onClick={() => {
                       registroUsuarios(
-                        <RegistroClientes
-                          setShowModal={setShowModal}
-                        />
-                      )
+                        <RegistroClientes setShowModal={setShowModal} />
+                      );
                     }}
                   >
                     Crear usuario
@@ -161,17 +161,22 @@ function Login({ setRefreshCheckLogin }) {
             </Form>
           </div>
 
-          < BasicModal show={showModal} setShow={setShowModal} title={titulosModal} >
+          <BasicModal
+            show={showModal}
+            setShow={setShowModal}
+            title={titulosModal}
+          >
             {contentModal}
-          </BasicModal >
-
+          </BasicModal>
         </div>
         <div className="w-full text-center lg:text-left">
           <div className="text-gray-700 text-center p-4">
-            © {
+            ©{" "}
+            {
               // Get current year
               new Date().getFullYear()
-            } Copyright:{' '}
+            }{" "}
+            Copyright:{" "}
             <a
               className="pie text-emerald-700 no-underline"
               href="https://ideasysolucionestecnologicas.com"
@@ -185,14 +190,14 @@ function Login({ setRefreshCheckLogin }) {
         </div>
       </div>
     </section>
-  )
+  );
 }
 
 function initialFormValue() {
   return {
-    usuario: '',
-    password: '',
-  }
+    usuario: "",
+    password: "",
+  };
 }
 
 export default Login;
