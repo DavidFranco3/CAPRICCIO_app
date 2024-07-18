@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Col, Container, Form, Row } from "react-bootstrap";
 import { registraInsumo } from "../../../api/insumos";
 import { toast } from "react-toastify";
+import { data } from "autoprefixer";
 
 function RegistroInsumo(props) {
   const { setShow } = props;
@@ -38,9 +39,9 @@ function RegistroInsumo(props) {
     event.preventDefault();
 
     const precioUnitario = calcularPrecioUnitario(
-      formData.precioCompra,
-      formData.umCompra,
-      formData.umTrabajo
+      parseFloat(formData.precioCompra),
+      parseFloat(formData.umCompra),
+      parseFloat(formData.umTrabajo)
     );
 
     if (formValid) {
@@ -59,7 +60,7 @@ function RegistroInsumo(props) {
       }
 
       // Aquí puedes manejar el envío del formulario
-      console.log("Formulario enviado:", formData);
+      console.log("Formulario enviado:" + data);
     } else {
       console.log("Formulario incompleto");
       toast.error("Formulario incompleto");
@@ -76,7 +77,7 @@ function RegistroInsumo(props) {
         updatedFormData.precioCompra > 0 &&
         updatedFormData.categoria &&
         updatedFormData.umCompra &&
-        updatedFormData.umTrabajo &&
+        (updatedFormData.umTrabajo || updatedFormData.umCompra === "Pieza") &&
         updatedFormData.stock > 0
     );
   };

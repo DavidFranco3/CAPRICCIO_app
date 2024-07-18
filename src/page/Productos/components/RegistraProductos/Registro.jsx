@@ -40,7 +40,11 @@ function RegsitroProds(props) {
   const cargarInsumos = async () => {
     const response = await listarInsumos();
     const { data } = response;
-    setListInsumos(data);
+    const insumosFiltrados = data.filter(
+      (insumo) => insumo.categoria === "Materia prima"
+    );
+    insumosFiltrados.sort();
+    setListInsumos(insumosFiltrados);
   };
 
   const cargarCategorias = async () => {

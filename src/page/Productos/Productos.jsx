@@ -217,7 +217,7 @@ function Productos(props) {
   // obtener el listado de productos
   useEffect(() => {
     cargarDatos();
-  }, [location, estadoSwitch, page, rowsPerPage]);
+  }, [location, estadoSwitch, page, rowsPerPage, showModal]);
 
   const cargarDatosCategorias = () => {
     try {
