@@ -3,7 +3,7 @@ import { Button, Col, Form, Row } from "react-bootstrap";
 import { registraMesas } from "../../../api/mesas";
 import { toast } from "react-toastify";
 
-const RegistoMesas = () => {
+const RegistroMesas = () => {
   const [numeroMesa, setNumeroMesa] = useState("");
   const [numeroPersonas, setNumeroPersonas] = useState("");
   const [descripcion, setDescripcion] = useState("");
@@ -14,8 +14,6 @@ const RegistoMesas = () => {
       return;
     }
     try {
-      
-
       const response = await registraMesas({
         numeroMesa,
         descripcion,
@@ -31,7 +29,6 @@ const RegistoMesas = () => {
         setDescripcion("");
       } else {
         console.error("Error al registrar la mesa");
-
       }
     } catch (error) {
       console.error("Error de red:", error);
@@ -101,4 +98,4 @@ const RegistoMesas = () => {
   );
 };
 
-export default RegistoMesas;
+export default RegistroMesas;
