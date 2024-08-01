@@ -15,7 +15,7 @@ import ModificarInsumos from "./Modificar";
 import EliminarInsumos from "./Eliminar";
 
 function ListInsumos(props) {
-  const { showModIns } = props;
+  const { showModIns, datosUsuario } = props;
 
   const [listInsumos, setListInsumos] = useState([]);
   const [search, setSearch] = useState("");
@@ -27,8 +27,6 @@ function ListInsumos(props) {
     setListInsumos(data);
     setFilteredInsumos(data);
   };
-
-  console.log(props);
 
   useEffect(() => {
     setFilteredInsumos(
@@ -106,23 +104,34 @@ function ListInsumos(props) {
               bg="success"
               onClick={() =>
                 modificarInsumos(
-                  <ModificarInsumos datosInsumos={row} setShow={setShowModal} />
+                  <ModificarInsumos
+                    datosInsumos={row}
+                    setShow={setShowModal}
+                    datosUsuario={datosUsuario}
+                  />
                 )
               }
             >
               <FontAwesomeIcon icon={faPen} className="text-lg" />
             </Badge>
-            <Badge
-              className="cursor-pointer"
-              bg="danger"
-              onClick={() =>
-                eliminarInsumo(
-                  <EliminarInsumos datosInsumo={row} setShow={setShowModal} />
-                )
-              }
-            >
-              <FontAwesomeIcon icon={faTrashCan} className="text-lg" />
-            </Badge>
+            {datosUsuario.rol === "administrador" && (
+              <>
+                <Badge
+                  className="cursor-pointer"
+                  bg="danger"
+                  onClick={() =>
+                    eliminarInsumo(
+                      <EliminarInsumos
+                        datosInsumo={row}
+                        setShow={setShowModal}
+                      />
+                    )
+                  }
+                >
+                  <FontAwesomeIcon icon={faTrashCan} className="text-lg" />
+                </Badge>
+              </>
+            )}
           </div>
         </>
       ),

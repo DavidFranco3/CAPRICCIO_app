@@ -19,7 +19,7 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 function ModificarInsumos(props) {
-  const { datosInsumos, setShow } = props;
+  const { datosInsumos, setShow, datosUsuario } = props;
 
   const [listProductos, setListProductos] = useState([]);
   const [formData, setFormData] = useState(datosInsumos);
@@ -193,6 +193,7 @@ function ModificarInsumos(props) {
               name="nombre"
               defaultValue={formData.nombre}
               onChange={handleInputChange}
+              disabled={datosUsuario.rol === "cajero"}
             />
           </Col>
           <Col>
@@ -202,6 +203,7 @@ function ModificarInsumos(props) {
               name="precioCompra"
               defaultValue={formData.precioCompra}
               onChange={handleInputChange}
+              disabled={datosUsuario.rol === "cajero"}
             />
           </Col>
           <Col>
@@ -210,6 +212,7 @@ function ModificarInsumos(props) {
               name="umCompra"
               value={formData.umCompra}
               onChange={handleInputChange}
+              disabled={datosUsuario.rol === "cajero"}
             >
               <option value="">Elige una opción</option>
               <option value="Gramos">Gramos</option>

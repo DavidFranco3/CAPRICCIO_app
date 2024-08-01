@@ -210,7 +210,7 @@ function Dashboard(props) {
       )}
       {/*Vista del Dashboard para un usuario cajero*/}
       {estadoUsuario === "false" &&
-        rolUsuario === "vendedor" &&
+        rolUsuario === "cajero" &&
         tipoUsuario === "interno" && (
           <>
             <div className="m-3 grid grid-cols-5 gap-5">
@@ -220,20 +220,14 @@ function Dashboard(props) {
                 title={"Ventas"}
               />
               <ItemCard
-                path={"/HistorialesNoAdmin"}
-                logo={LogoHistorial}
-                title={"Historiales"}
-              />
-              <ItemCard path={"/Cajas"} logo={LogoCajas} title={"Cajas"} />
-              <ItemCard
-                path={"/Clientes"}
-                logo={LogoClientes}
-                title={"Clientes"}
+                path={"/Insumos"}
+                logo={LogoIngredientes}
+                title={"Insumos"}
               />
               <ItemCard
-                path={"/PedidosClientes"}
-                logo={LogoPedidos}
-                title={"Pedidos en línea"}
+                path={"/Turnos"}
+                logo={LogoCajas}
+                title={"Turnos y Cajas"}
               />
             </div>
             <BasicModal

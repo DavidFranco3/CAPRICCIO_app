@@ -127,7 +127,7 @@ const Menu = ({ datosUsuario, turno }) => {
                   </>
                 )}
               {/*Vista del Dashboard para un usuario cajero*/}
-              {datosUsuario.rol === "vendedor" &&
+              {datosUsuario.rol === "cajero" &&
                 datosUsuario.tipo === "interno" && (
                   <>
                     <ItemCard
@@ -136,24 +136,19 @@ const Menu = ({ datosUsuario, turno }) => {
                       title={"Ventas"}
                     />
                     <ItemCard
-                      path={"/Historiales"}
-                      logo={"fa-history"}
-                      title={"Historiales"}
+                      path={"/Ordenes"}
+                      logo={"fa-clipboard"}
+                      title={"Pedidos"}
+                    />
+                    <ItemCard
+                      path={"/Insumos"}
+                      logo={"fa-warehouse"}
+                      title={"Insumos"}
                     />
                     <ItemCard
                       path={"/Turnos"}
                       logo={"fa-cash-register"}
                       title={"Turnos y Cajas"}
-                    />
-                    <ItemCard
-                      path={"/Clientes"}
-                      logo={"fa-user-friends"}
-                      title={"Clientes"}
-                    />
-                    <ItemCard
-                      path={"/PedidosClientes"}
-                      logo={"fa-shopping-cart"}
-                      title={"Pedidos en línea"}
                     />
                   </>
                 )}

@@ -46,7 +46,7 @@ const configRouting = [
   {
     path: "/Turnos",
     page: VistaTurnos,
-    roles: ["administrador", "vendedor"],
+    roles: ["administrador", "cajero"],
   },
   // {
   //     path: "/TerminalPedidos",
@@ -56,7 +56,7 @@ const configRouting = [
   {
     path: "/Insumos",
     page: Insumos,
-    roles: ["administrador", "vendedor", "mesero"],
+    roles: ["administrador", "vendedor", "cajero"],
   },
   {
     path: "/Cajas",
@@ -86,12 +86,12 @@ const configRouting = [
   {
     path: "/TerminalPV",
     page: TerminalPV,
-    roles: ["administrador", "vendedor", "mesero"],
+    roles: ["administrador", "vendedor", "cajero"],
   },
   // {
   //     path: "/ModificarTerminalPV/:id",
   //     page: ModificarTerminalPV,
-  //     roles: ["administrador", "vendedor", "mesero"]
+  //     roles: ["administrador", "vendedor", "cajero"]
   // },
   {
     path: "/Usuarios",
@@ -116,39 +116,39 @@ const configRouting = [
   {
     path: "/Historiales",
     page: Historial,
-    roles: ["administrador", "vendedor", "mesero"],
+    roles: ["administrador"],
   },
   {
     path: "/Ordenes",
     page: Pedidos,
-    roles: ["administrador", "vendedor", "mesero"],
+    roles: ["administrador", "vendedor", "cajero"],
   },
   {
     path: "/HistorialesNoAdmin",
     page: HistorialesNoAdmin,
-    roles: ["vendedor", "mesero"],
+    roles: ["vendedor", "cajero"],
   },
   {
     path: "/Mesas",
     page: VistaMesas,
-    roles: ["administrador", "vendedor", "mesero"],
+    roles: ["administrador"],
   },
   {
     path: "*",
     page: Error404,
-    roles: ["administrador", "vendedor", "mesero"],
+    roles: ["administrador", "vendedor", "cajero"],
   },
   {
     path: "/",
     page: Dashboard,
     default: true,
-    roles: ["administrador", "vendedor", "cliente", "mesero"],
+    roles: ["administrador", "cajero"],
   },
   {
     path: "/AdminLTE",
     page: LayoutAdminLTE,
     default: false,
-    roles: ["administrador", "vendedor", "cliente", "mesero"],
+    roles: ["administrador", "cajero"],
   },
 ];
 

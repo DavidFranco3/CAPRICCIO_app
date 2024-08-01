@@ -16,8 +16,8 @@ const clientRoutes = configRouting.filter((route) =>
   route.roles.includes("cliente")
 );
 
-const waitersRoutes = configRouting.filter((route) =>
-  route.roles.includes("mesero")
+const cashiersRoutes = configRouting.filter((route) =>
+  route.roles.includes("cajero")
 );
 
 const Routing = ({ setRefreshCheckLogin, userRole, turno, setTurno }) => (
@@ -28,8 +28,8 @@ const Routing = ({ setRefreshCheckLogin, userRole, turno, setTurno }) => (
           ? adminRoutes
           : userRole === "vendedor"
           ? sellerRoutes
-          : userRole === "mesero"
-          ? waitersRoutes
+          : userRole === "cajero"
+          ? cashiersRoutes
           : clientRoutes,
         (route, index) => (
           <Route
