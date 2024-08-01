@@ -91,13 +91,13 @@ function Login({ setRefreshCheckLogin }) {
       <div className="container px-6 py-12 h-full">
         <div className="flex justify-center items-center flex-wrap h-full g-6 text-gray-800">
           <div className="md:w-8/12 lg:w-6/12 mb-12 md:mb-0 space-y-4">
-            <div className="logos">
-              <Image
-                className="logoPrincipal1"
-                src={LogoLANENA}
-                alt="Tortas la Nena"
-                title="Tortas la Nena"
-              />
+            <div className="d-flex flex-column justify-content-center">
+              <Row className="d-flex justify-content-center">
+                <h4 className="d-flex justify-content-center">TPV</h4>
+              </Row>
+              <Row>
+                <h4 className="d-flex justify-content-center">IsoTech</h4>
+              </Row>
             </div>
             <Form onSubmit={onSubmit} onChange={onChange}>
               <div className="mb-6">
