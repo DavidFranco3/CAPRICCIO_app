@@ -24,6 +24,7 @@ import { ocuparDesocuparMesas } from "../../../../api/mesas";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { obtenerComisiones } from "../../../../api/comision";
 import TicketCocina from "./Imprimir/TicketCocina";
+import Logo from "../../../../components/Logo/Logo";
 
 function Tiquet(props) {
   console.log(props);
@@ -351,12 +352,12 @@ function Tiquet(props) {
     }
   };
 
-  const Encabezado = ({ logo, tipoPedido, fechayHora }) => {
+  const Encabezado = ({ Logo, tipoPedido, fechayHora }) => {
     return (
       <div className="cafe">
         {/**/}
         <div id="logoFinal" className="logotipo">
-          <Image src={logo} alt="logo" />
+          <Logo />
         </div>
 
         <div className="card card-widget widget-user">
@@ -534,7 +535,7 @@ function Tiquet(props) {
           {/**/}
 
           <Encabezado
-            logo={logoTiquetGris}
+            Logo={Logo}
             numeroTiquet={numeroTiquet}
             mesa={numMesa}
             fechayHora={fechayHora}

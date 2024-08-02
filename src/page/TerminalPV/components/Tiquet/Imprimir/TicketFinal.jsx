@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { logoTiquetGris } from "../../../../../assets/base64/logo-tiquet";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faX } from "@fortawesome/free-solid-svg-icons";
+import Logo from "../../../../../components/Logo/Logo";
 
 function TicketFinal(params) {
   const { formData, setShowTicket, setShowTerminalPV, setShowMod } = params;
@@ -47,7 +48,7 @@ function TicketFinal(params) {
     <>
       <div id="ticketCocina" className="container-sm">
         <div className="d-flex justify-content-center align-items-center">
-          <img src={logoTiquetGris} alt="Logo" />
+          <Logo />
         </div>
         <div>Nombre: {formData.cliente}</div>
         <div className="row d-flex justify-content-center">
