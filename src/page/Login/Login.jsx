@@ -142,22 +142,6 @@ function Login({ setRefreshCheckLogin }) {
                 </Button>
               </div>
               <br />
-              <Form.Group as={Row} className="botonSubirProducto">
-                <Col>
-                  <Button
-                    title="Registrar usuario"
-                    variant="success"
-                    className="registrar"
-                    onClick={() => {
-                      registroUsuarios(
-                        <RegistroClientes setShowModal={setShowModal} />
-                      );
-                    }}
-                  >
-                    Crear usuario
-                  </Button>
-                </Col>
-              </Form.Group>
             </Form>
           </div>
 
