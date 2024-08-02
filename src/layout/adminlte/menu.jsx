@@ -1,6 +1,8 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import Logo from "../../components/Logo/Logo";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUser } from "@fortawesome/free-solid-svg-icons";
 
 const Menu = ({ datosUsuario, turno }) => {
   console.log(turno);
@@ -33,13 +35,14 @@ const Menu = ({ datosUsuario, turno }) => {
         {/* Sidebar */}
         <div className="sidebar">
           {/* Sidebar user panel (optional) */}
-          <div className="user-panel mt-3 pb-3 mb-3 d-flex">
+          <div className="user-panel mt-3 pb-3 mb-3 d-flex align-items-center">
             <div className="image">
-              <img
-                src="dist/img/user2-160x160.jpg"
-                className="img-circle elevation-2"
-                alt="User"
-              />
+              <h4 className="m-0">
+                <FontAwesomeIcon
+                  className="brand-image img-circle bg-white elevation-3"
+                  icon={faUser}
+                />
+              </h4>
             </div>
             <div className="info">
               <span
