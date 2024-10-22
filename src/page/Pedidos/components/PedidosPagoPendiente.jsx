@@ -2,11 +2,12 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { useEffect, useState } from "react";
-import { listarPedidosPendientes, obtenerVentas } from "../../../api/ventas";
+import { listarPedidosPendientes, obtenerVentas, cancelarVenta } from "../../../api/ventas";
 import "./styles/stylesTabla.css";
 import TerminalPVprev from "../../TerminalPV/TerminalPVprev";
 import BasicModal from "../../../components/Modal/BasicModal";
 import DatosExtraVenta from "../../TerminalPV/components/DatosExtraVenta";
+import CancelarVenta from "./CancelarPedido";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -47,6 +48,12 @@ function PedidosPagoPendiente(props) {
 
   const clicMesa = (content) => {
     setTitulosModal("Ticket");
+    setContentModal(content);
+    setShowModal(true);
+  };
+
+  const clicCancelar = (content) => {
+    setTitulosModal("Cancelar");
     setContentModal(content);
     setShowModal(true);
   };
@@ -153,6 +160,28 @@ function PedidosPagoPendiente(props) {
                       <i className="fas fa-ticket-alt mr-1"></i>
                     </span>
                     Ticket
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-danger btn-sm"
+                    onClick={() =>
+                      clicCancelar(
+                        <CancelarVenta
+                          agregar={true}
+                          setShow={setShowModal}
+                          estado={"abierto"}
+                          mesaticket={row.mesa}
+                          idmesa={row._id}
+                          idTicket={row.numeroTiquet}
+                          datosVentas={row}
+                        />
+                      )
+                    }
+                  >
+                    <span className="icon-ticket">
+                      <i className="fas fa-times-circle mr-1"></i>
+                    </span>
+                    Cancelar
                   </button>
                 </td>
               </tr>
