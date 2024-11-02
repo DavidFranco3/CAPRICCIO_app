@@ -30,7 +30,8 @@ const Menu = ({ datosUsuario, turno }) => {
         {/* Brand Logo */}
         <a href="#" className="brand-link">
           <Logo bsclass={"brand-image img-circle elevation-3"} />
-          <span className="brand-text font-weight-light">Restaurante</span>
+          <span className="brand-text font-weight-light">CAPRICCIO
+          </span>
         </a>
         {/* Sidebar */}
         <div className="sidebar">
