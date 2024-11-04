@@ -144,34 +144,40 @@ function RegsitroProds(props) {
   };
 
   const registrarProducto = async () => {
-    try {
+  try {
+    let imageUrl = "";
+
+    // Check if there's an image to upload
+    if (imagePreview) {
       const response = await subeArchivosCloudinary(imagePreview, "productos");
       const { data } = response;
-      const dataTemp = {
-        nombre: formData.nombreProducto,
-        categoria: formData.categoria,
-        precio: formData.precio,
-        imagen: data.secure_url,
-        negocio: formData.negocio,
-        costoProduccion: costoProduccion,
-        insumos: listInsumosReceta,
-        estado: "true",
-      };
-
-      const productoResponse = await registraProductos(dataTemp);
-      const { data: productoData } = productoResponse;
-      LogsInformativos(
-        "Se ha registrado el producto " + formData.nombreProducto,
-        productoData.datos
-      );
-      toast.success(productoData.mensaje);
-      cancelarRegistro();
-    } catch (error) {
-      console.log(error);
-      toast.error("Error al registrar el producto");
+      imageUrl = data.secure_url;
     }
-  };
 
+    const dataTemp = {
+      nombre: formData.nombreProducto,
+      categoria: formData.categoria,
+      precio: formData.precio,
+      imagen: imageUrl, // Use imageUrl, which is either the uploaded URL or an empty string
+      negocio: formData.negocio,
+      costoProduccion: costoProduccion,
+      insumos: listInsumosReceta,
+      estado: "true",
+    };
+
+    const productoResponse = await registraProductos(dataTemp);
+    const { data: productoData } = productoResponse;
+    LogsInformativos(
+      "Se ha registrado el producto " + formData.nombreProducto,
+      productoData.datos
+    );
+    toast.success(productoData.mensaje);
+    cancelarRegistro();
+  } catch (error) {
+    console.log(error);
+    toast.error("Error al registrar el producto");
+  }
+};
   return (
     <>
       <Container>
