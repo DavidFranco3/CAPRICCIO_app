@@ -16,6 +16,8 @@ function Login({ setRefreshCheckLogin }) {
   const [formData, setFormData] = useState(initialFormValue);
   const [signInLoading, setSignInLoading] = useState(false);
 
+  const logo = "https://res.cloudinary.com/omarlestrella/image/upload/v1730506157/TPV_LA_NENA/msdxqnu7gehwjru0jhvs.jpg";
+
   const [mostrarPassword, setMostrarPassword] = useState(false);
   const togglePasswordVisiblity = () => {
     setMostrarPassword((val) => !val);
@@ -98,6 +100,8 @@ function Login({ setRefreshCheckLogin }) {
               <Row>
                 <h4 className="d-flex justify-content-center">IsoTech</h4>
               </Row>
+              <img src={logo}
+                alt="logo"></img>
             </div>
             <Form onSubmit={onSubmit} onChange={onChange}>
               <div className="mb-6">
