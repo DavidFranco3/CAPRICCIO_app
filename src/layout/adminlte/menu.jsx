@@ -131,7 +131,7 @@ const Menu = ({ datosUsuario, turno }) => {
                   </>
                 )}
               {/*Vista del Dashboard para un usuario cajero*/}
-              {datosUsuario.rol === "cajero" &&
+              {datosUsuario.rol === "vendedor" &&
                 datosUsuario.tipo === "interno" && (
                   <>
                     <ItemCard
