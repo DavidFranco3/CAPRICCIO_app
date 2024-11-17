@@ -16,7 +16,7 @@ function CancelarVenta(props) {
 
     console.log(location);
 
-    const { id, numeroTiquet, productos, total, estado, createdAt } = datosVentas
+    const { _id, numeroTiquet, productos, total, estado, createdAt } = datosVentas
 
     console.log(navigate)
 
@@ -37,7 +37,7 @@ function CancelarVenta(props) {
             const dataTemp = {
                 estado: estado === "true" ? "false" : "true"
             }
-            cancelarVenta(id, dataTemp).then(response => {
+            cancelarVenta(_id, dataTemp).then(response => {
                 const { data } = response;
                 navigate({
                     search: queryString.stringify(""),
