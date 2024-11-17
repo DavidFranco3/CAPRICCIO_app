@@ -18,7 +18,7 @@ import {
   isExpiredToken,
   logoutApi,
   obtenidusuarioLogueado,
-} from "../../api/auth";
+} from "../../../api/auth";
 
 function ListVentas(props) {
   console.log(props);
