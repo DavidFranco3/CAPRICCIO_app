@@ -4,7 +4,7 @@ import { cancelarVenta } from "../../../../api/ventas";
 import { toast } from "react-toastify";
 import { Button, Col, Row, Form, Spinner, Alert } from "react-bootstrap";
 import queryString from "query-string";
-import { faX, faSave } from "@fortawesome/free-solid-svg-icons";
+import { faX, faSave, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import 'dayjs/locale/es';
 import dayjs from 'dayjs';
@@ -16,7 +16,7 @@ function CancelarVenta(props) {
 
     console.log(location);
 
-    const { id, numeroTiquet, productosVendidos, total, estado, fechaCreacion } = datosVentas
+    const { id, numeroTiquet, productos, total, estado, createdAt } = datosVentas
 
     console.log(navigate)
 
@@ -96,7 +96,7 @@ function CancelarVenta(props) {
                             Productos vendidos
                             <Form.Control
                                 type="text"
-                                value={productosVendidos}
+                                value={productos.length}
                                 disabled
                             />
                         </Form.Group>
@@ -116,7 +116,7 @@ function CancelarVenta(props) {
                             Día de la venta
                             <Form.Control
                                 type="text"
-                                value={dayjs(fechaCreacion).format('L hh:mm A')}
+                                value={dayjs(createdAt).format('L hh:mm A')}
                                 disabled
                             />
                         </Form.Group>
@@ -125,12 +125,12 @@ function CancelarVenta(props) {
                     <Form.Group as={Row} className="botonSubirProducto">
                         <Col>
                             <Button
-                                title={estado === "true" ? "cancelar venta" : "recuperar venta"}
+                                title={"Eliminar venta"}
                                 type="submit"
                                 variant="success"
                                 className="registrar"
                             >
-                                <FontAwesomeIcon icon={faSave} /> {!loading ? (estado === "true" ? "Deshabilitar" : "Habilitar") : <Spinner animation="border" />}
+                                <FontAwesomeIcon icon={faTrashCan} /> {!loading ? ("Eliminar") : <Spinner animation="border" />}
                             </Button>
                         </Col>
                         <Col>
