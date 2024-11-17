@@ -15,10 +15,10 @@ import { Bar } from "react-chartjs-2";
 import Utilidades from "./Utilidades";
 import {
   getTokenApi,
-  isExpiredToken,
-  logoutApi,
   obtenidusuarioLogueado,
 } from "../../../api/auth";
+import { obtenerUsuario } from "../../../api/usuarios";
+import { toast } from "react-toastify";
 
 function ListVentas(props) {
   console.log(props);
