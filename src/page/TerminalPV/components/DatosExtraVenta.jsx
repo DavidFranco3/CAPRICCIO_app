@@ -1,7 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { Col, Form, Row } from "react-bootstrap";
-import dayjs from "dayjs";
-import "dayjs/locale/es";
+import dayjs from 'dayjs';
+import 'dayjs/locale/es';
+import localizedFormat from 'dayjs/plugin/localizedFormat';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
 import "../../../scss/styles.scss";
 import { toast } from "react-toastify";
 import { ocuparDesocuparMesas } from "../../../api/mesas";
@@ -47,8 +50,19 @@ function DatosExtraVenta(props) {
     tipoPedido: "",
   });
 
-  const [fechayHora, setFechayHora] = useState("");
+    // Importa el complemento de zona horaria
+    dayjs.extend(utc);
+    dayjs.extend(timezone);
+    dayjs.extend(localizedFormat);
+
   const [fechayHoraSinFormato, setFechayHoraSinFormato] = useState("");
+
+  useEffect(() => {
+    const hoy = new Date();
+    const adjustedDate = dayjs(hoy).utc().utcOffset(-360).format(); // Ajusta la hora a CST (UTC -6)
+    
+    setFechayHoraSinFormato(adjustedDate);
+  }, []);
 
   const cargarCajas = async () => {
     const response = await listarCajas();
@@ -102,14 +116,6 @@ function DatosExtraVenta(props) {
     setModalContent(content);
     setShowMod(true);
   };
-
-  useEffect(() => {
-    const hoy = new Date();
-    const adjustedDate = dayjs(hoy).utc().utcOffset(-360).format(); // Ajusta la hora a CST (UTC -6)
-
-    setFechayHora(dayjs(adjustedDate).locale("es").format("dddd, LL hh:mm A"));
-    setFechayHoraSinFormato(adjustedDate);
-  }, []);
 
   // FORM DATA
   const [formData, setFormData] = useState({
@@ -501,6 +507,7 @@ function DatosExtraVenta(props) {
   const cambiarOrdenAVenta = async () => {
     const fecha = calcularFecha();
     formData.infoVenta.total = total;
+    const formattedDate = dayjs(fechayHoraSinFormato).tz('America/Mexico_City').format('YYYY-MM-DDTHH:mm:ss.SSSZ');
 
     if (
       (formData.infoMetodosPago.efectivo.estado &&
@@ -557,6 +564,7 @@ function DatosExtraVenta(props) {
           semana: formData.infoVenta.semana || fecha.weekNumber,
           fecha: formData.infoVenta.fecha || fecha.formattedDate,
           metodosPago: formData.infoMetodosPago,
+          createdAt: formattedDate
         };
         console.log(dataTemp);
 
@@ -620,6 +628,7 @@ function DatosExtraVenta(props) {
   const cobrarDespues = async () => {
     const fecha = calcularFecha();
     formData.infoVenta.total = total;
+    const formattedDate = dayjs(fechayHoraSinFormato).tz('America/Mexico_City').format('YYYY-MM-DDTHH:mm:ss.SSSZ');
 
     if (
       (formData.infoMetodosPago.efectivo.estado &&
@@ -672,6 +681,7 @@ function DatosExtraVenta(props) {
         semana: formData.infoVenta.semana || fecha.weekNumber,
         fecha: formData.infoVenta.fecha || fecha.formattedDate,
         metodosPago: formData.infoMetodosPago,
+        createdAt: formattedDate
       };
       console.log(dataTemp);
 

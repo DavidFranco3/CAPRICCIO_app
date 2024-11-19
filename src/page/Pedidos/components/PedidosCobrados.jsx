@@ -1,18 +1,17 @@
 import { useEffect, useState } from "react";
-import { listarVentasDia } from "../../../api/ventas";
+import { listarVentasRangoFechas } from "../../../api/ventas";
 import DataTable from "react-data-table-component";
 import BasicModal from "../../../components/Modal/BasicModal";
 import ModalProductos from "./modalProductos";
 import dayjs from "dayjs";
 import TicketView from "../../TerminalPV/components/Tiquet/TicketView";
 
-function VentasTerminadas() {
+function VentasTerminadas({fechaInicial, fechaFinal}) {
     const [ventasHoy, setVentasHoy] = useState([]);
 
     const cargarVentasDelDia = async () => {
-      const hoy = dayjs().format("YYYY-MM-DD");
       try {
-          await listarVentasDia(hoy).then((response) => {
+          await listarVentasRangoFechas(fechaInicial, fechaFinal).then((response) => {
             const { data } = response;
             setVentasHoy(data);
             console.log(data);

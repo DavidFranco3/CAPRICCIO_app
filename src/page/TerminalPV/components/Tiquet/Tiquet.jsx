@@ -29,6 +29,13 @@ import Logo from "../../../../components/Logo/Logo";
 function Tiquet(props) {
   console.log(props);
 
+      // Importa el complemento de zona horaria
+      dayjs.extend(utc);
+      dayjs.extend(timezone);
+      dayjs.extend(localizedFormat);
+
+
+
   const {
     setShow,
     setShowTerminalPV,
@@ -178,13 +185,14 @@ function Tiquet(props) {
     setShowModal(true);
   };
 
-  const [fechayHora, setFechayHora] = useState("");
   const [fechayHoraSinFormato, setFechayHoraSinFormato] = useState("");
+  const [fechayHora, setFechayHora] = useState("");
+
   useEffect(() => {
     const hoy = new Date();
-    const adjustedDate = dayjs(hoy).utc().utcOffset(-360).format();
+    const adjustedDate = dayjs(hoy).utc().utcOffset(-360).format(); // Ajusta la hora a CST (UTC -6)
 
-    setFechayHora(dayjs(adjustedDate).locale("es").format("dddd, LL hh:mm A"));
+    setFechayHora(dayjs(adjustedDate).locale('es').format('dddd, LL hh:mm A'));
     setFechayHoraSinFormato(adjustedDate);
   }, []);
 
@@ -269,6 +277,7 @@ function Tiquet(props) {
   const ponerOrden = async () => {
     const fecha = calcularFecha();
     setAgregado(true);
+    const formattedDate = dayjs(fechayHoraSinFormato).tz('America/Mexico_City').format('YYYY-MM-DDTHH:mm:ss.SSSZ');
 
     if (products.length === 0) {
       toast.warning("Debe cargar productos al ticket");
@@ -290,6 +299,7 @@ function Tiquet(props) {
           año: fecha.añoVenta,
           semana: fecha.weekNumber,
           fecha: fecha.formattedDate,
+          createdAt: formattedDate
         };
         console.log(dataTemp);
         await registraVentas(dataTemp).then(async (response) => {

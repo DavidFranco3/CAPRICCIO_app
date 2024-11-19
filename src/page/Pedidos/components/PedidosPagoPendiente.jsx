@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { useEffect, useState } from "react";
-import { listarPedidosPendientes, obtenerVentas, cancelarVenta } from "../../../api/ventas";
+import { listarPedidosPendientes, obtenerVentas } from "../../../api/ventas";
 import "./styles/stylesTabla.css";
 import TerminalPVprev from "../../TerminalPV/TerminalPVprev";
 import BasicModal from "../../../components/Modal/BasicModal";

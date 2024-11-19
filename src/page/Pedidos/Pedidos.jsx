@@ -2,9 +2,29 @@ import VentasTerminadas from "./components/PedidosCobrados";
 import PedidosEnMesa from "./components/PedidosEnMesa";
 import PedidosPagoPendiente from "./components/PedidosPagoPendiente";
 import "./styles/styles.css";
+import {
+  Dropdown,
+  DropdownButton,
+  FormControl,
+  InputGroup,
+  Tab,
+  Tabs,
+} from "react-bootstrap";
+import dayjs from "dayjs";
+import { useEffect, useState } from "react";
+import utc from "dayjs/plugin/utc";
 
 function Pedidos(props) {
   const { turno } = props;
+
+  dayjs.extend(utc);
+
+  const hoy = dayjs().utc();
+
+  const [fechaInicial, setFechaInicial] = useState(hoy.format("YYYY-MM-DD"));
+  const [fechaFinal, setFechaFinal] = useState(hoy.format("YYYY-MM-DD"));
+
+  console.log(fechaInicial, fechaFinal)
 
   return (
     <>
@@ -76,13 +96,32 @@ function Pedidos(props) {
               role="tabpanel"
               aria-labelledby="custom-content-below-profile-tab"
             >
+              <label htmlFor="fechas">Rango de fechas</label>
+          <InputGroup>
+            <FormControl
+              type="date"
+              placeholder="Fecha inicial"
+              aria-label="Fecha inicial"
+              value={fechaInicial}
+              onChange={(e) => setFechaInicial(e.target.value)}
+            />
+            <span className="input-group-text">-</span>
+            <FormControl
+              type="date"
+              className=""
+              placeholder="Fecha final"
+              aria-label="Fecha final"
+              value={fechaFinal}
+              onChange={(e) => setFechaFinal(e.target.value)}
+            />
+          </InputGroup>
               <div className="d-flex">
                 <div className="mt-2 card w-100 border-success">
                   <div className="card-header bg-success">
                     Ventas terminadas
                   </div>
                   <div className="card-body">
-                    <VentasTerminadas />
+                    <VentasTerminadas fechaInicial={fechaInicial} fechaFinal={fechaFinal} />
                   </div>
                 </div>
               </div>

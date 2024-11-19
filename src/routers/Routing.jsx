@@ -1,6 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { map } from "lodash";
-
 import configRouting from "./configRouting";
 import LayoutAdminLTE from "../layout/adminlte/layout";
 
