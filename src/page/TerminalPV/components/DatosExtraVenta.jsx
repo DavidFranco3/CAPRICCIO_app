@@ -372,6 +372,7 @@ function DatosExtraVenta(props) {
   useEffect(() => {
     if (
       formaPedido.hacerPedido === "Uber" ||
+      formaPedido.hacerPedido === "Didi" ||
       formaPedido.hacerPedido === "Rappi"
     ) {
       setFormaPedido((prevFormaPedido) => ({
@@ -552,7 +553,7 @@ function DatosExtraVenta(props) {
           tipoDescuento: formData.infoVenta.tipoDescuento,
           descuento: formData.infoVenta.descuento,
           pagado:
-            props.hacerPedido === "Rappi" && props.hacerPedido === "Uber"
+            (props.hacerPedido === "Rappi" && props.hacerPedido === "Didi" && props.hacerPedido === "Uber")
               ? false
               : true,
           total: formData.infoVenta.total,
@@ -769,7 +770,8 @@ function DatosExtraVenta(props) {
                       onChange={handleTipoDescuentoChange}
                       disabled={
                         formaPedido.hacerPedido === "Uber" &&
-                        formaPedido.hacerPedido === "Rappi"
+                        formaPedido.hacerPedido === "Didi" &&
+                        formaPedido.hacerPedido === "Rappi" 
                       }
                     />
                     <Form.Check
@@ -839,6 +841,7 @@ function DatosExtraVenta(props) {
                         <option value="Presencial">Presencial</option>
                       )}
                       <option value="Rappi">Rappi</option>
+                      <option value="Didi">Didi food</option>
                       <option value="Uber">Uber</option>
                     </Form.Control>
                   </Form.Group>
@@ -854,6 +857,7 @@ function DatosExtraVenta(props) {
                       disabled={
                         props.mesaClick ||
                         formaPedido.hacerPedido === "Uber" ||
+                        formaPedido.hacerPedido === "Didi" ||
                         formaPedido.hacerPedido === "Rappi"
                       }
                     >
@@ -919,8 +923,9 @@ function DatosExtraVenta(props) {
             </Col>
           </Row>
 
-          {formaPedido.hacerPedido !== "Rappi" &&
-            formaPedido.hacerPedido !== "Uber" &&
+          {(formaPedido.hacerPedido !== "Rappi" &&
+          formaPedido.hacerPedido !== "Didi" &&
+            formaPedido.hacerPedido !== "Uber") &&
             !tpv && (
               <Row className="mx-1 p-1 border rounded">
                 <Col className="">

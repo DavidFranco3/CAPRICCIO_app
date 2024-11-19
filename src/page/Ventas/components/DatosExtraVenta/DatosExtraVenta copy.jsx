@@ -183,6 +183,7 @@ function DatosExtraVenta(props) {
                     <option value="por llamada">Llamada</option>
                     <option value="de forma presencial">Presencial</option>
                     <option value="por Rappi">Rappi</option>
+                    <option value="por Didi">Didi</option>
                     <option value="por Uber">Uber</option>
                   </Form.Control>
                 </Form.Group>
