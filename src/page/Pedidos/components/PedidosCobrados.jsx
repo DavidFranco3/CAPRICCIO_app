@@ -7,6 +7,7 @@ import dayjs from "dayjs";
 import TicketView from "../../TerminalPV/components/Tiquet/TicketView";
 
 function VentasTerminadas({fechaInicial, fechaFinal}) {
+  console.log(fechaInicial, fechaFinal)
     const [ventasHoy, setVentasHoy] = useState([]);
 
     const cargarVentasDelDia = async () => {
@@ -24,7 +25,7 @@ function VentasTerminadas({fechaInicial, fechaFinal}) {
 
     useEffect(() => {
         cargarVentasDelDia();
-    }, []);
+    }, [fechaInicial, fechaFinal]);
 
     const ventasAgrupadasPorTipoPago = ventasHoy.reduce(
         (acumulador, venta) => {
