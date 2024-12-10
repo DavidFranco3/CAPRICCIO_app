@@ -64,6 +64,8 @@ function DatosExtraVenta(props) {
     setFechayHoraSinFormato(adjustedDate);
   }, []);
 
+  console.log(fechayHoraSinFormato)
+
   const cargarCajas = async () => {
     const response = await listarCajas();
     const { data } = response;

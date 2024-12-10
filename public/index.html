@@ -23,6 +23,21 @@
 
     <title>Terminal Punto de Venta</title>
   </head>
+  <script>
+    document.addEventListener('click', function (event) {
+      var sidebar = document.querySelector('.main-sidebar');
+      if (sidebar) {
+        var isClickInside = sidebar.contains(event.target);
+        if (!isClickInside && window.innerWidth < 990) {
+          var body = document.querySelector('body');
+          if (body.classList.contains('sidebar-open')) {
+            body.classList.replace('sidebar-open', 'sidebar-closed');
+            body.classList.add('sidebar-collapse');
+          }
+        }
+      }
+    });
+  </script>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
