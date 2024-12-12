@@ -12,9 +12,7 @@ import localizedFormat from 'dayjs/plugin/localizedFormat';
 import { LogsInformativos } from '../../../Logs/components/LogsSistema/LogsSistema';
 
 function CancelarVenta(props) {
-    const { datosVentas, navigate, location, setShowModal } = props;
-
-    console.log(location);
+    const { datosVentas, navigate, setShowModal } = props;
 
     const { _id, numeroTiquet, productos, total, estado, createdAt } = datosVentas
 

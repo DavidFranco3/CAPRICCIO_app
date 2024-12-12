@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleInfo, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import BasicModal from "../../../components/Modal/BasicModal";
 import DetallesListaVentas from "./DetallesListaVentas";
-import { listarCategorias} from "../../../api/categorias";
+import { listarCategorias } from "../../../api/categorias";
 import ReporteCSV from "./GenerarDocs/ReportePDF";
 import { Bar } from "react-chartjs-2";
 import Utilidades from "./Utilidades";
@@ -19,10 +19,11 @@ import {
 } from "../../../api/auth";
 import { obtenerUsuario } from "../../../api/usuarios";
 import { toast } from "react-toastify";
+import { withRouter } from "../../../utils/withRouter";
 
 function ListVentas(props) {
   console.log(props);
-  const { fechaInicial, fechaFinal, filtros } = props;
+  const { fechaInicial, fechaFinal, filtros, location, navigate } = props;
 
   const [tipoUsuario, setTipoUsuario] = useState("");
 
@@ -152,7 +153,7 @@ function ListVentas(props) {
       obtenerVentasPorFechas();
       cargarCategorias();
     }
-  }, [fechaInicial, fechaFinal, filtros]);
+  }, [fechaInicial, fechaFinal, filtros, location]);
 
   const columns = [
     {
@@ -194,8 +195,8 @@ function ListVentas(props) {
         row.metodosPago.efectivo.estado
           ? "Efectivo"
           : row.metodosPago.tdc.estado
-          ? "TDC"
-          : "Transferencia",
+            ? "TDC"
+            : "Transferencia",
       sortable: false,
       center: true,
       reorder: false,
@@ -222,27 +223,28 @@ function ListVentas(props) {
       name: "Acciones",
       selector: (row) => (
         <>
-        {tipoUsuario == "true" ? (<>
-          <div className="flex justify-end items-center space-x-4">
-            <Badge
-              className="cursor-pointer"
-              bg="danger"
-              onClick={() =>
-                cancelarVenta(
-                  <CancelarVenta
-                    datosInsumos={row}
-                    setShow={setShowModal}
-                    datosVentas={row}
-                  />
-                )
-              }
-            >
-              <FontAwesomeIcon icon={faTrashCan} className="text-lg" />
-            </Badge>
-          </div>
+          {tipoUsuario == "true" ? (<>
+            <div className="flex justify-end items-center space-x-4">
+              <Badge
+                className="cursor-pointer"
+                bg="danger"
+                onClick={() =>
+                  cancelarVenta(
+                    <CancelarVenta
+                      datosInsumos={row}
+                      setShowModal={setShowModal}
+                      datosVentas={row}
+                      navigate={navigate}
+                    />
+                  )
+                }
+              >
+                <FontAwesomeIcon icon={faTrashCan} className="text-lg" />
+              </Badge>
+            </div>
           </>) : (
             <>
-            No disponibles
+              No disponibles
             </>
           )}
         </>
@@ -402,4 +404,4 @@ function ListVentas(props) {
   );
 }
 
-export default ListVentas;
+export default withRouter(ListVentas);
