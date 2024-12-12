@@ -45,7 +45,7 @@ function MovimientosTurnos(params) {
   };
 
   const cargarSaldoCaja = () => {
-    if (turno.totalEfectivo === 0) setSaldoCaja(caja.saldo);
+    if (turno.totalEfectivo === 0) setSaldoCaja(caja?.saldo);
     else setSaldoCaja(turno.totalEfectivo);
   };
 
