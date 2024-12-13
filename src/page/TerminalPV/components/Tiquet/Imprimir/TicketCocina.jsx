@@ -1,3 +1,6 @@
+import React from "react";
+import PrintJS from "print-js";
+
 function TicketCocina(params) {
   const { formData } = params;
 
@@ -5,25 +8,26 @@ function TicketCocina(params) {
     if (formData.productos.length === 0) {
       console.log("agregue productos");
     } else {
-      const tiquetGenerado = window.open(
-        "Tiquet",
-        "PRINT",
-        "height=800,width=1200"
-      );
-      tiquetGenerado.document.write("<html><head>");
-      tiquetGenerado.document.write(
-        "<style>.tabla{width:100%;border-collapse:collapse;margin:16px 0 16px 0;}.tabla th{border:1px solid #ddd;padding:4px;background-color:#d4eefd;text-align:left;font-size:30px;}.tabla td{border:1px solid #ddd;text-align:left;padding:6px;} p {margin-top: -10px !important;} .cafe__number {margin-top: -10px !important;} .logotipo {width: 91px !important; margin: 0 auto;} img {width: 91px !important; margin: 0 auto;} .logotipoRappi {width: 91px !important; margin: 0 auto;} img {width: 91px !important; margin: 0 auto;}  .detallesTitulo {margin-top: 10px !important;} .ticket__actions {display: none !important;} .remove-icon {display: none !important;} .remove-icono {display: none !important;} .items__price {color: #000000 !important;} </style>"
-      );
-      tiquetGenerado.document.write("</head><body>");
-      tiquetGenerado.document.write(
-        document.getElementById("ticketCocina").innerHTML
-      );
-      tiquetGenerado.document.write("</body></html>");
-
-      tiquetGenerado.document.close();
-      tiquetGenerado.focus();
-      tiquetGenerado.print();
-      tiquetGenerado.close();
+      // Usamos print-js para generar el ticket
+      PrintJS({
+        printable: 'ticketCocina', // El ID del contenedor que queremos imprimir
+        type: 'html', // Tipo de contenido: HTML
+        style: `
+          .tabla{width:100%;border-collapse:collapse;margin:16px 0 16px 0;}
+          .tabla th{border:1px solid #ddd;padding:4px;background-color:#d4eefd;text-align:left;font-size:30px;}
+          .tabla td{border:1px solid #ddd;text-align:left;padding:6px;}
+          p {margin-top: -10px !important;} 
+          .cafe__number {margin-top: -10px !important;}
+          .logotipo {width: 91px !important; margin: 0 auto;}
+          img {width: 91px !important; margin: 0 auto;} 
+          .logotipoRappi {width: 91px !important; margin: 0 auto;}
+          .detallesTitulo {margin-top: 10px !important;}
+          .ticket__actions {display: none !important;}
+          .remove-icon {display: none !important;}
+          .remove-icono {display: none !important;}
+          .items__price {color: #000000 !important;}
+        `, // Estilos personalizados para la impresión
+      });
     }
   };
 

@@ -1,15 +1,12 @@
 import { useEffect, useState } from "react";
 import { Container, Table } from "react-bootstrap";
 import { listarMovimientoTurno } from "../../../api/movimientosTurnoCajas";
-import {
-  listarVentasRangoFechas,
-  listarVentasTurno,
-} from "../../../api/ventas";
-import dayjs from "dayjs";
+import { listarVentasTurno } from "../../../api/ventas";
+import { toast } from "react-toastify";
+import printJS from 'print-js';
 import BasicModal from "../../Modal/BasicModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPrint } from "@fortawesome/free-solid-svg-icons";
-import { toast } from "react-toastify";
 
 function MovimientosTurnos(params) {
   const { caja, turno } = params;
@@ -27,17 +24,15 @@ function MovimientosTurnos(params) {
   const cargarListVentas = async () => {
     const response = await listarVentasTurno(turno.idTurno);
     const { data } = response;
-    // console.log(data);
     setListVentas(data);
     calcularTotalVentasEfectivo(data);
   };
 
   const calcularTotalVentasEfectivo = (ventas) => {
     if (!Array.isArray(ventas)) {
-      setTotalVentasEfectivo(0); // Manejar el caso cuando ventas no es un array
+      setTotalVentasEfectivo(0);
       return;
     }
-
     const total = ventas
       .filter((venta) => venta.tipoPago === "Efectivo")
       .reduce((acc, venta) => acc + (venta.total || 0), 0);
@@ -55,7 +50,7 @@ function MovimientosTurnos(params) {
     cargarSaldoCaja();
   }, []);
 
-  //Para el modal
+  // Para el modal
   const [showMod, setShowMod] = useState(false);
   const [modalContent, setModalContent] = useState(null);
   const [titulosModal, setTitulosModal] = useState(null);
@@ -64,25 +59,25 @@ function MovimientosTurnos(params) {
     if (listMovs.length === 0 && listVentas.length === 0) {
       toast.warning("No hay información para imprimir");
     } else {
-      const tiquetGenerado = window.open(
-        "Tiquet",
-        "PRINT",
-        "height=800,width=1200"
-      );
-      tiquetGenerado.document.write("<html><head>");
-      tiquetGenerado.document.write(
-        "<style>.tabla{width:100%;border-collapse:collapse;margin:16px 0 16px 0;}.tabla th{border:1px solid #ddd;padding:4px;background-color:#d4eefd;text-align:left;font-size:30px;}.tabla td{border:1px solid #ddd;text-align:left;padding:6px;} p {margin-top: -10px !important;} .cafe__number {margin-top: -10px !important;} .logotipo {width: 91px !important; margin: 0 auto;} img {width: 91px !important; margin: 0 auto;} .logotipoRappi {width: 91px !important; margin: 0 auto;} img {width: 91px !important; margin: 0 auto;}  .detallesTitulo {margin-top: 10px !important;} .ticket__actions {display: none !important;} .remove-icon {display: none !important;} .remove-icono {display: none !important;} .items__price {color: #000000 !important;} </style>"
-      );
-      tiquetGenerado.document.write("</head><body>");
-      tiquetGenerado.document.write(
-        document.getElementById("ticketCorteCaja").innerHTML
-      );
-      tiquetGenerado.document.write("</body></html>");
-
-      tiquetGenerado.document.close();
-      tiquetGenerado.focus();
-      tiquetGenerado.print();
-      tiquetGenerado.close();
+      printJS({
+        printable: "ticketCorteCaja", // Usamos el ID del contenedor de la tabla
+        type: "html",
+        style: `
+          .tabla { width: 100%; border-collapse: collapse; margin: 16px 0; }
+          .tabla th { border: 1px solid #ddd; padding: 4px; background-color: #d4eefd; text-align: left; font-size: 30px; }
+          .tabla td { border: 1px solid #ddd; text-align: left; padding: 6px; }
+          p { margin-top: -10px !important; }
+          .cafe__number { margin-top: -10px !important; }
+          .logotipo { width: 91px !important; margin: 0 auto; }
+          img { width: 91px !important; margin: 0 auto; }
+          .logotipoRappi { width: 91px !important; margin: 0 auto; }
+          .detallesTitulo { margin-top: 10px !important; }
+          .ticket__actions { display: none !important; }
+          .remove-icon { display: none !important; }
+          .items__price { color: #000000 !important; }
+        `,
+        showModal: true
+      });
     }
   };
 

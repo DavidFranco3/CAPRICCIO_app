@@ -8,6 +8,7 @@ import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import { obtenerVentaAsociada } from '../../../../api/ventas';
 import { map } from "lodash";
+import printJS from 'print-js';  // Importa print-js
 
 function GeneraPdfProductosAdicionales(props) {
     const { datos } = props;
@@ -29,34 +30,24 @@ function GeneraPdfProductosAdicionales(props) {
         }
     }
 
-    console.log(datosProductos);
-
     useEffect(() => {
         cargarDatos();
     }, []);
 
     const comisionTotal = datosProductos.reduce((amount, item) => (amount + parseInt(item.comision)), 0);
-
     const ivaTotal = datosProductos.reduce((amount, item) => (amount + parseInt(item.iva)), 0);
-
     const totalFinal = datosProductos.reduce((amount, item) => (amount + parseInt(item.total)), 0);
-
     const efectivoTotal = datosProductos.reduce((amount, item) => (amount + parseInt(item.efectivo)), 0);
-    
     const cambioTotal = datosProductos.reduce((amount, item) => (amount + parseInt(item.cambio)), 0);
-
     const subtotalFinal = datosProductos.reduce((amount, item) => (amount + parseInt(item.subtotal)), 0);
-
-
-    console.log(comisionTotal)
 
     const [productosAdicionales, setProductosAdicionales] = useState();
 
     const cargarListaProductosAdicionales = () => {
         let auxProductos = [];
-        map(datosProductos, (item, index) => {
+        map(datosProductos, (item) => {
             const { productos } = item
-            map(productos, (item2, indexSecundario) => {
+            map(productos, (item2) => {
                 const { nombre, precio } = item2;
                 auxProductos.push({ nombre, precio });
             })
@@ -68,62 +59,43 @@ function GeneraPdfProductosAdicionales(props) {
         cargarListaProductosAdicionales();
     }, [datosProductos]);
 
-    console.log(productosAdicionales);
-
     dayjs.locale('es');
     dayjs.extend(localizedFormat);
 
     const handlePrint = () => {
         toast.info("Generando... espere por favor")
 
-        const timer = setTimeout(() => {
-            const tiquetGenerado = window.open('Tiquet', 'PRINT', 'height=400,width=600');
-            tiquetGenerado.document.write('<html><head>');
-            tiquetGenerado.document.write('<style>.tabla{width:100%;border-collapse:collapse;margin:16px 0 16px 0;}.tabla th{border:1px solid #ddd;padding:4px;background-color:#d4eefd;text-align:left;font-size:30px;}.tabla td{border:1px solid #ddd;text-align:left;padding:6px;} p {margin-top: -10px !important;} .cafe__number {margin-top: -10px !important;} .logotipo {width: 91px !important; margin: 0 auto;} img {width: 91px !important; margin: 0 auto;} .detallesTitulo {margin-top: 10px !important;} </style>');
-            tiquetGenerado.document.write('</head><body>');
-            tiquetGenerado.document.write(document.getElementById('tiquetAutogenerado').innerHTML);
-            tiquetGenerado.document.write('</body></html>');
+        const content = document.getElementById('tiquetAutogenerado').innerHTML;  // Obtén el contenido del ticket
 
-            tiquetGenerado.document.close();
-            tiquetGenerado.focus();
-            tiquetGenerado.print();
-            tiquetGenerado.close();
+        setTimeout(() => {
+            printJS({
+                printable: content,  // El contenido que deseas imprimir
+                type: 'raw-html',    // Especifica que es HTML
+                style: `.tabla{width:100%;border-collapse:collapse;margin:16px 0 16px 0;}.tabla th{border:1px solid #ddd;padding:4px;background-color:#d4eefd;text-align:left;font-size:30px;}.tabla td{border:1px solid #ddd;text-align:left;padding:6px;} p {margin-top: -10px !important;} .cafe__number {margin-top: -10px !important;} .logotipo {width: 91px !important; margin: 0 auto;} img {width: 91px !important; margin: 0 auto;} .detallesTitulo {margin-top: 10px !important;}`  // Agrega el estilo
+            });
         }, 2500);
-        return () => clearTimeout(timer);
     }
 
     const Encabezado = ({ logo, numeroTiquet, nombreCliente, tipoPedido, hacerPedido, fechayHora }) => {
         return (
             <div className="cafe">
-                {/**/}
                 <div id="logo" className="logotipo">
                     <Image src={logo} alt="logo" />
                 </div>
-                {/**/}
                 <div className="detallesTitulo">
                     <p className="cafe__number">Teléfono para pedidos</p>
                     <p className="cafe__number">442-714-09-79</p>
                     <p className="cafe__number">Ticket #{numeroTiquet}</p>
-                    {
-                        nombreCliente !== "" &&
-                        (
-                            <>
-                                <p className="invoice__cliente">Mesa {nombreCliente}</p>
-                            </>
-                        )
-                    }
+                    {nombreCliente !== "" && <p className="invoice__cliente">Mesa {nombreCliente}</p>}
                     <p className="invoice__cliente">Pedido {tipoPedido}</p>
                     <p className="invoice__cliente">Hecho {hacerPedido}</p>
-                    <p className="cafe__number">
-                        {fechayHora}
-                    </p>
+                    <p className="cafe__number">{fechayHora}</p>
                 </div>
             </div>
-        )
+        );
     }
 
     const Cuerpo = ({ products }) => {
-        console.log(products)
         return (
             <div className="ticket__table">
                 <Table>
@@ -142,8 +114,7 @@ function GeneraPdfProductosAdicionales(props) {
                                 <td className="items__description">{item.nombre}</td>
                                 <td>1</td>
                                 <td>
-                                    ${''}
-                                    {new Intl.NumberFormat('es-MX', {
+                                    ${new Intl.NumberFormat('es-MX', {
                                         minimumFractionDigits: 2,
                                         maximumFractionDigits: 2,
                                     }).format(item.precio)} MXN
@@ -153,7 +124,7 @@ function GeneraPdfProductosAdicionales(props) {
                     </tbody>
                 </Table>
             </div>
-        )
+        );
     }
 
     const Pie = ({ detalles, tipoPago, comision, iva, subtotal, total, efectivo, cambio }) => {
@@ -162,82 +133,61 @@ function GeneraPdfProductosAdicionales(props) {
                 <hr />
                 <Row>
                     <Col>
-                        <p className="observaciones__tiquet">
-                            {detalles}
-                        </p>
+                        <p className="observaciones__tiquet">{detalles}</p>
                     </Col>
                     <Col>
                         <div className="subtotal__cambio">
                             Pago realizado con {tipoPago}
                         </div>
-                        {
-                            tipoPago === "Tarjeta" &&
-                            (
-                                <>
-                                    <div className="subtotal__cambio">
-                                        Comisión ${''}
-                                        {new Intl.NumberFormat('es-MX', {
-                                            minimumFractionDigits: 2,
-                                            maximumFractionDigits: 2,
-                                        }).format(comision)} MXN
-                                    </div>
-                                </>
-                            )
-                        }
-                        {
-                            iva != "0" &&
-                            (
-                                <>
-                                    <div className="subtotal__price">
-                                        IVA ${''}
-                                        {new Intl.NumberFormat('es-MX', {
-                                            minimumFractionDigits: 2,
-                                            maximumFractionDigits: 2,
-                                        }).format(iva)} MXN
-                                    </div>
-                                </>
-                            )
-                        }
+                        {tipoPago === "Tarjeta" && (
+                            <div className="subtotal__cambio">
+                                Comisión ${new Intl.NumberFormat('es-MX', {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                }).format(comision)} MXN
+                            </div>
+                        )}
+                        {iva !== "0" && (
+                            <div className="subtotal__price">
+                                IVA ${new Intl.NumberFormat('es-MX', {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                }).format(iva)} MXN
+                            </div>
+                        )}
                         <div className="subtotal__price">
-                            Subtotal ${''}
-                            {new Intl.NumberFormat('es-MX', {
+                            Subtotal ${new Intl.NumberFormat('es-MX', {
                                 minimumFractionDigits: 2,
                                 maximumFractionDigits: 2,
                             }).format(subtotal)} MXN
                         </div>
                         <div className="subtotal__price">
-                            Total ${''}
-                            {new Intl.NumberFormat('es-MX', {
+                            Total ${new Intl.NumberFormat('es-MX', {
                                 minimumFractionDigits: 2,
                                 maximumFractionDigits: 2,
                             }).format(total)} MXN
                         </div>
-                        {
-                            tipoPago === "Efectivo" &&
-                            (
-                                <>
-                                    <div className="subtotal__cambio">
-                                        Efectivo ${''}
-                                        {new Intl.NumberFormat('es-MX', {
-                                            minimumFractionDigits: 2,
-                                            maximumFractionDigits: 2,
-                                        }).format(efectivo)} MXN
-                                    </div>
-                                    <div className="subtotal__cambio">
-                                        Cambio ${''}
-                                        {new Intl.NumberFormat('es-MX', {
-                                            minimumFractionDigits: 2,
-                                            maximumFractionDigits: 2,
-                                        }).format(cambio)} MXN
-                                    </div>
-                                </>
-                            )
-                        }
+                        {tipoPago === "Efectivo" && (
+                            <>
+                                <div className="subtotal__cambio">
+                                    Efectivo ${new Intl.NumberFormat('es-MX', {
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2,
+                                    }).format(efectivo)} MXN
+                                </div>
+                                <div className="subtotal__cambio">
+                                    Cambio ${new Intl.NumberFormat('es-MX', {
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2,
+                                    }).format(cambio)} MXN
+                                </div>
+                            </>
+                        )}
                     </Col>
                 </Row>
                 <hr />
             </div>
-        )
+        );
     }
 
     const Imprimir = ({ onClick }) => {
@@ -252,7 +202,7 @@ function GeneraPdfProductosAdicionales(props) {
                     > 🖨︎</button>
                 </Col>
             </Row>
-        )
+        );
     }
 
     return (
@@ -266,12 +216,8 @@ function GeneraPdfProductosAdicionales(props) {
                         tipoPedido={tipoPedido}
                         hacerPedido={hacerPedido}
                         fechayHora={dayjs.utc(fechaCreacion).format('dddd, LL hh:mm A')}
-
                     />
-                    <Cuerpo
-                        products={articulosVendidos}
-                    />
-
+                    <Cuerpo products={articulosVendidos} />
                     <Pie
                         detalles={detalles}
                         tipoPago={tipoPago}
@@ -285,9 +231,7 @@ function GeneraPdfProductosAdicionales(props) {
                 </div>
             </div>
 
-            <Imprimir
-                onClick={() => handlePrint()}
-            />
+            <Imprimir onClick={handlePrint} />
         </>
     );
 }

@@ -3,62 +3,64 @@ import { Col, Row, Table } from "react-bootstrap";
 import "../../../../../scss/styles.scss";
 import { logoTiquetGris } from "../../../../../assets/base64/logo-tiquet";
 import { toast } from "react-toastify";
-import { map } from "lodash"
+import { map } from "lodash";
 import 'dayjs/locale/es';
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
-
+import printJS from 'print-js';
 
 function GeneraPdf(props) {
     const { datos } = props;
-
     const { idCaja, movimientosAcumulados, dineroAcumulado, observaciones, fechaCreacion } = datos;
-console.log(datos);
+    console.log(datos);
+    
     const movimientosTotales = movimientosAcumulados.concat(datos);
 
     dayjs.locale('es');
     dayjs.extend(localizedFormat);
 
     const handlePrint = () => {
-        toast.info("Generando... espere por favor")
+        toast.info("Generando... espere por favor");
 
         const timer = setTimeout(() => {
-            const tiquetGenerado = window.open('Tiquet', 'PRINT', 'height=400,width=600');
-            tiquetGenerado.document.write('<html><head>');
-            tiquetGenerado.document.write('<style>.tabla{width:100%;border-collapse:collapse;margin:16px 0 16px 0;}.tabla th{border:1px solid #ddd;padding:4px;background-color:#d4eefd;text-align:left;font-size:30px;}.tabla td{border:1px solid #ddd;text-align:left;padding:6px;} p {margin-top: -10px !important;} .cafe__number {margin-top: -10px !important;} .logotipo {width: 91px !important; margin: 0 auto;} img {width: 91px !important; margin: 0 auto;} .detallesTitulo {margin-top: 10px !important;} </style>');
-            tiquetGenerado.document.write('</head><body>');
-            tiquetGenerado.document.write(document.getElementById('tiquetAutogenerado').innerHTML);
-            tiquetGenerado.document.write('</body></html>');
-
-            tiquetGenerado.document.close();
-            tiquetGenerado.focus();
-            tiquetGenerado.print();
-            tiquetGenerado.close();
+            // Usando print-js para imprimir el contenido del ticket
+            printJS({
+                printable: 'tiquetAutogenerado', // El ID del contenedor que contiene el ticket
+                type: 'html',                   // Tipo de contenido (HTML)
+                style: `
+                    .tabla{width:100%;border-collapse:collapse;margin:16px 0 16px 0;}
+                    .tabla th{border:1px solid #ddd;padding:4px;background-color:#d4eefd;text-align:left;font-size:30px;}
+                    .tabla td{border:1px solid #ddd;text-align:left;padding:6px;}
+                    p {margin-top: -10px !important;}
+                    .cafe__number {margin-top: -10px !important;}
+                    .logotipo {width: 91px !important; margin: 0 auto;}
+                    img {width: 91px !important; margin: 0 auto;}
+                    .detallesTitulo {margin-top: 10px !important;}
+                `
+            });
         }, 2500);
+
         return () => clearTimeout(timer);
     }
 
     const [totalTarjeta, setTotalTarjeta] = useState(0);
-
     let cantidadTotalTarjeta = 0;
 
     const [totalTransferencia, setTotalTransferencia] = useState(0);
-
     let cantidadTotalTransferencia = 0;
 
     const obtenerTotales = () => {
         map(movimientosTotales, (item, index) => {
-            const { monto, pago } = item
-            if (pago == "Tarjeta") {
+            const { monto, pago } = item;
+            if (pago === "Tarjeta") {
                 cantidadTotalTarjeta += parseFloat(monto);
-            } else if (pago == "Transferencia") {
+            } else if (pago === "Transferencia") {
                 cantidadTotalTransferencia += parseFloat(monto);
             }
             setTotalTarjeta(cantidadTotalTarjeta);
             setTotalTransferencia(cantidadTotalTransferencia);
-        })
+        });
     }
-
 
     useEffect(() => {
         obtenerTotales();
@@ -69,11 +71,9 @@ console.log(datos);
             <div id="tiquetAutogenerado" className="ticket__autogenerado">
                 <div className="ticket__information">
                     <div className="cafe">
-                        {/**/}
                         <div id="logo" className="logotipo">
                             <img src={logoTiquetGris} alt="logo" />
                         </div>
-                        {/**/}
                         <div className="detallesTitulo">
                             <p className="cafe__number">Teléfono para pedidos</p>
                             <p className="cafe__number">442-714-09-79</p>
@@ -88,7 +88,7 @@ console.log(datos);
                                 <tr>
                                     <th className="items__numeracion">#</th>
                                     <th className="items__description">Movimiento</th>
-                                    <th className="items__description">Datelles</th>
+                                    <th className="items__description">Detalles</th>
                                     <th className="items__price">Monto</th>
                                 </tr>
                             </thead>
@@ -97,7 +97,9 @@ console.log(datos);
                                     <tr key={index}>
                                         <td>{index + 1}.- </td>
                                         <td className="items__description">{item.movimiento}</td>
-                                        <td className="items__description">{item.pago == "" ? item.concepto == "" ? "No disponibles" : item.concepto : item.pago}</td>
+                                        <td className="items__description">
+                                            {item.pago === "" ? item.concepto === "" ? "No disponibles" : item.concepto : item.pago}
+                                        </td>
                                         <td>
                                             ${''}
                                             {new Intl.NumberFormat('es-MX', {
@@ -125,14 +127,14 @@ console.log(datos);
                                     {new Intl.NumberFormat('es-MX', {
                                         minimumFractionDigits: 2,
                                         maximumFractionDigits: 2,
-                                    }).format(totalTarjeta/2)} MXN
+                                    }).format(totalTarjeta / 2)} MXN
                                 </div>
                                 <div className="subtotal__price">
                                     Total de transferencia ${''}
                                     {new Intl.NumberFormat('es-MX', {
                                         minimumFractionDigits: 2,
                                         maximumFractionDigits: 2,
-                                    }).format(totalTransferencia/2)} MXN
+                                    }).format(totalTransferencia / 2)} MXN
                                 </div>
                                 <div className="subtotal__price">
                                     Total de efectivo ${''}
@@ -163,7 +165,7 @@ console.log(datos);
 }
 
 function formatModelMovimientosCajas(movimientos) {
-    const tempMovimientos = []
+    const tempMovimientos = [];
     movimientos.forEach((movimiento) => {
         tempMovimientos.push({
             id: movimiento._id,

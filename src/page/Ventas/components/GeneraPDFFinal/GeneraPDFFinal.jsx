@@ -143,7 +143,6 @@ function GeneraPdfFinal(props) {
     }
 
     const Cuerpo = ({ products }) => {
-        console.log(products)
         return (
             <div className="ticket__table">
                 <Table>

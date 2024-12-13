@@ -1,10 +1,11 @@
-import { Col, Row, Image, Button, Table } from "react-bootstrap";
+import { Col, Row, Image, Table } from "react-bootstrap";
 import "../../../../scss/styles.scss";
 import { logoTiquetGris } from "../../../../assets/base64/logo-tiquet";
 import { toast } from "react-toastify";
 import 'dayjs/locale/es';
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
+import printJS from 'print-js';  // Importar print-js
 
 function GeneraPdf(props) {
     const { datos } = props;
@@ -15,63 +16,57 @@ function GeneraPdf(props) {
     dayjs.extend(localizedFormat);
 
     const handlePrint = () => {
-        toast.info("Generando... espere por favor")
+        toast.info("Generando... espere por favor");
 
         const timer = setTimeout(() => {
-            const tiquetGenerado = window.open('Tiquet', 'PRINT', 'height=400,width=600');
-            tiquetGenerado.document.write('<html><head>');
-            tiquetGenerado.document.write('<style>.tabla{width:100%;border-collapse:collapse;margin:16px 0 16px 0;}.tabla th{border:1px solid #ddd;padding:4px;background-color:#d4eefd;text-align:left;font-size:30px;}.tabla td{border:1px solid #ddd;text-align:left;padding:6px;} p {margin-top: -10px !important;} .cafe__number {margin-top: -10px !important;} .logotipo {width: 91px !important; margin: 0 auto;} img {width: 91px !important; margin: 0 auto;} .detallesTitulo {margin-top: 10px !important;} </style>');
-            tiquetGenerado.document.write('</head><body>');
-            tiquetGenerado.document.write(document.getElementById('tiquetAutogenerado').innerHTML);
-            tiquetGenerado.document.write('</body></html>');
-
-            tiquetGenerado.document.close();
-            tiquetGenerado.focus();
-            tiquetGenerado.print();
-            tiquetGenerado.close();
+            // Usar print-js para imprimir el contenido
+            printJS({
+                printable: 'tiquetAutogenerado',  // ID del contenedor a imprimir
+                type: 'html',  // Tipo de contenido a imprimir
+                style: '.tabla{width:100%;border-collapse:collapse;margin:16px 0 16px 0;}.tabla th{border:1px solid #ddd;padding:4px;background-color:#d4eefd;text-align:left;font-size:30px;}.tabla td{border:1px solid #ddd;text-align:left;padding:6px;} p {margin-top: -10px !important;} .cafe__number {margin-top: -10px !important;} .logotipo {width: 91px !important; margin: 0 auto;} img {width: 91px !important; margin: 0 auto;} .detallesTitulo {margin-top: 10px !important;}',
+                scanStyles: true  // Escanea y aplica estilos del documento
+            });
         }, 2500);
         return () => clearTimeout(timer);
     }
 
-const Encabezado = ({ logo, mesa, numeroTiquet, nombreCliente, tipoPedido, hacerPedido, fechayHora }) => {
-    return (
-        <div className="cafe">
-            {/** Logo de la cafetería */}
-            <div id="logo" className="logotipo">
-                <Image src={logo} alt="logo" />
+    const Encabezado = ({ logo, mesa, numeroTiquet, nombreCliente, tipoPedido, hacerPedido, fechayHora }) => {
+        return (
+            <div className="cafe">
+                {/** Logo de la cafetería */}
+                <div id="logo" className="logotipo">
+                    <Image src={logo} alt="logo" />
+                </div>
+
+                {/** Detalles del tiquet */}
+                <div className="detallesTitulo">
+                    <p className="cafe__number">Teléfono para pedidos</p>
+                    <p className="cafe__number">442-714-09-79</p>
+                    <p className="cafe__number">Ticket #{numeroTiquet}</p>
+                    
+                    {/** Mostrar el número de mesa si está disponible */}
+                    {nombreCliente !== "" && (
+                        <>
+                            {mesa && !isNaN(mesa) && (
+                                <p className="invoice__cliente">Mesa: {mesa}</p>
+                            )}
+                            {nombreCliente && mesa && !isNaN(mesa) && (
+                                <p className="invoice__cliente">Cliente: {nombreCliente}</p>
+                            )}
+                        </>
+                    )}
+
+                    <p className="invoice__cliente">Pedido {tipoPedido}</p>
+                    <p className="invoice__cliente">Hecho {hacerPedido}</p>
+                    <p className="cafe__number">
+                        {fechayHora}
+                    </p>
+                </div>
             </div>
-
-            {/** Detalles del tiquet */}
-            <div className="detallesTitulo">
-                <p className="cafe__number">Teléfono para pedidos</p>
-                <p className="cafe__number">442-714-09-79</p>
-                <p className="cafe__number">Ticket #{numeroTiquet}</p>
-                
-                {/** Mostrar el número de mesa si está disponible */}
-                {nombreCliente !== "" && (
-                    <>
-                        {mesa && !isNaN(mesa) && (
-                            <p className="invoice__cliente">Mesa: {mesa}</p>
-                        )}
-                        {nombreCliente && mesa && !isNaN(mesa) && (
-                            <p className="invoice__cliente">Cliente: {nombreCliente}</p>
-                        )}
-                    </>
-                )}
-
-                <p className="invoice__cliente">Pedido {tipoPedido}</p>
-                <p className="invoice__cliente">Hecho {hacerPedido}</p>
-                <p className="cafe__number">
-                    {fechayHora}
-                </p>
-            </div>
-        </div>
-    );
-}
-
+        );
+    }
 
     const Cuerpo = ({ products }) => {
-        console.log(products)
         return (
             <div className="ticket__table">
                 <Table>
