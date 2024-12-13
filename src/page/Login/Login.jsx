@@ -16,7 +16,7 @@ function Login({ setRefreshCheckLogin }) {
   const [formData, setFormData] = useState(initialFormValue);
   const [signInLoading, setSignInLoading] = useState(false);
 
-  const logo = "https://res.cloudinary.com/omarlestrella/image/upload/v1730506157/TPV_LA_NENA/msdxqnu7gehwjru0jhvs.jpg";
+  const logo = "https://res.cloudinary.com/omarlestrella/image/upload/v1725055341/TPV_LA_NENA/logosLaNena/1725055340385_Logo%20La%20Nena.png.png";
 
   const [mostrarPassword, setMostrarPassword] = useState(false);
   const togglePasswordVisiblity = () => {
