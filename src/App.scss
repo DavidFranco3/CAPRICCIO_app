@@ -37,3 +37,18 @@
     transform: rotate(360deg);
   }
 }
+
+/* Estilos para impresión */
+@media print {
+  body * {
+      visibility: hidden;
+  }
+  .vista-previa {
+      display: block;
+      visibility: visible;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+  }
+}
