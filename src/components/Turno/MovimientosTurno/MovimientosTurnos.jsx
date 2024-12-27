@@ -64,7 +64,7 @@ function MovimientosTurnos(params) {
         type: "html",
         style: `
           @page {
-            size: 58mm 120mm; /* Dimensiones del ticket */
+            size: 58mm 100mm; /* Dimensiones del ticket */
             margin: 0; /* Eliminar márgenes */
           }
           body {

@@ -24,7 +24,7 @@ function GeneraPdf(props) {
                 type: 'html',  // Tipo de contenido a imprimir
                 style: `
                     @page {
-                        size: 58mm 120mm; /* Establece el tamaño del ticket */
+                        size: 58mm 100mm; /* Establece el tamaño del ticket */
                         margin: 0; /* Eliminar márgenes */
                     }
                     body {

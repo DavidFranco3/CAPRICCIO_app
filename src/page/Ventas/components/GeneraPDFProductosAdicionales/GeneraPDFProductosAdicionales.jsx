@@ -73,7 +73,7 @@ function GeneraPdfProductosAdicionales(props) {
                 type: 'raw-html',     // Especifica que es HTML
                 style: `
                     @page {
-                        size: 58mm 120mm;  /* Establece el tamaño del ticket */
+                        size: 58mm 100mm;  /* Establece el tamaño del ticket */
                         margin: 0;  /* Elimina márgenes */
                     }
                     body {

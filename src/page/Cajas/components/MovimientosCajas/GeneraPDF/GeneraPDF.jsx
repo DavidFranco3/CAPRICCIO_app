@@ -29,7 +29,7 @@ function GeneraPdf(props) {
             type: 'html',                   // Tipo de contenido (HTML)
             style: `
               @page {
-                size: 58mm 120mm; /* Establecer el tamaño del ticket */
+                size: 58mm 100mm; /* Establecer el tamaño del ticket */
                 margin: 0; /* Eliminar márgenes */
               }
               body {
