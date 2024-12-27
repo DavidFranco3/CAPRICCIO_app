@@ -17,27 +17,77 @@ function GeneraPdf(props) {
 
     const handlePrint = () => {
         toast.info("Generando... espere por favor");
-
+    
         const timer = setTimeout(() => {
             printJS({
                 printable: 'tiquetAutogenerado', // ID del contenedor HTML que quieres imprimir
                 type: 'html', // Tipo de documento, en este caso HTML
                 style: `
-                    .tabla { width: 100%; border-collapse: collapse; margin: 16px 0; }
-                    .tabla th { border: 1px solid #ddd; padding: 4px; background-color: #d4eefd; text-align: left; font-size: 30px; }
-                    .tabla td { border: 1px solid #ddd; text-align: left; padding: 6px; }
-                    p { margin-top: -10px !important; }
-                    .cafe__number { margin-top: -10px !important; }
-                    .logotipo { width: 91px !important; margin: 0 auto; }
-                    img { width: 91px !important; margin: 0 auto; }
-                    .detallesTitulo { margin-top: 10px !important; }
+                    @page {
+                        size: 58mm 120mm; /* Establecer el tamaño del ticket */
+                        margin: 0; /* Eliminar márgenes */
+                    }
+                    body {
+                        margin: 0; /* Eliminar márgenes del cuerpo */
+                        padding: 0;
+                        width: 58mm;
+                    }
+                    .tabla {
+                        width: 100%;
+                        border-collapse: collapse;
+                        margin: 0;
+                    }
+                    .tabla th {
+                        border: 1px solid #ddd;
+                        padding: 4px;
+                        background-color: #d4eefd;
+                        text-align: left;
+                        font-size: 12px; /* Ajustar tamaño de fuente */
+                    }
+                    .tabla td {
+                        border: 1px solid #ddd;
+                        text-align: left;
+                        padding: 6px;
+                        font-size: 10px; /* Ajustar tamaño de fuente */
+                    }
+                    p {
+                        margin-top: -10px !important;
+                        font-size: 10px; /* Ajustar tamaño de fuente */
+                    }
+                    .cafe__number {
+                        margin-top: -10px !important;
+                        font-size: 10px; /* Ajustar tamaño de fuente */
+                    }
+                    .logotipo {
+                        width: 50px !important;
+                        margin: 0 auto;
+                    }
+                    img {
+                        width: 50px !important;
+                        margin: 0 auto;
+                    }
+                    .detallesTitulo {
+                        margin-top: 10px !important;
+                        font-size: 12px;
+                    }
+                    .ticket__actions {
+                        display: none !important;
+                    }
+                    .remove-icon {
+                        display: none !important;
+                    }
+                    .items__price {
+                        color: #000000 !important;
+                        font-size: 10px; /* Ajustar tamaño de fuente */
+                    }
                 `,
-                scanStyles: false,  // Desactiva el escaneo de estilos por defecto de printJS
+                scanStyles: false, // Desactiva el escaneo de estilos por defecto de printJS
             });
         }, 2500);
-        
+    
         return () => clearTimeout(timer);
-    }
+    };
+    
 
     const Encabezado = ({ logo, numeroTiquet, nombreCliente, tipoPedido, hacerPedido, fechayHora }) => {
         return (

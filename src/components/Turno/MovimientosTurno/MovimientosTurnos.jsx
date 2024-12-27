@@ -63,23 +63,33 @@ function MovimientosTurnos(params) {
         printable: "ticketCorteCaja", // Usamos el ID del contenedor de la tabla
         type: "html",
         style: `
-          .tabla { width: 100%; border-collapse: collapse; margin: 16px 0; }
-          .tabla th { border: 1px solid #ddd; padding: 4px; background-color: #d4eefd; text-align: left; font-size: 30px; }
-          .tabla td { border: 1px solid #ddd; text-align: left; padding: 6px; }
-          p { margin-top: -10px !important; }
-          .cafe__number { margin-top: -10px !important; }
-          .logotipo { width: 91px !important; margin: 0 auto; }
-          img { width: 91px !important; margin: 0 auto; }
-          .logotipoRappi { width: 91px !important; margin: 0 auto; }
-          .detallesTitulo { margin-top: 10px !important; }
+          @page {
+            size: 58mm 120mm; /* Dimensiones del ticket */
+            margin: 0; /* Eliminar márgenes */
+          }
+          body {
+            margin: 0; /* Eliminar márgenes del cuerpo */
+            padding: 0;
+            width: 58mm;
+          }
+          .tabla { width: 100%; border-collapse: collapse; margin: 0; }
+          .tabla th { border: 1px solid #ddd; padding: 4px; background-color: #d4eefd; text-align: left; font-size: 12px; }
+          .tabla td { border: 1px solid #ddd; text-align: left; padding: 6px; font-size: 10px; }
+          p { margin-top: -10px !important; font-size: 10px; }
+          .cafe__number { margin-top: -10px !important; font-size: 10px; }
+          .logotipo { width: 50px !important; margin: 0 auto; }
+          img { width: 50px !important; margin: 0 auto; }
+          .logotipoRappi { width: 50px !important; margin: 0 auto; }
+          .detallesTitulo { margin-top: 10px !important; font-size: 12px; }
           .ticket__actions { display: none !important; }
           .remove-icon { display: none !important; }
-          .items__price { color: #000000 !important; }
+          .items__price { color: #000000 !important; font-size: 10px; }
         `,
         showModal: true
       });
     }
   };
+  
 
   return (
     <>
