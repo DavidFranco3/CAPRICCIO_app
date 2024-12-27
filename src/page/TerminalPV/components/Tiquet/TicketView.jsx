@@ -6,15 +6,60 @@ const TicketView = ({ ticket }) => {
     return <div>No hay datos del ticket disponibles.</div>;
   }
 
+  const logo = "https://res.cloudinary.com/omarlestrella/image/upload/v1730506157/TPV_LA_NENA/msdxqnu7gehwjru0jhvs.jpg";
+
   const handlePrint = () => {
     if (ticket.productos.length === 0) {
       console.log("Agregue productos");
     } else {
-      // Configuración para `print-js`
+      // Configuración para `print-js` con tamaño de ticket 58mm x 100mm
       printJS({
         printable: "ticket-view",
         type: "html",
         targetStyles: ["*"], // Incluye todos los estilos
+        style: `
+          @page {
+            size: 58mm 100mm; /* Dimensiones del ticket */
+            margin: 0; /* Eliminar márgenes */
+          }
+          body {
+            margin: 0; /* Eliminar márgenes del cuerpo */
+            padding: 0;
+            width: 58mm;
+          }
+          .ticket-view {
+            font-size: 10px;
+            font-family: Arial, sans-serif;
+            width: 58mm; /* Ancho fijo para ticket */
+            margin: 0 auto; /* Centrado */
+          }
+          .ticket-view h2 {
+            font-size: 12px;
+            text-align: center;
+            margin-bottom: 2px;
+          }
+          .ticket-view p {
+            margin: 0;
+            font-size: 10px;
+            line-height: 1.2;
+          }
+          .ticket-view ul {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+          }
+          .ticket-view li {
+            font-size: 10px;
+            margin-bottom: 2px;
+          }
+          .logotipo {
+            width: 50px !important;
+            margin: 0 auto;
+          }
+          .btn {
+            display: none; /* Oculta el botón al imprimir */
+          }
+        `,
       });
     }
   };
@@ -22,6 +67,9 @@ const TicketView = ({ ticket }) => {
   return (
     <>
       <div className="ticket-view" id="ticket-view">
+        <div id="logo" className="logotipo">
+          <img src={logo} alt="logo" />
+        </div>
         <h2>Ticket {ticket.numeroTiquet}</h2>
         <p>
           <strong>Cliente:</strong> {ticket.cliente}
@@ -55,8 +103,8 @@ const TicketView = ({ ticket }) => {
         </p>
       </div>
       <div className="d-flex justify-content-center">
-        <button className="btn btn-primary" onClick={() => handlePrint()}>
-          <i className="fas fa-print"></i> Imp
+        <button className="btn btn-primary" onClick={handlePrint}>
+          <i className="fas fa-print"></i> Imprimir
         </button>
       </div>
     </>

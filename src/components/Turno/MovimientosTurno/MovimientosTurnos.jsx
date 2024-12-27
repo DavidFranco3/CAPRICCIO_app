@@ -55,6 +55,8 @@ function MovimientosTurnos(params) {
   const [modalContent, setModalContent] = useState(null);
   const [titulosModal, setTitulosModal] = useState(null);
 
+  const logo = "https://res.cloudinary.com/omarlestrella/image/upload/v1730506157/TPV_LA_NENA/msdxqnu7gehwjru0jhvs.jpg";
+
   const handlePrint = () => {
     if (listMovs.length === 0 && listVentas.length === 0) {
       toast.warning("No hay información para imprimir");
@@ -72,18 +74,40 @@ function MovimientosTurnos(params) {
             padding: 0;
             width: 58mm;
           }
-          .tabla { width: 100%; border-collapse: collapse; margin: 0; }
-          .tabla th { border: 1px solid #ddd; padding: 4px; background-color: #d4eefd; text-align: left; font-size: 12px; }
-          .tabla td { border: 1px solid #ddd; text-align: left; padding: 6px; font-size: 10px; }
-          p { margin-top: -10px !important; font-size: 10px; }
-          .cafe__number { margin-top: -10px !important; font-size: 10px; }
-          .logotipo { width: 50px !important; margin: 0 auto; }
-          img { width: 50px !important; margin: 0 auto; }
-          .logotipoRappi { width: 50px !important; margin: 0 auto; }
-          .detallesTitulo { margin-top: 10px !important; font-size: 12px; }
-          .ticket__actions { display: none !important; }
-          .remove-icon { display: none !important; }
-          .items__price { color: #000000 !important; font-size: 10px; }
+          .logotipo img {
+            width: 50px !important;
+            display: block;
+            margin: 0 auto;
+          }
+          .tabla { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin: 0;
+          }
+          .tabla th, .tabla td {
+            border: 1px solid #ddd; 
+            padding: 2px 5px; /* Reducir el espaciado para ajustarse mejor */
+            text-align: left;
+            font-size: 8px; /* Reducir el tamaño de fuente para caber mejor */
+          }
+          .tabla th {
+            background-color: #d4eefd;
+          }
+          p, .cafe__number {
+            margin-top: -5px !important;
+            font-size: 8px; /* Ajustar el tamaño de fuente para que quepa mejor */
+          }
+          .ticket__actions, .remove-icon {
+            display: none !important;
+          }
+          .items__price {
+            color: #000000 !important;
+            font-size: 8px; /* Reducir tamaño de texto para ajustarse mejor */
+          }
+          .detallesTitulo {
+            margin-top: 5px !important;
+            font-size: 10px;
+          }
         `,
         showModal: true
       });
@@ -94,6 +118,9 @@ function MovimientosTurnos(params) {
   return (
     <>
       <Container id="ticketCorteCaja">
+        <div class="logotipo">
+          <img src={logo} alt="Logo" />
+        </div>
         <h4>Movimientos del Turno No. {turno.idTurno}</h4>
         {listMovs.length > 0 || listVentas.length > 0 ? (
           <>

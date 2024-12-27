@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect } from "react";
 import { Col, Row, Table } from "react-bootstrap";
 import "../../../../../scss/styles.scss";
 import { logoTiquetGris } from "../../../../../assets/base64/logo-tiquet";
@@ -12,87 +12,88 @@ import printJS from 'print-js';
 function GeneraPdf(props) {
     const { datos } = props;
     const { idCaja, movimientosAcumulados, dineroAcumulado, observaciones, fechaCreacion } = datos;
-    console.log(datos);
-    
-    const movimientosTotales = movimientosAcumulados.concat(datos);
+
+    const movimientosTotales = [...movimientosAcumulados, ...datos]; // Combina los movimientos
 
     dayjs.locale('es');
     dayjs.extend(localizedFormat);
 
+    const logo = "https://res.cloudinary.com/omarlestrella/image/upload/v1730506157/TPV_LA_NENA/msdxqnu7gehwjru0jhvs.jpg";
+
     const handlePrint = () => {
         toast.info("Generando... espere por favor");
-      
+
         const timer = setTimeout(() => {
-          // Usando print-js para imprimir el contenido del ticket
-          printJS({
-            printable: 'tiquetAutogenerado', // El ID del contenedor que contiene el ticket
-            type: 'html',                   // Tipo de contenido (HTML)
-            style: `
-              @page {
-                size: 58mm 100mm; /* Establecer el tamaño del ticket */
-                margin: 0; /* Eliminar márgenes */
-              }
-              body {
-                margin: 0; /* Eliminar márgenes del cuerpo */
-                padding: 0;
-                width: 58mm;
-              }
-              .tabla {
-                width: 100%;
-                border-collapse: collapse;
-                margin: 0;
-              }
-              .tabla th {
-                border: 1px solid #ddd;
-                padding: 4px;
-                background-color: #d4eefd;
-                text-align: left;
-                font-size: 12px; /* Ajustar tamaño de fuente */
-              }
-              .tabla td {
-                border: 1px solid #ddd;
-                text-align: left;
-                padding: 6px;
-                font-size: 10px; /* Ajustar tamaño de fuente */
-              }
-              p {
-                margin-top: -10px !important;
-                font-size: 10px; /* Ajustar tamaño de fuente */
-              }
-              .cafe__number {
-                margin-top: -10px !important;
-                font-size: 10px; /* Ajustar tamaño de fuente */
-              }
-              .logotipo {
-                width: 50px !important;
-                margin: 0 auto;
-              }
-              img {
-                width: 50px !important;
-                margin: 0 auto;
-              }
-              .detallesTitulo {
-                margin-top: 10px !important;
-                font-size: 12px;
-              }
-              .ticket__actions {
-                display: none !important;
-              }
-              .remove-icon {
-                display: none !important;
-              }
-              .items__price {
-                color: #000000 !important;
-                font-size: 10px; /* Ajustar tamaño de fuente */
-              }
-            `,
-            showModal: true
-          });
+            // Usando print-js para imprimir el contenido del ticket
+            printJS({
+                printable: 'tiquetAutogenerado', // El ID del contenedor que contiene el ticket
+                type: 'html',                   // Tipo de contenido (HTML)
+                style: `
+                    @page {
+                        size: 58mm 100mm; /* Establecer el tamaño del ticket */
+                        margin: 0; /* Eliminar márgenes */
+                    }
+                    body {
+                        margin: 0; /* Eliminar márgenes del cuerpo */
+                        padding: 0;
+                        width: 58mm;
+                    }
+                    .ticket__autogenerado {
+                        width: 58mm; /* Ajustar el contenedor al tamaño del ticket */
+                        font-family: Arial, sans-serif;
+                        font-size: 10px; /* Tamaño de fuente más pequeño para ajustarse al tamaño del ticket */
+                        line-height: 1.4;
+                    }
+                    .logotipo {
+                        width: 50px !important;
+                        margin: 0 auto;
+                        display: block;
+                    }
+                    img {
+                        width: 50px !important;
+                        display: block;
+                        margin: 0 auto;
+                    }
+                    .detallesTitulo p {
+                        margin: 0;
+                        font-size: 9px;
+                        text-align: center;
+                    }
+                    .tabla {
+                        width: 100%;
+                        border-collapse: collapse;
+                        margin: 0;
+                    }
+                    .tabla th, .tabla td {
+                        border: 1px solid #ddd;
+                        padding: 2px;
+                        font-size: 8px; /* Ajustar tamaño de fuente */
+                        text-align: left;
+                    }
+                    .subtotal__price {
+                        font-size: 8px;
+                        text-align: right;
+                    }
+                    .observaciones__tiquet {
+                        font-size: 8px;
+                        text-align: center;
+                    }
+                    .items__price {
+                        font-size: 8px; /* Ajustar tamaño de fuente para montos */
+                    }
+                    .ticket__actions {
+                        display: none !important;
+                    }
+                    .remove-icon {
+                        display: none !important;
+                    }
+                `,
+                showModal: true
+            });
         }, 2500);
-      
+
         return () => clearTimeout(timer);
-      };
-      
+    };
 
     const [totalTarjeta, setTotalTarjeta] = useState(0);
     let cantidadTotalTarjeta = 0;
@@ -122,8 +123,8 @@ function GeneraPdf(props) {
             <div id="tiquetAutogenerado" className="ticket__autogenerado">
                 <div className="ticket__information">
                     <div className="cafe">
-                        <div id="logo" className="logotipo">
-                            <img src={logoTiquetGris} alt="logo" />
+                        <div className="logotipo">
+                            <img src={logo} alt="Logo" />
                         </div>
                         <div className="detallesTitulo">
                             <p className="cafe__number">Teléfono para pedidos</p>

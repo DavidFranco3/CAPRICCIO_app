@@ -15,6 +15,8 @@ function GeneraPdf(props) {
     dayjs.locale('es');
     dayjs.extend(localizedFormat);
 
+    const logo = "https://res.cloudinary.com/omarlestrella/image/upload/v1730506157/TPV_LA_NENA/msdxqnu7gehwjru0jhvs.jpg";
+
     const handlePrint = () => {
         toast.info("Generando... espere por favor");
     
@@ -32,43 +34,47 @@ function GeneraPdf(props) {
                         padding: 0;
                         width: 58mm;
                     }
+                    .ticket__autogenerado {
+                        font-family: Arial, sans-serif;
+                        font-size: 9px; /* Tamaño de fuente ajustado para el ticket */
+                    }
                     .tabla {
                         width: 100%;
                         border-collapse: collapse;
                         margin: 0;
                     }
-                    .tabla th {
+                    .tabla th, .tabla td {
                         border: 1px solid #ddd;
-                        padding: 4px;
+                        padding: 3px;
+                        font-size: 8px; /* Ajustar tamaño de fuente */
+                    }
+                    .tabla th {
                         background-color: #d4eefd;
                         text-align: left;
-                        font-size: 12px; /* Ajustar tamaño de fuente */
                     }
                     .tabla td {
-                        border: 1px solid #ddd;
                         text-align: left;
-                        padding: 6px;
-                        font-size: 10px; /* Ajustar tamaño de fuente */
+                        padding: 3px;
                     }
                     p {
-                        margin-top: -10px !important;
-                        font-size: 10px; /* Ajustar tamaño de fuente */
+                        margin: 0;
+                        font-size: 8px; /* Ajustar tamaño de fuente */
                     }
                     .cafe__number {
-                        margin-top: -10px !important;
-                        font-size: 10px; /* Ajustar tamaño de fuente */
+                        margin-top: -5px !important;
+                        font-size: 8px;
                     }
-                    .logotipo {
-                        width: 50px !important;
-                        margin: 0 auto;
-                    }
-                    img {
-                        width: 50px !important;
+                    .logotipo img {
+                        width: 40px !important; /* Reducir tamaño del logo */
                         margin: 0 auto;
                     }
                     .detallesTitulo {
-                        margin-top: 10px !important;
-                        font-size: 12px;
+                        font-size: 9px; /* Ajustar tamaño de fuente */
+                        line-height: 1.2;
+                    }
+                    .items__price {
+                        color: #000000 !important;
+                        font-size: 8px; /* Ajustar tamaño de fuente */
                     }
                     .ticket__actions {
                         display: none !important;
@@ -76,9 +82,15 @@ function GeneraPdf(props) {
                     .remove-icon {
                         display: none !important;
                     }
-                    .items__price {
-                        color: #000000 !important;
-                        font-size: 10px; /* Ajustar tamaño de fuente */
+                    .items__description {
+                        font-size: 7px !important; /* Reducir tamaño de descripción */
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        max-width: 45mm;
+                    }
+                    .items__qty, .items__price {
+                        font-size: 7px !important;
                     }
                 `,
                 scanStyles: false, // Desactiva el escaneo de estilos por defecto de printJS
@@ -88,12 +100,13 @@ function GeneraPdf(props) {
         return () => clearTimeout(timer);
     };
     
+    
 
     const Encabezado = ({ logo, numeroTiquet, nombreCliente, tipoPedido, hacerPedido, fechayHora }) => {
         return (
             <div className="cafe">
-                <div id="logo" className="logotipo">
-                    <Image src={logo} alt="logo" />
+                <div class="logotipo">
+                    <img src={logo} alt="Logo" />
                 </div>
                 <div className="detallesTitulo">
                     <p className="cafe__number">Teléfono para pedidos</p>
@@ -237,7 +250,7 @@ function GeneraPdf(props) {
             <div id="tiquetAutogenerado" className="ticket__autogenerado">
                 <div className="ticket__information">
                     <Encabezado
-                        logo={logoTiquetGris}
+                        logo={logo}
                         numeroTiquet={numeroTiquet}
                         nombreCliente={cliente}
                         tipoPedido={tipoPedido}

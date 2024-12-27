@@ -62,6 +62,8 @@ function GeneraPdfProductosAdicionales(props) {
     dayjs.locale('es');
     dayjs.extend(localizedFormat);
 
+    const logo = "https://res.cloudinary.com/omarlestrella/image/upload/v1730506157/TPV_LA_NENA/msdxqnu7gehwjru0jhvs.jpg";
+
     const handlePrint = () => {
         toast.info("Generando... espere por favor");
     
@@ -80,44 +82,38 @@ function GeneraPdfProductosAdicionales(props) {
                         margin: 0;
                         padding: 0;
                         width: 58mm;  /* Ajusta al ancho del ticket */
+                        font-family: Arial, sans-serif;  /* Fuente legible */
                     }
                     .tabla {
                         width: 100%;
                         border-collapse: collapse;
                         margin: 0;
                     }
+                    .tabla th, .tabla td {
+                        border: 1px solid #ddd;
+                        padding: 2px;
+                        font-size: 8px;  /* Ajuste del tamaño de fuente */
+                        text-align: left;
+                    }
                     .tabla th {
-                        border: 1px solid #ddd;
-                        padding: 4px;
                         background-color: #d4eefd;
-                        text-align: left;
-                        font-size: 12px;  /* Ajuste del tamaño de fuente */
+                        font-size: 9px;  /* Asegura que los encabezados sean legibles */
                     }
-                    .tabla td {
-                        border: 1px solid #ddd;
-                        text-align: left;
-                        padding: 6px;
-                        font-size: 10px;  /* Ajuste del tamaño de fuente */
-                    }
-                    p {
-                        margin-top: -10px !important;
-                        font-size: 10px;  /* Ajuste del tamaño de fuente */
-                    }
-                    .cafe__number {
-                        margin-top: -10px !important;
-                        font-size: 10px;  /* Ajuste del tamaño de fuente */
+                    p, .cafe__number, .invoice__cliente {
+                        margin: 0;
+                        padding: 0;
+                        font-size: 8px;  /* Ajuste del tamaño de fuente */
+                        text-align: center;
                     }
                     .logotipo {
-                        width: 50px !important;
+                        width: 40px !important;  /* Tamaño pequeño para el logo */
                         margin: 0 auto;
-                    }
-                    img {
-                        width: 50px !important;
-                        margin: 0 auto;
+                        display: block;
                     }
                     .detallesTitulo {
-                        margin-top: 10px !important;
-                        font-size: 12px;
+                        margin-top: 5px !important;
+                        font-size: 8px;  /* Ajuste del tamaño de fuente */
+                        text-align: center;
                     }
                     .ticket__actions {
                         display: none !important;
@@ -127,7 +123,14 @@ function GeneraPdfProductosAdicionales(props) {
                     }
                     .items__price {
                         color: #000000 !important;
-                        font-size: 10px;  /* Ajuste del tamaño de fuente */
+                        font-size: 8px;  /* Ajuste del tamaño de fuente */
+                    }
+                    .items__description {
+                        font-size: 7px; /* Ajuste del tamaño de descripción */
+                    }
+                    .subtotal__price, .subtotal__cambio {
+                        font-size: 8px;
+                        text-align: center;
                     }
                 `,
                 scanStyles: false  // Desactiva el escaneo de estilos por defecto
@@ -270,7 +273,7 @@ function GeneraPdfProductosAdicionales(props) {
             <div id="tiquetAutogenerado" className="ticket__autogenerado">
                 <div className="ticket__information">
                     <Encabezado
-                        logo={logoTiquetGris}
+                        logo={logo}
                         numeroTiquet={numeroTiquet}
                         nombreCliente={cliente}
                         tipoPedido={tipoPedido}

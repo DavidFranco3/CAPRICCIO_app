@@ -8,13 +8,18 @@ import printJS from "print-js";  // Importamos la librería
 function TicketFinal(params) {
   const { formData, setShowTicket, setShowTerminalPV, setShowMod } = params;
 
+  const logo = "https://res.cloudinary.com/omarlestrella/image/upload/v1730506157/TPV_LA_NENA/msdxqnu7gehwjru0jhvs.jpg";
+
   const handlePrint = () => {
     if (formData.productos.length === 0) {
-      console.log("agregue productos");
+      console.log("Agregue productos");
     } else {
       // Crear el contenido del ticket para imprimir
       const ticketContent = `
         <div id="ticketCocina" class="container-sm">
+        <div id="logo" className="logotipo">
+                    <img src=${logo} alt="logo" />
+                </div>
           <div class="d-flex justify-content-center align-items-center">
             <Logo />
           </div>
@@ -53,13 +58,13 @@ function TicketFinal(params) {
               </thead>
               <tbody>
                 ${formData.productos.map(
-                  (item, index) => `
+        (item, index) => ` 
                     <tr>
                       <td>${index + 1}.- </td>
                       <td class="items__description">${item.nombre}</td>
                       <td>1</td>
                     </tr>`
-                ).join("")}
+      ).join("")}
               </tbody>
             </table>
           </div>
@@ -98,20 +103,57 @@ function TicketFinal(params) {
         printable: ticketContent,
         type: 'raw-html',
         style: `
-          .tabla {width:100%;border-collapse:collapse;margin:16px 0 16px 0;}
-          .tabla th {border:1px solid #ddd;padding:4px;background-color:#d4eefd;text-align:left;font-size:30px;}
-          .tabla td {border:1px solid #ddd;text-align:left;padding:6px;}
-          p {margin-top: -10px !important;}
-          .cafe__number {margin-top: -10px !important;}
-          .logotipo {width: 91px !important; margin: 0 auto;}
-          img {width: 91px !important; margin: 0 auto;}
-          .logotipoRappi {width: 91px !important; margin: 0 auto;}
-          img {width: 91px !important; margin: 0 auto;}
-          .detallesTitulo {margin-top: 10px !important;}
-          .ticket__actions {display: none !important;}
-          .remove-icon {display: none !important;}
-          .remove-icono {display: none !important;}
-          .items__price {color: #000000 !important;}
+          @page {
+            size: 58mm 100mm; /* Establecer el tamaño del ticket */
+            margin: 0; /* Sin márgenes */
+          }
+          body {
+            margin: 0; /* Sin márgenes */
+            padding: 0;
+            width: 58mm; /* Ajuste al tamaño del ticket */
+            font-family: Arial, sans-serif;  /* Fuente más clara para tickets */
+            font-size: 8px;  /* Tamaño de fuente reducido */
+          }
+          .ticket__table {
+            width: 100%;
+            font-size: 8px;
+          }
+          .ticket__table th, .ticket__table td {
+            padding: 2px;
+            font-size: 8px;
+            text-align: left;
+          }
+          .items__numeracion, .items__description, .items__qty {
+            font-size: 8px;
+          }
+          .ticket__actions, .remove-icon, .remove-icono {
+            display: none !important;
+          }
+          .logotipo {
+            width: 50px !important;
+            margin: 0 auto;
+            display: block;
+          }
+          img {
+            width: 50px !important;
+            margin: 0 auto;
+          }
+          .detallesTitulo {
+            margin-top: 5px !important;
+            font-size: 8px;
+          }
+          .items__description {
+            font-size: 7px;  /* Ajuste de tamaño de descripción de productos */
+          }
+          .items__qty {
+            font-size: 7px;  /* Ajuste de cantidad */
+          }
+          p {
+            margin: 0;
+            padding: 0;
+            font-size: 8px;
+            text-align: center;
+          }
         `
       });
     }
