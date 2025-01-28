@@ -2,6 +2,7 @@ import React from "react";
 import printJS from "print-js";
 
 const TicketView = ({ ticket }) => {
+  console.log(ticket)
   if (!ticket) {
     return <div>No hay datos del ticket disponibles.</div>;
   }
@@ -84,7 +85,13 @@ const TicketView = ({ ticket }) => {
           <strong>Forma de Pago:</strong> {ticket.tipoPago}
         </p>
         <p>
-          <strong>Total:</strong> {ticket.total}
+          <strong>Total:</strong> ${ticket.total.toFixed(2)}
+        </p>
+        <p>
+          <strong>Pago:</strong> ${(ticket.cambio + ticket.total).toFixed(2)}
+        </p>
+        <p>
+          <strong>Cambio:</strong> ${ticket.cambio.toFixed(2)}
         </p>
         <h3>Productos:</h3>
         <ul>

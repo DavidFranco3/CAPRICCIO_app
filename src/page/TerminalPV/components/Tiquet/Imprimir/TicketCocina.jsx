@@ -4,6 +4,7 @@ import { Image } from "react-bootstrap";
 
 function TicketCocina(params) {
   const { formData } = params;
+  console.log(formData)
 
   const logo = "https://res.cloudinary.com/omarlestrella/image/upload/v1730506157/TPV_LA_NENA/msdxqnu7gehwjru0jhvs.jpg";
 
@@ -109,7 +110,7 @@ function TicketCocina(params) {
             </tbody>
           </table>
         </div>
-        <div className="row" style={{ fontSize: '7px', marginTop: '3px' }}>{params.fecha}</div>
+        <div className="row">{params.fecha}</div>
         <div className="ticket__table">
           <table className="table table-borderless tabla">
             <thead>
@@ -130,7 +131,8 @@ function TicketCocina(params) {
             </tbody>
           </table>
         </div>
-        <div style={{ fontSize: '7px', marginTop: '3px' }}>Detalles: {formData.detalles}</div>
+        <div>Total: ${formData.total.toFixed(2)}</div>
+        <div>Detalles: {formData.detalles}</div>
       </div>
       <div className="d-flex justify-content-center">
         <button className="btn btn-primary" onClick={() => handlePrint()}>
