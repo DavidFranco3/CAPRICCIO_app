@@ -81,6 +81,9 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
+  "resolutions": {
+    "node-sass": "9.0.0"
+  },
   "eslintConfig": {
     "extends": [
       "react-app",
