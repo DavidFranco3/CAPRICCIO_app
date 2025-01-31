@@ -119,6 +119,7 @@ function DatosExtraVenta(props) {
     setShowMod(true);
   };
 
+
   // FORM DATA
   const [formData, setFormData] = useState({
     infoVenta: props.formData,
@@ -687,7 +688,14 @@ function DatosExtraVenta(props) {
         createdAt: formattedDate
       };
       console.log(dataTemp);
-
+      await imprimirTicketFinal(
+        <TicketFinal
+          formData={dataTemp}
+          setShowMod={setShowMod}
+          setShowTerminalPV={setShowTerminalPV}
+          setShowTicket={setShowTicket}
+        />
+      );
       if (!isVenta) {
         await registraVentas(dataTemp).then(async (response) => {
           const { data } = response;
@@ -701,7 +709,6 @@ function DatosExtraVenta(props) {
           } catch (error) {
             console.error("Error al cerrar el modal principal:", error);
             try {
-              setShow(false);
             } catch (error) {
               console.error("Error al cerrar el modal secundario:", error);
               // Mostrar un mensaje de error general aquí
@@ -726,7 +733,6 @@ function DatosExtraVenta(props) {
             } catch (error) {
               console.error("Error al cerrar el modal principal:", error);
               try {
-                setShow(false);
               } catch (error) {
                 console.error("Error al cerrar el modal secundario:", error);
                 // Mostrar un mensaje de error general aquí
@@ -925,6 +931,7 @@ function DatosExtraVenta(props) {
             </Col>
           </Row>
 
+
           {(formaPedido.hacerPedido !== "Rappi" &&
           formaPedido.hacerPedido !== "Didi" &&
             formaPedido.hacerPedido !== "Uber") &&
@@ -1085,7 +1092,6 @@ function DatosExtraVenta(props) {
           Imp
         </button>
       </div>
-
       <BasicModal
         show={showMod}
         setShow={setShowMod}
