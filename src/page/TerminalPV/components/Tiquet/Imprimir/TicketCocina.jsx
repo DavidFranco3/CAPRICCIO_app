@@ -131,7 +131,7 @@ function TicketCocina(params) {
             </tbody>
           </table>
         </div>
-        <div>Total: ${formData.total.toFixed(2)}</div>
+        <div>Total: ${isNaN(Number(formData.total)) ? "0.00" : Number(formData.subtotal).toFixed(2)}</div>
         <div>Detalles: {formData.detalles}</div>
       </div>
       <div className="d-flex justify-content-center">

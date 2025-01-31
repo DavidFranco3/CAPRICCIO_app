@@ -142,7 +142,7 @@ const configRouting = [
     path: "/",
     page: Dashboard,
     default: true,
-    roles: ["administrador", "cajero"],
+    roles: ["administrador", "cajero", "false"],
   },
   {
     path: "/AdminLTE",
