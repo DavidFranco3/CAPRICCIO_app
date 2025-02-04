@@ -197,11 +197,15 @@ const TicketView = ({ ticket }) => {
     if (formData.tipoPago == "Efectivo") {
       ticket += centrarTexto("Cambio: " + "$" + (isNaN(Number(formData.cambio)) ? "0.00" : Number(formData.cambio).toFixed(2)) + "\n\n");
     }
-
+    // ticket += "\n\n";
+    // ticket += "\n\n";
     // Pie de página
     ticket += centrarTexto("Gracias por su compra") + "\n";
     ticket += centrarTexto("¡Vuelva pronto!") + "\n";
-
+    ticket += "\n\n";
+    ticket += "\n\n";
+    ticket += "\n\n";
+    ticket += "\x1D\x56\x00";
     return ticket;
   };
 
