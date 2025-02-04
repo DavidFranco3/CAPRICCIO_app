@@ -50,17 +50,17 @@ function DatosExtraVenta(props) {
     tipoPedido: "",
   });
 
-    // Importa el complemento de zona horaria
-    dayjs.extend(utc);
-    dayjs.extend(timezone);
-    dayjs.extend(localizedFormat);
+  // Importa el complemento de zona horaria
+  dayjs.extend(utc);
+  dayjs.extend(timezone);
+  dayjs.extend(localizedFormat);
 
   const [fechayHoraSinFormato, setFechayHoraSinFormato] = useState("");
 
   useEffect(() => {
     const hoy = new Date();
     const adjustedDate = dayjs(hoy).utc().utcOffset(-360).format(); // Ajusta la hora a CST (UTC -6)
-    
+
     setFechayHoraSinFormato(adjustedDate);
   }, []);
 
@@ -242,7 +242,7 @@ function DatosExtraVenta(props) {
           ...prevFormData.infoMetodosPago,
           [name.split("cantidadPago")[1].toLowerCase()]: {
             ...prevFormData.infoMetodosPago[
-              name.split("cantidadPago")[1].toLowerCase()
+            name.split("cantidadPago")[1].toLowerCase()
             ],
             cantidad: parsedValue,
           },
@@ -297,15 +297,13 @@ function DatosExtraVenta(props) {
 
     setInputValues((prevInputValues) => ({
       ...prevInputValues,
-      [`cantidadPago${
-        metodoPagoKey.charAt(0).toUpperCase() + metodoPagoKey.slice(1)
-      }`]: checked
-        ? prevInputValues[
-            `cantidadPago${
-              metodoPagoKey.charAt(0).toUpperCase() + metodoPagoKey.slice(1)
-            }`
+      [`cantidadPago${metodoPagoKey.charAt(0).toUpperCase() + metodoPagoKey.slice(1)
+        }`]: checked
+          ? prevInputValues[
+          `cantidadPago${metodoPagoKey.charAt(0).toUpperCase() + metodoPagoKey.slice(1)
+          }`
           ]
-        : 0,
+          : 0,
     }));
   }, []);
 
@@ -538,7 +536,7 @@ function DatosExtraVenta(props) {
       try {
         const dataTemp = {
           numeroTiquet: formData.infoVenta.numeroTiquet,
-          turno: turno.idTurno,
+          turno: turno?.idTurno,
           cliente: formData.infoVenta.cliente,
           tipo: props.mesaClick ? "Orden de mesa" : "Pedido de mostrador",
           mesa: formData.infoVenta.mesa,
@@ -585,9 +583,9 @@ function DatosExtraVenta(props) {
             const { data } = response;
             LogsInformativos(
               "Orden creada y cobrada " +
-                dataTemp.numeroTiquet +
-                " en la  mesa " +
-                props.numMesa,
+              dataTemp.numeroTiquet +
+              " en la  mesa " +
+              props.numMesa,
               data.datos
             );
             await actualizarStockInsumos(dataTemp.productos);
@@ -609,9 +607,9 @@ function DatosExtraVenta(props) {
               const { data } = response;
               LogsInformativos(
                 "Se ha cobrado la orden " +
-                  formData.infoVenta.numeroTiquet +
-                  " de la  mesa " +
-                  formData.infoVenta.mesa,
+                formData.infoVenta.numeroTiquet +
+                " de la  mesa " +
+                formData.infoVenta.mesa,
                 data.datos
               );
               await actualizarStockInsumos(dataTemp.productos);
@@ -658,7 +656,7 @@ function DatosExtraVenta(props) {
     try {
       const dataTemp = {
         numeroTiquet: formData.infoVenta.numeroTiquet,
-        turno: turno.idTurno,
+        turno: turno?.idTurno,
         cliente: formData.infoVenta.cliente,
         tipo: props.mesaClick ? "Orden de mesa" : "Pedido de mostrador",
         mesa: formData.infoVenta.mesa,
@@ -701,11 +699,10 @@ function DatosExtraVenta(props) {
           const { data } = response;
           LogsInformativos(
             "Orden creada y puesta para cobrar después " +
-              dataTemp.numeroTiquet,
+            dataTemp.numeroTiquet,
             data.datos
           );
           try {
-            setShowTicket(false);
           } catch (error) {
             console.error("Error al cerrar el modal principal:", error);
             try {
@@ -723,13 +720,12 @@ function DatosExtraVenta(props) {
             const { data } = response;
             LogsInformativos(
               "Orden cambiada para cobrar después " +
-                dataTemp.numeroTiquet +
-                " en la  mesa " +
-                props.numMesa,
+              dataTemp.numeroTiquet +
+              " en la  mesa " +
+              props.numMesa,
               data.datos
             );
             try {
-              setShowTicket(false);
             } catch (error) {
               console.error("Error al cerrar el modal principal:", error);
               try {
@@ -779,7 +775,7 @@ function DatosExtraVenta(props) {
                       disabled={
                         formaPedido.hacerPedido === "Uber" &&
                         formaPedido.hacerPedido === "Didi" &&
-                        formaPedido.hacerPedido === "Rappi" 
+                        formaPedido.hacerPedido === "Rappi"
                       }
                     />
                     <Form.Check
@@ -933,7 +929,7 @@ function DatosExtraVenta(props) {
 
 
           {(formaPedido.hacerPedido !== "Rappi" &&
-          formaPedido.hacerPedido !== "Didi" &&
+            formaPedido.hacerPedido !== "Didi" &&
             formaPedido.hacerPedido !== "Uber") &&
             !tpv && (
               <Row className="mx-1 p-1 border rounded">
@@ -1078,6 +1074,7 @@ function DatosExtraVenta(props) {
           Cancelar
         </button>
         <button
+          className="btn btn-primary"
           onClick={() =>
             imprimirTicketFinal(
               <TicketFinal
@@ -1089,7 +1086,7 @@ function DatosExtraVenta(props) {
             )
           }
         >
-          Imp
+          <i className="fas fa-print"></i> Imp
         </button>
       </div>
       <BasicModal

@@ -184,6 +184,7 @@ const TicketView = ({ ticket }) => {
     // Tipo de pago
     ticket += centrarTexto("Pago: " + formData.tipoPago) + "\n";
     if (formData.tipoPago === "Efectivo") {
+      ticket += centrarTexto("Pagado: $" + Number((Number(formData.cambio || 0) + Number(formData.total || 0))).toFixed(2)) + "\n";
       ticket += centrarTexto("Cambio: $" + Number(formData.cambio || 0).toFixed(2)) + "\n";
     }
 
