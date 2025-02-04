@@ -9563,6 +9563,11 @@ quick-lru@^5.1.1:
   resolved "https://registry.npmjs.org/quick-lru/-/quick-lru-5.1.1.tgz"
   integrity sha512-WuyALRjWPDGtt/wzJiadO5AXY+8hZ80hVpe6MyivgraREW751X3SbhRvG3eLKOYN+8VEvqLcf3wdnt44Z4S4SA==
 
+qz-tray@^2.2.4:
+  version "2.2.4"
+  resolved "https://registry.yarnpkg.com/qz-tray/-/qz-tray-2.2.4.tgz#14f2e5eb14656dfc3da71fa20d1517906466427c"
+  integrity sha512-5beEVkqewsuB//B0p+1guP7w45VU6kILazYa+VePHy5k0U2EzmE8JnZ/06pspgVgeeKIJDKb/Uu4Cu6tGi1cIw==
+
 raf@^3.4.1:
   version "3.4.1"
   resolved "https://registry.npmjs.org/raf/-/raf-3.4.1.tgz"

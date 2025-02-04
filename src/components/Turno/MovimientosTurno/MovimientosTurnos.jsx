@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Container, Table } from "react-bootstrap";
+import { Container, Table, Image, Modal, Button, Form } from "react-bootstrap";
 import { listarMovimientoTurno } from "../../../api/movimientosTurnoCajas";
 import { listarVentasTurno } from "../../../api/ventas";
 import { toast } from "react-toastify";
@@ -7,6 +7,11 @@ import printJS from 'print-js';
 import BasicModal from "../../Modal/BasicModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPrint } from "@fortawesome/free-solid-svg-icons";
+import utc from 'dayjs/plugin/utc';
+import dayjs from "dayjs";
+import localizedFormat from "dayjs/plugin/localizedFormat";
+import 'dayjs/locale/es';
+import qz from "qz-tray";
 
 function MovimientosTurnos(params) {
   const { caja, turno } = params;
@@ -14,6 +19,14 @@ function MovimientosTurnos(params) {
   const [listVentas, setListVentas] = useState([]);
   const [totalVentasEfectivo, setTotalVentasEfectivo] = useState(0);
   const [saldoCaja, setSaldoCaja] = useState(0);
+
+  dayjs.extend(utc); // Configura el idioma español
+  dayjs.locale('es');
+  dayjs.extend(localizedFormat);
+
+  const [showModal, setShowModal] = useState(false);
+  const [selectedPrinter, setSelectedPrinter] = useState(null);
+  const [printers, setPrinters] = useState([]);
 
   const cargarListMovs = async () => {
     const response = await listarMovimientoTurno(turno.idTurno);
@@ -113,7 +126,104 @@ function MovimientosTurnos(params) {
       });
     }
   };
+
+  const obtenerImpresoras = async () => {
+    try {
+      if (!qz.websocket.isActive()) {
+        await qz.websocket.connect();
+      }
+
+      const impresoras = await qz.printers.find();
+      console.log("Lista de impresoras:", impresoras);
+      setPrinters(impresoras);
+    } catch (error) {
+      console.error("Error al obtener impresoras:", error);
+    }
+  };
+
+  useEffect(() => {
+    obtenerImpresoras();
+  }, []);
+
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+  const imprimirTicket = async () => {
+    if (!selectedPrinter) {
+      console.log("Selecciona una impresora");
+      return;
+    }
+
+    try {
+      await qz.websocket.connect();
+      const printerConfig = qz.configs.create(selectedPrinter);
+      const ticketContent = generarTicket(turno, listMovs, listVentas, totalVentasEfectivo, saldoCaja);
+
+      const contenido = [
+        { type: "raw", format: "plain", data: ticketContent },
+        { type: "raw", format: "plain", data: "\x1B\x69" }, // Corte
+      ];
+
+      await qz.print(printerConfig, contenido);
+    } catch (error) {
+      console.error("Error al imprimir el ticket:", error);
+    } finally {
+      if (qz.websocket.isActive()) {
+        qz.websocket.disconnect();
+      }
+    }
+  };
+
+  const generarTicket = (turno, listMovs, listVentas, totalVentasEfectivo, saldoCaja) => {
+    const anchoTicket = 40;
+    const anchoTipo = 12;
+    const anchoCantidad = 8;
+    const anchoRazon = 16;
   
+    const centrarTexto = (texto, ancho = anchoTicket) => {
+      const espaciosIzquierda = Math.max(0, Math.floor((ancho - texto.length) / 2));
+      return ' '.repeat(espaciosIzquierda) + texto;
+    };
+  
+    let ticket = '';
+  
+    ticket += centrarTexto("CAPRICCIO") + "\n\n";
+    ticket += centrarTexto("Movimientos del Turno No. " + turno.idTurno) + "\n";
+    ticket += "#  Tipo Mov.      Cantidad     Razón\n";
+    ticket += "----------------------------------------\n";
+  
+    listMovs.forEach((mov, index) => {
+      const numero = (index + 1).toString().padEnd(3);
+      let tipoMov = mov.movimiento.length > anchoTipo ? mov.movimiento.slice(0, anchoTipo - 1) + "." : mov.movimiento.padEnd(anchoTipo);
+      const cantidad = String(mov.cantidad).padStart(anchoCantidad);
+      let razon = mov.razon;
+      let razonCorto = razon.length > anchoRazon ? razon.slice(0, anchoRazon - 1) + "." : razon.padEnd(anchoRazon);
+  
+      ticket += `${numero}${tipoMov}${cantidad}${razonCorto}\n`;
+  
+      if (razon.length > anchoRazon) {
+        let restoRazon = razon.slice(anchoRazon - 1);
+        while (restoRazon.length > 0) {
+          let parte = restoRazon.slice(0, anchoRazon);
+          restoRazon = restoRazon.slice(anchoRazon);
+          ticket += `   ${parte}\n`;
+        }
+      }
+    });
+  
+    ticket += "----------------------------------------\n";
+  
+    const subtotalTexto = `Total de ventas en efectivo: $${(isNaN(Number(totalVentasEfectivo)) ? "0.00" : Number(totalVentasEfectivo).toFixed(2))}`;
+    if (turno.estado === "abierto") {
+      ticket += centrarTexto("Saldo de la caja hasta el momento: " + "$" + (isNaN(Number(saldoCaja)) ? "0.00" : Number(saldoCaja).toFixed(2)) + "\n\n");
+    } else {
+      ticket += centrarTexto("Saldo de la caja al corte: " + "$" + (isNaN(Number(saldoCaja)) ? "0.00" : Number(saldoCaja).toFixed(2)) + "\n\n");
+    }
+    ticket += centrarTexto(subtotalTexto) + "\n";
+  
+    return ticket;
+  };
+  
+  console.log(generarTicket(turno, listMovs, listVentas, totalVentasEfectivo, saldoCaja));
 
   return (
     <>
@@ -121,7 +231,7 @@ function MovimientosTurnos(params) {
         <div class="logotipo">
           <img src={logo} alt="Logo" />
         </div>
-        <h4>Movimientos del Turno No. {turno.idTurno}</h4>
+        <h4>Movimientos del Turno No. {turno?.idTurno}</h4>
         {listMovs.length > 0 || listVentas.length > 0 ? (
           <>
             {listMovs.length > 0 ? (
@@ -163,10 +273,42 @@ function MovimientosTurnos(params) {
         )}
       </Container>
       <div className=" mt-2 d-flex justify-content-center">
-        <button className="btn btn-secondary" onClick={handlePrint}>
+        <button className="btn btn-secondary" onClick={() => isMobile ? handlePrint() : setShowModal(true)}>
           <FontAwesomeIcon icon={faPrint} /> Imp
         </button>
       </div>
+      
+      {/* Modal para seleccionar impresora en PC */}
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Selecciona una impresora</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Group controlId="selectPrinter">
+            <Form.Label>Elige una impresora</Form.Label>
+            <Form.Control
+              as="select"
+              value={selectedPrinter || ""}
+              onChange={(e) => setSelectedPrinter(e.target.value)}
+            >
+              <option value="">Seleccione una impresora</option>
+              {printers.map((printer, index) => (
+                <option key={index} value={printer}>
+                  {printer}
+                </option>
+              ))}
+            </Form.Control>
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
+            Cerrar
+          </Button>
+          <Button variant="primary" onClick={imprimirTicket}>
+            Imprimir
+          </Button>
+        </Modal.Footer>
+      </Modal>
 
       <BasicModal
         show={showMod}
