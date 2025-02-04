@@ -113,18 +113,18 @@ function ListVentas(props) {
         },
         {
             //CODIGO PARA FILTRAR VENTA EN VISTA CLIENTE. ANTES DEL 20 SE USA UTC+7, DESPUES UTC
-        name: "Día de la venta",
-        selector: row => {
-            const fechaCreacion = dayjs(row.fechaCreacion);
-            if (fechaCreacion.isBefore('2023-10-20')) {
-                return fechaCreacion.utcOffset('+07:00').format('dddd, LL hh:mm A');
-            } else {
-                return fechaCreacion.utc().format('dddd, LL hh:mm A');
-            }
-        },
-        sortable: false,
-        center: true,
-        reorder: false
+            name: "Día de la venta",
+            selector: row => {
+                const fechaCreacion = dayjs(row.fechaCreacion);
+                if (fechaCreacion.isBefore('2023-10-20')) {
+                    return fechaCreacion.utcOffset('+07:00').format('dddd, LL hh:mm A');
+                } else {
+                    return fechaCreacion.utc().format('dddd, LL hh:mm A');
+                }
+            },
+            sortable: false,
+            center: true,
+            reorder: false
         },
         {
             name: "Estado",
@@ -247,25 +247,23 @@ function ListVentas(props) {
             selector: row => row.productosVendidos,
         },
         //CODIGO PARA MOSTRAR MESA O CLIENTE EN VISTA CLIENTE
-{
-    name: "Mesa/Cliente",
-    sortable: false,
-    center: true,
-    reorder: false,
-    selector: row => {
-        if (row.mesa === "no aplica") {
-            return row.cliente;
-        } else if (row.mesa === "") {
-            return row.cliente;
-        } else if (!row.cliente) {
-            return row.mesa;
-        } else {
-            return "Mesa: " + row.mesa + " / Cliente: " + row.cliente;
-        }
-    },
-},
-
-
+        {
+            name: "Mesa/Cliente",
+            sortable: false,
+            center: true,
+            reorder: false,
+            selector: row => {
+                if (row.mesa === "no aplica") {
+                    return row.cliente;
+                } else if (row.mesa === "") {
+                    return row.cliente;
+                } else if (!row.cliente) {
+                    return row.mesa;
+                } else {
+                    return "Mesa: " + row.mesa + " / Cliente: " + row.cliente;
+                }
+            },
+        },
 
         {
             name: "Total",
@@ -300,7 +298,7 @@ function ListVentas(props) {
                                         className="editar"
                                         onClick={() => {
                                             const dataTemp = {
-                                                    atendido: row.atendido === "false" ? "true" : "false",
+                                                atendido: row.atendido === "false" ? "true" : "false",
                                             }
                                             //console.log(dataTemp)
 

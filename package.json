@@ -40,6 +40,7 @@
     "process": "^0.11.10",
     "pusher": "^5.2.0",
     "query-string": "^8.1.0",
+    "qz-tray": "^2.2.4",
     "react": "^18.2.0",
     "react-bootstrap": "^2.10.0",
     "react-chartjs-2": "^5.2.0",
