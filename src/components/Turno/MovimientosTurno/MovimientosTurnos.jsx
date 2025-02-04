@@ -174,10 +174,10 @@ function MovimientosTurnos(params) {
   };
 
   const generarTicket = (turno, listMovs, listVentas, totalVentasEfectivo, saldoCaja) => {
-    const anchoTicket = 40;
-    const anchoTipo = 12;
-    const anchoCantidad = 8;
-    const anchoRazon = 16;
+    const anchoTicket = 32;
+    const anchoTipo = 16;
+    const anchoCantidad = 5;
+    const anchoRazon = 9;
   
     const centrarTexto = (texto, ancho = anchoTicket) => {
       const espaciosIzquierda = Math.max(0, Math.floor((ancho - texto.length) / 2));
@@ -219,6 +219,11 @@ function MovimientosTurnos(params) {
       ticket += centrarTexto("Saldo de la caja al corte: " + "$" + (isNaN(Number(saldoCaja)) ? "0.00" : Number(saldoCaja).toFixed(2)) + "\n\n");
     }
     ticket += centrarTexto(subtotalTexto) + "\n";
+
+    ticket += "\n";
+    ticket += "\n\n";
+    ticket += "\n\n\n"; // Espacio extra para corte automático
+    ticket += "\x1D\x56\x00"; // Código de corte de papel
   
     return ticket;
   };

@@ -232,10 +232,10 @@ function TicketFinal(params) {
   };
 
   const generarTicket = (formData) => {
-    const anchoTicket = 40; // Ancho fijo del ticket
-    const anchoProducto = 12; // Ancho máximo del nombre del producto
-    const anchoCantidad = 8;
-    const anchoPrecio = 16;
+    const anchoTicket = 32; // Ancho de 54mm (~32 caracteres)
+    const anchoProducto = 16; // Ajustado para mejor alineación
+    const anchoCantidad = 5;
+    const anchoPrecio = 9;
 
     // Función para centrar texto
     const centrarTexto = (texto, ancho = anchoTicket) => {
@@ -255,38 +255,32 @@ function TicketFinal(params) {
     ticket += centrarTexto("Mesa: " + formData.mesa) + "\n";
     ticket += centrarTexto("Pedido: " + formData.hacerPedido) + "\n";
     ticket += centrarTexto("Para: " + formData.tipoPedido) + "\n";
-    ticket += centrarTexto("Fecha: " + dayjs.utc(formData.fecha).format("dddd, LL hh:mm A")) + "\n\n";
+    ticket += centrarTexto("Fecha: " + dayjs.utc(formData.fecha).format("DD/MM/YYYY hh:mm A")) + "\n\n";
 
-    // Encabezado de productos
-    ticket += "#  Producto        Cantidad     Precio\n";
-    ticket += "----------------------------------------\n";
+    // Encabezado de productos con alineación exacta
+    ticket += centrarTexto("Producto        Cant  Precio") + "\n";
+    ticket += centrarTexto("------------------------------") + "\n";
 
-    // Imprimir productos con control de ancho
-    formData.productos.forEach((producto, index) => {
-      const numero = (index + 1).toString().padEnd(3);
+    // Imprimir productos con mejor alineación
+    formData.productos.forEach((producto) => {
+      let nombre = producto?.nombre || "";
+      let cantidad = String(producto.cantidad || 1).padStart(anchoCantidad);
+      let precio = ('$' + producto.precio.toFixed(2)).padStart(anchoPrecio);
 
       // Si el nombre es muy largo, dividirlo en varias líneas
-      let nombre = producto?.nombre;
-      let nombreCorto = nombre.length > anchoProducto ? nombre.slice(0, anchoProducto - 1) + "." : nombre.padEnd(anchoProducto);
-
-      const cantidad = String(producto.cantidad || 1).padStart(anchoCantidad);
-      const precio = ('$' + producto.precio.toFixed(2)).padStart(anchoPrecio);
-
-      ticket += `${numero}${nombreCorto}${cantidad}${precio}\n`;
-
-      // Si el nombre es largo, imprimir las siguientes líneas
-      if (nombre.length > anchoProducto) {
-        let restoNombre = nombre.slice(anchoProducto - 1);
-        while (restoNombre.length > 0) {
-          let parte = restoNombre.slice(0, anchoProducto);
-          restoNombre = restoNombre.slice(anchoProducto);
-          ticket += `   ${parte}\n`; // Indentar para alinear con productos
-        }
+      while (nombre.length > anchoProducto) {
+        ticket += centrarTexto(nombre.slice(0, anchoProducto)) + "\n";
+        nombre = nombre.slice(anchoProducto);
       }
+
+      // Agregar el producto alineado
+      let lineaProducto = `${nombre.padEnd(anchoProducto)}${cantidad}${precio}`;
+      ticket += centrarTexto(lineaProducto) + "\n";
     });
 
+
     // Línea de separación
-    ticket += "----------------------------------------\n";
+    ticket += centrarTexto("------------------------------") + "\n";
 
     // Detalles adicionales
     ticket += centrarTexto("Detalles: " + formData.detalles) + "\n\n";
@@ -306,9 +300,12 @@ function TicketFinal(params) {
       ticket += centrarTexto("Cambio: " + "$" + (isNaN(Number(formData.cambio)) ? "0.00" : Number(formData.cambio).toFixed(2)) + "\n\n");
     }
 
-    // Pie de página
-    ticket += centrarTexto("Gracias por su compra") + "\n";
-    ticket += centrarTexto("¡Vuelva pronto!") + "\n";
+    ticket += "\n";
+    ticket += centrarTexto("¡Gracias por su compra!") + "\n";
+    ticket += centrarTexto("Vuelva pronto") + "\n";
+    ticket += "\n\n";
+    ticket += "\n\n\n"; // Espacio extra para corte automático
+    ticket += "\x1D\x56\x00"; // Código de corte de papel
 
     return ticket;
   };
@@ -318,7 +315,7 @@ function TicketFinal(params) {
   return (
     <>
       <div className="d-flex justify-content-evenly">
-      <button className="btn btn-primary" onClick={() => isMobile ? handlePrint() : setShowModal(true)}>
+        <button className="btn btn-primary" onClick={() => isMobile ? handlePrint() : setShowModal(true)}>
           <i className="fas fa-print"></i> Imp
         </button>
         <button className="btn btn-danger" onClick={cancelarImp}>
@@ -326,7 +323,7 @@ function TicketFinal(params) {
         </button>
       </div>
 
-      
+
       {/* Modal para seleccionar impresora en PC */}
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
