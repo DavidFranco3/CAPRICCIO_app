@@ -77,19 +77,21 @@ const TicketView = ({ ticket }) => {
   const [selectedPrinter, setSelectedPrinter] = useState(null);
   const [printers, setPrinters] = useState([]);
 
-  const obtenerImpresoras = async () => {
+  async function obtenerImpresoras() {
     try {
+      // Asegurar que QZ Tray está inicializado antes de usarlo
       if (!qz.websocket.isActive()) {
         await qz.websocket.connect();
       }
 
-      const impresoras = await qz.printers.find();
-      console.log("Lista de impresoras:", impresoras);
-      setPrinters(impresoras);
+      // Obtener la impresora predeterminada
+      const impresora = await qz.printers.getDefault();
+      setPrinters(impresora);
+      setSelectedPrinter(impresora)
     } catch (error) {
-      console.error("Error al obtener impresoras:", error);
+      console.error("Error al obtener la impresora predeterminada:", error);
     }
-  };
+  }
 
   useEffect(() => {
     obtenerImpresoras();
@@ -123,77 +125,77 @@ const TicketView = ({ ticket }) => {
     }
   };
 
-  
-const generarTicket = (formData) => {
-  const anchoTicket = 32; // Ancho de 54mm (~32 caracteres)
-  const anchoProducto = 16; // Ajustado para mejor alineación
-  const anchoCantidad = 5;
-  const anchoPrecio = 9;
 
-  // Función para centrar texto
-  const centrarTexto = (texto, ancho = anchoTicket) => {
-    const espacios = Math.max(0, Math.floor((ancho - texto.length) / 2));
-    return ' '.repeat(espacios) + texto;
-  };
+  const generarTicket = (formData) => {
+    const anchoTicket = 32; // Ancho de 54mm (~32 caracteres)
+    const anchoProducto = 16; // Ajustado para mejor alineación
+    const anchoCantidad = 5;
+    const anchoPrecio = 9;
 
-  let ticket = "";
+    // Función para centrar texto
+    const centrarTexto = (texto, ancho = anchoTicket) => {
+      const espacios = Math.max(0, Math.floor((ancho - texto.length) / 2));
+      return ' '.repeat(espacios) + texto;
+    };
 
-  // Encabezado de la empresa
-  ticket += centrarTexto("CAPRICCIO") + "\n\n";
+    let ticket = "";
 
-  // Detalles de la venta
-  ticket += centrarTexto("Cliente: " + formData.cliente) + "\n";
-  ticket += centrarTexto("Ticket: " + formData.numeroTiquet) + "\n";
-  ticket += centrarTexto("Mesa: " + formData.mesa) + "\n";
-  ticket += centrarTexto("Pedido: " + formData.hacerPedido) + "\n";
-  ticket += centrarTexto("Para: " + formData.tipoPedido) + "\n";
-  ticket += centrarTexto("Fecha: " + dayjs.utc(formData.fecha).format("DD/MM/YYYY hh:mm A")) + "\n\n";
+    // Encabezado de la empresa
+    ticket += centrarTexto("CAPRICCIO") + "\n\n";
 
-  // Encabezado de productos con alineación exacta
-  ticket += centrarTexto("Producto        Cant  Precio") + "\n";
-  ticket += centrarTexto("------------------------------") + "\n";
+    // Detalles de la venta
+    ticket += centrarTexto("Cliente: " + formData.cliente) + "\n";
+    ticket += centrarTexto("Ticket: " + formData.numeroTiquet) + "\n";
+    ticket += centrarTexto("Mesa: " + formData.mesa) + "\n";
+    ticket += centrarTexto("Pedido: " + formData.hacerPedido) + "\n";
+    ticket += centrarTexto("Para: " + formData.tipoPedido) + "\n";
+    ticket += centrarTexto("Fecha: " + dayjs.utc(formData.fecha).format("DD/MM/YYYY hh:mm A")) + "\n\n";
 
-  // Imprimir productos con mejor alineación
-  formData.productos.forEach((producto) => {
-    let nombre = producto?.nombre || "";
-    let cantidad = String(producto.cantidad || 1).padStart(anchoCantidad);
-    let precio = ('$' + producto.precio.toFixed(2)).padStart(anchoPrecio);
+    // Encabezado de productos con alineación exacta
+    ticket += centrarTexto("Producto        Cant  Precio") + "\n";
+    ticket += centrarTexto("------------------------------") + "\n";
 
-    // Si el nombre es muy largo, dividirlo en varias líneas
-    while (nombre.length > anchoProducto) {
-      ticket += centrarTexto(nombre.slice(0, anchoProducto)) + "\n";
-      nombre = nombre.slice(anchoProducto);
+    // Imprimir productos con mejor alineación
+    formData.productos.forEach((producto) => {
+      let nombre = producto?.nombre || "";
+      let cantidad = String(producto.cantidad || 1).padStart(anchoCantidad);
+      let precio = ('$' + producto.precio.toFixed(2)).padStart(anchoPrecio);
+
+      // Si el nombre es muy largo, dividirlo en varias líneas
+      while (nombre.length > anchoProducto) {
+        ticket += centrarTexto(nombre.slice(0, anchoProducto)) + "\n";
+        nombre = nombre.slice(anchoProducto);
+      }
+
+      // Agregar el producto alineado
+      let lineaProducto = `${nombre.padEnd(anchoProducto)}${cantidad}${precio}`;
+      ticket += centrarTexto(lineaProducto) + "\n";
+    });
+
+    // Línea de separación
+    ticket += centrarTexto("------------------------------") + "\n";
+
+    // Totales alineados y centrados
+    ticket += centrarTexto(`Subtotal: $${Number(formData.subtotal || 0).toFixed(2)}`) + "\n";
+    ticket += centrarTexto(`Descuento: $${Number(formData.descuento || 0).toFixed(2)}`) + "\n";
+    ticket += centrarTexto(`IVA: $${Number(formData.iva || 0).toFixed(2)}`) + "\n";
+    ticket += centrarTexto(`Total: $${Number(formData.total || 0).toFixed(2)}`) + "\n";
+
+    // Tipo de pago
+    ticket += centrarTexto("Pago: " + formData.tipoPago) + "\n";
+    if (formData.tipoPago === "Efectivo") {
+      ticket += centrarTexto("Cambio: $" + Number(formData.cambio || 0).toFixed(2)) + "\n";
     }
 
-    // Agregar el producto alineado
-    let lineaProducto = `${nombre.padEnd(anchoProducto)}${cantidad}${precio}`;
-    ticket += centrarTexto(lineaProducto) + "\n";
-  });
+    ticket += "\n";
+    ticket += centrarTexto("¡Gracias por su compra!") + "\n";
+    ticket += centrarTexto("Vuelva pronto") + "\n";
+    ticket += "\n\n";
+    ticket += "\n\n\n"; // Espacio extra para corte automático
+    ticket += "\x1D\x56\x00"; // Código de corte de papel
 
-  // Línea de separación
-  ticket += centrarTexto("------------------------------") + "\n";
-
-  // Totales alineados y centrados
-  ticket += centrarTexto(`Subtotal: $${Number(formData.subtotal || 0).toFixed(2)}`) + "\n";
-  ticket += centrarTexto(`Descuento: $${Number(formData.descuento || 0).toFixed(2)}`) + "\n";
-  ticket += centrarTexto(`IVA: $${Number(formData.iva || 0).toFixed(2)}`) + "\n";
-  ticket += centrarTexto(`Total: $${Number(formData.total || 0).toFixed(2)}`) + "\n";
-
-  // Tipo de pago
-  ticket += centrarTexto("Pago: " + formData.tipoPago) + "\n";
-  if (formData.tipoPago === "Efectivo") {
-    ticket += centrarTexto("Cambio: $" + Number(formData.cambio || 0).toFixed(2)) + "\n";
-  }
-
-  ticket += "\n";
-  ticket += centrarTexto("¡Gracias por su compra!") + "\n";
-  ticket += centrarTexto("Vuelva pronto") + "\n";
-  ticket += "\n\n";
-  ticket += "\n\n\n"; // Espacio extra para corte automático
-  ticket += "\x1D\x56\x00"; // Código de corte de papel
-
-  return ticket;
-};
+    return ticket;
+  };
 
   console.log(generarTicket(ticket));
 
@@ -251,42 +253,10 @@ const generarTicket = (formData) => {
         </p>
       </div>
       <div className="d-flex justify-content-center">
-      <button className="btn btn-primary" onClick={() => isMobile ? handlePrint() : setShowModal(true)}>
+        <button className="btn btn-primary" onClick={() => isMobile ? handlePrint() : imprimirTicket()}>
           <i className="fas fa-print"></i> Imprimir
         </button>
       </div>
-
-      {/* Modal para seleccionar impresora en PC */}
-      <Modal show={showModal} onHide={() => setShowModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Selecciona una impresora</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form.Group controlId="selectPrinter">
-            <Form.Label>Elige una impresora</Form.Label>
-            <Form.Control
-              as="select"
-              value={selectedPrinter || ""}
-              onChange={(e) => setSelectedPrinter(e.target.value)}
-            >
-              <option value="">Seleccione una impresora</option>
-              {printers.map((printer, index) => (
-                <option key={index} value={printer}>
-                  {printer}
-                </option>
-              ))}
-            </Form.Control>
-          </Form.Group>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
-            Cerrar
-          </Button>
-          <Button variant="primary" onClick={imprimirTicket}>
-            Imprimir
-          </Button>
-        </Modal.Footer>
-      </Modal>
     </>
   );
 };

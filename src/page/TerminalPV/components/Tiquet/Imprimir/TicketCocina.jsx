@@ -43,19 +43,21 @@ function TicketCocina(params) {
     }
   };
 
-  const obtenerImpresoras = async () => {
-    try {
-      if (!qz.websocket.isActive()) {
-        await qz.websocket.connect();
+  async function obtenerImpresoras() {
+      try {
+        // Asegurar que QZ Tray está inicializado antes de usarlo
+        if (!qz.websocket.isActive()) {
+          await qz.websocket.connect();
+        }
+  
+        // Obtener la impresora predeterminada
+        const impresora = await qz.printers.getDefault();
+        setPrinters(impresora);
+        setSelectedPrinter(impresora)
+      } catch (error) {
+        console.error("Error al obtener la impresora predeterminada:", error);
       }
-
-      const impresoras = await qz.printers.find();
-      console.log("Lista de impresoras:", impresoras);
-      setPrinters(impresoras);
-    } catch (error) {
-      console.error("Error al obtener impresoras:", error);
     }
-  };
 
   useEffect(() => {
     obtenerImpresoras();
@@ -204,42 +206,10 @@ function TicketCocina(params) {
       </div>
 
       <div className="d-flex justify-content-center">
-        <button className="btn btn-primary" onClick={() => isMobile ? handlePrint() : setShowModal(true)}>
+        <button className="btn btn-primary" onClick={() => isMobile ? handlePrint() : imprimirTicket()}>
           <i className="fas fa-print"></i> Imp
         </button>
       </div>
-
-      {/* Modal para seleccionar impresora en PC */}
-      <Modal show={showModal} onHide={() => setShowModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Selecciona una impresora</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form.Group controlId="selectPrinter">
-            <Form.Label>Elige una impresora</Form.Label>
-            <Form.Control
-              as="select"
-              value={selectedPrinter || ""}
-              onChange={(e) => setSelectedPrinter(e.target.value)}
-            >
-              <option value="">Seleccione una impresora</option>
-              {printers.map((printer, index) => (
-                <option key={index} value={printer}>
-                  {printer}
-                </option>
-              ))}
-            </Form.Control>
-          </Form.Group>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
-            Cerrar
-          </Button>
-          <Button variant="primary" onClick={imprimirTicket}>
-            Imprimir
-          </Button>
-        </Modal.Footer>
-      </Modal>
     </>
   );
 }
