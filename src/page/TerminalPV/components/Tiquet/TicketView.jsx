@@ -188,7 +188,7 @@ const generarTicket = (formData) => {
   ticket += "\n";
   ticket += centrarTexto("¡Gracias por su compra!") + "\n";
   ticket += centrarTexto("Vuelva pronto") + "\n";
-
+  ticket += "\n\n";
   ticket += "\n\n\n"; // Espacio extra para corte automático
   ticket += "\x1D\x56\x00"; // Código de corte de papel
 
