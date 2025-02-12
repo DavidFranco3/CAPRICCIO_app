@@ -13,7 +13,7 @@ import MovimientosTurnos from "../../components/Turno/MovimientosTurno/Movimient
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
-
+ 
 function VistaTurnos(props) {
   console.log(props);
   const { turno, setTurno } = props;
@@ -99,6 +99,8 @@ function VistaTurnos(props) {
       toast.error("Caja no encontrada.");
     }
   };
+
+  console.log(caja)
 
   const terminarTurno = async () => {
     const dataTemp = {

@@ -32,7 +32,7 @@ function ReporteCSV(params) {
   }, [listVentas, listCategorias]);
 
   const headers = {
-    numeroTiquet: "Num de Tiquet",
+    numeroTiquet: "Numero de Tiquet",
     estado: "Estado venta",
     cliente: "Cliente",
     nombre: "Producto",

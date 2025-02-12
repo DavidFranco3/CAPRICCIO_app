@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { listarTurno } from "../../api/turnos";
+import { listarVentasTurno } from "../../api/ventas";
 import DataTable from "react-data-table-component";
 import { Badge } from "react-bootstrap";
 import { estilos } from "../../utils/tableStyled";
@@ -8,10 +9,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 import BasicModal from "../Modal/BasicModal";
 import MovimientosTurnos from "./MovimientosTurno/MovimientosTurnos";
+import GenerarExcel from "./GenerarExcel";
 
 function ListTurnos(params) {
   const { turno } = params;
+
   const [listTurnos, setListTurnos] = useState([]);
+  const [listVentas, setListVentas] = useState([]);
 
   const cargarTurnos = async () => {
     const response = await listarTurno();
@@ -19,9 +23,18 @@ function ListTurnos(params) {
     setListTurnos(data);
   };
 
+  const cargarVentas = async () => {
+    const response = await listarVentasTurno(turno?.idTurno);
+    const { data } = response;
+    setListVentas(data);
+  };
+
   useEffect(() => {
     cargarTurnos();
+    cargarVentas();
   }, []);
+
+  console.log(listVentas)
 
   const adjustTimeToMexico = (dateString) => {
     const date = dayjs(dateString);
@@ -80,6 +93,7 @@ function ListTurnos(params) {
           >
             <FontAwesomeIcon className="text-lg" icon={faCircleInfo} />
           </Badge>
+          <GenerarExcel idTurno={row.idTurno} />
         </>
       ),
       sortable: false,

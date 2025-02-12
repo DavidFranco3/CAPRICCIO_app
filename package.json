@@ -30,6 +30,7 @@
     "buffer": "^6.0.3",
     "chart.js": "^4.4.1",
     "dayjs": "^1.11.11",
+    "file-saver": "^2.0.5",
     "firebase": "^10.7.2",
     "json-2-csv": "^5.0.1",
     "jwt-decode": "^4.0.0",
@@ -55,7 +56,7 @@
     "react-scripts": "^5.0.1",
     "react-to-print": "^3.0.2",
     "react-toastify": "10.0.4",
-    "sass": "^1.83.4",
+    "sass": "^1.84.0",
     "socket.io-client": "^4.7.4",
     "stream-browserify": "^3.0.0",
     "styled-components": "6.1.8",
@@ -73,7 +74,8 @@
     "workbox-range-requests": "^7.0.0",
     "workbox-routing": "^7.0.0",
     "workbox-strategies": "^7.0.0",
-    "workbox-streams": "^7.0.0"
+    "workbox-streams": "^7.0.0",
+    "xlsx": "^0.18.5"
   },
   "scripts": {
     "dev": "react-scripts start",
