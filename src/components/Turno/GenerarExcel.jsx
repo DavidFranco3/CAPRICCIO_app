@@ -26,7 +26,7 @@ const GenerarExcel = ({ idTurno }) => {
     };
 
     const cargarMovimientos = async () => {
-        const response = await listarMovimientoTurno();
+        const response = await listarMovimientoTurno(idTurno);
         const { data } = response;
 
         // Filtrar los turnos que coincidan con la variable idTurno
