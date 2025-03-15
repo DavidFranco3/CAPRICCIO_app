@@ -928,10 +928,7 @@ function DatosExtraVenta(props) {
           </Row>
 
 
-          {(formaPedido.hacerPedido !== "Rappi" &&
-            formaPedido.hacerPedido !== "Didi" &&
-            formaPedido.hacerPedido !== "Uber") &&
-            !tpv && (
+          {!tpv && (
               <Row className="mx-1 p-1 border rounded">
                 <Col className="">
                   <h3>Métodos de pago y pago</h3>

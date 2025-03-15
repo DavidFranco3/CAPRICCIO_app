@@ -113,7 +113,7 @@ function TicketCocina(params) {
     ticket += centrarTexto("Cliente: " + formData.cliente) + "\n";
     ticket += centrarTexto("Ticket: " + formData.numeroTiquet) + "\n";
     ticket += centrarTexto("Mesa: " + formData.mesa) + "\n";
-    ticket += centrarTexto("Fecha: " + dayjs.utc(formData.fecha).format("DD/MM/YYYY hh:mm A")) + "\n\n";
+    ticket += centrarTexto("Fecha: " + dayjs.utc(params.fecha).format("DD/MM/YYYY hh:mm A")) + "\n\n";
 
     // Encabezado de productos con alineación exacta
     ticket += centrarTexto("Producto        Cant  Precio") + "\n";
@@ -202,7 +202,7 @@ function TicketCocina(params) {
           </table>
         </div>
         <div>Total: ${isNaN(Number(formData.total)) ? "0.00" : Number(formData.subtotal).toFixed(2)}</div>
-        <div>Detalless: {formData.detalles}</div>
+        <div>Detalles: {formData.detalles}</div>
       </div>
 
       <div className="d-flex justify-content-center">
