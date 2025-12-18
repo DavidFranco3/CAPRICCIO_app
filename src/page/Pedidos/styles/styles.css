@@ -1,0 +1,17 @@
+.nav-tabs .nav-link {
+    color: white;
+    background-color: #6c757d; /* Color gris oscuro para las pestañas inactivas */
+    border-color: transparent;
+  }
+  
+  .nav-tabs .nav-link.active {
+    color: black;
+    background-color: white; /* Color azul para la pestaña activa */
+    border-color: white;
+  }
+  
+  .nav-tabs .nav-link:hover {
+    color: white;
+    background-color: #5a6268; /* Gris oscuro para el hover */
+    border-color: transparent;
+  }

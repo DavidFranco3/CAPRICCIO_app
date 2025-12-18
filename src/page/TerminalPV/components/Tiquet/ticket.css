@@ -1,0 +1,101 @@
+.containeripv{
+    margin: 1vw;
+}
+.ticket {
+    font-family: Arial, sans-serif;
+    width: 100%;
+    margin: 0 auto;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.ticket table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.ticket th,
+.ticket td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.ticket th {
+    background-color: #f2f2f2;
+}
+
+.ticket td:last-child {
+    text-align: center;
+}
+
+.ticket td.description {
+    width: 50%;
+}
+
+.ticket td.price,
+.ticket td.qty {
+    width: 20%;
+    text-align: center;
+}
+
+.ticket td.total {
+    font-weight: bold;
+}
+
+
+
+
+
+.logotipo {
+    display: flex; /* Agrega display: flex para activar flexbox */
+    justify-content: center; /* Centra horizontalmente el contenido */
+    align-items: center; /* Centra verticalmente el contenido */
+}
+
+.logotipo img {
+    max-width: 150px; /* Ancho máximo de la imagen */
+    height: auto; /* Altura automática para mantener la proporción */
+}
+
+
+/**botones*/
+.ticket__actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px; /* Ajusta el margen superior según sea necesario */
+}
+
+.ticket__actions button {
+    width: calc(20% - 5px); /* Calcula el ancho para que los botones ocupen el 100% del espacio disponible y tengan un pequeño margen entre ellos */
+    padding: 10px; /* Ajusta el relleno según sea necesario */
+    font-size: 20px; /* Ajusta el tamaño de fuente según sea necesario */
+    cursor: pointer;
+    border: none;
+    background-color: transparent;
+    transition: background-color 0.3s ease;
+}
+
+.ticket__actions button:hover {
+    background-color: #f0f0f0; /* Cambia el color de fondo al pasar el ratón */
+}
+
+/* Agrega un tooltip */
+.ticket__actions button::before {
+    content: attr(title); /* Muestra el título del botón como contenido del tooltip */
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: black;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.ticket__actions button:hover::before {
+    opacity: 1; /* Muestra el tooltip al pasar el ratón sobre el botón */
+}

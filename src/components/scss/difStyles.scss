@@ -1,0 +1,20 @@
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* Estilos personalizados para los switches */
+.form-check-input:checked {
+  background-color: #32CD32; /* Color oscuro para el switch cuando está activado */
+  border-color: #343a40;
+}
+
+.form-check-input {
+  background-color: #6c757d; /* Color oscuro para el switch cuando está desactivado */
+  border-color: #6c757d;
+}
+
+/* Estilo personalizado para los elementos del dropdown en estado hover */
+.dropdown-item:hover {
+  background-color: #343a40; /* Color de fondo más oscuro */
+  color: #fff; /* Color del texto */
+}

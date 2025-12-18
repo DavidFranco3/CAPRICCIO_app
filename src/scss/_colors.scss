@@ -1,0 +1,86 @@
+$primary: #1da0f2;
+$primary-light: #71c9f8;
+$primary-grey: #133145;
+$primary-dark-light: #192734;
+$primary-dark: #15212b;
+
+// Tonalidad de azul a usar
+$tonalidad-azul: rgb(33, 96, 189);
+$tonalidad-gris: rgba(72, 72, 72, 0.07);
+
+// Espciales para gradiente
+$tonalidad-azul-especial: rgba(33, 96, 189, 0.29);
+$tonalidad-gris-especial: rgba(72, 72, 72, 0.41);
+
+$font-primary: $primary;
+$font-light: #fff;
+$font-grey: $primary-grey;
+$font-dark: #000;
+
+$border-primary: $primary;
+$border-light: #fff;
+$border-grey: #38444d;
+$border-dark: $primary-dark;
+
+$background-light: #fff;
+$background-grey-dark: $primary-dark;
+$background-dark-light: $primary-dark-light;
+$background-transparente: rgba(245, 245, 245, -0.6);
+
+$background-transparente2: rgba(245, 245, 245, 0.5);
+
+$danger: #e0245e;
+
+$gradiente_1: #c445d4;
+$gradiente_2: #12abb5;
+$gradiente_3: rgb(66, 77, 173);
+$gradiente_4: rgb(241, 36, 36);
+$gradiente_5: rgba(247, 231, 11, 0.973);
+
+$gradiente_6: rgb(167, 176, 252);
+$gradiente_7: rgb(63, 196, 248);
+$gradiente_8: #f87575;
+$gradiente_9: #b1eaf3;
+
+//Colores claros
+$gradiente_10: rgb(175, 238, 238); //Turquesa pastel
+$gradiente_11: rgb(240, 255, 240); //Miel crema
+$gradiente_12: rgb(230, 230, 250); //Espliego
+$gradiente_13: rgb(240, 248, 255); //Azul alicia
+$gradiente_14: rgb(127, 255, 212); //Aguamarina
+$gradiente_15: rgb(255, 218, 185); //Amarillo melocoton
+$gradiente_16: rgb(255, 228, 196); //Bizcocho
+
+//Colores neutros
+$beige: #F5F5DCFF;
+$marron_suave1: #b39f9c;
+$marron_suave2: #a08783;
+$marron_suave3: #c1b9b4;
+$marron_suave4: #e0dbd9;
+$gris: #808080;
+
+//Apagado y minimalista
+$color_1: #96858F;
+$color_2: #6D7993;
+$color_3: #9099A2;
+$color_4: #D5D5D5;
+
+//Pro y moderno
+$color_5: #C5C1C0;
+$color_6: #0A1612;
+$color_7: #1A2930;
+$color_8: #F7CE3E;
+
+//Limpio y nitido
+$color_9: #99D3DF;
+$color_10: #88BBD6;
+$color_11: #CDCDCD;
+$color_12: #E9E9E9;
+
+$color_13: rgb(152, 251, 152);
+$color_14: #3fce4e;
+$color_15: #77DD77;
+
+//Colores IMDENTC
+$color1_IMDENTC: rgb(0, 150, 210);
+$color2_IMDENTC: rgb(0, 150, 210);

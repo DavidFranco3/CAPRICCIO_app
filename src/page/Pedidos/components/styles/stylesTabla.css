@@ -1,0 +1,8 @@
+.custom-header {
+    background-color: #5791cb; /* Cambia el color de fondo */
+    color: #343a40; /* Cambia el color del texto */
+    text-align: center; /* Centra el texto */
+    font-weight: bold; /* Hace el texto en negrita */
+    padding: 10px; /* Añade padding */
+    border-bottom: 2px solid #dee2e6; /* Añade un borde inferior */
+}
