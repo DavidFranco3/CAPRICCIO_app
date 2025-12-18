@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="utf-8" />
-  <link rel="icon" href="/vite.svg" />
+  <link rel="icon" href="/public/vite.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#000000" />
   <meta name="description" content="Caja de Ahorro" />
-
-  <!-- AdminLTE -->
-  <link rel="stylesheet" href="/dist/css/adminlte.css" />
-  <link rel="stylesheet" href="/plugins/fontawesome-free/css/all.min.css" />
-
+  <link rel="apple-touch-icon" href="/logo192.png" />
+  <!--adminlte-->
+  <link rel="stylesheet" href="public/dist/css/adminlte.css" />
+  <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css" />
   <link
     rel="stylesheet"
     href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback"
@@ -20,42 +20,45 @@
     href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css"
   />
 
+  <link rel="manifest" href="/manifest.json" />
+
   <title>Capriccio</title>
 </head>
+<script>
+  document.addEventListener('click', function (event) {
+    var sidebar = document.querySelector('.main-sidebar');
+    if (sidebar) {
+      var isClickInside = sidebar.contains(event.target);
+      if (!isClickInside && window.innerWidth < 990) {
+        var body = document.querySelector('body');
+        if (body.classList.contains('sidebar-open')) {
+          body.classList.replace('sidebar-open', 'sidebar-closed');
+          body.classList.add('sidebar-collapse');
+        }
+      }
+    }
+  });
+</script>
 
 <body>
   <noscript>You need to enable JavaScript to run this app.</noscript>
   <div id="root"></div>
 
-  <!-- React -->
   <script type="module" src="/src/index.jsx"></script>
-
-  <!-- JS DEPENDENCIAS -->
-  <script src="/plugins/jquery/jquery.min.js"></script>
-  <script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-  <!-- AdminLTE -->
-  <script src="/dist/js/adminlte.js"></script>
-
-  <!-- Opcionales -->
-  <script src="/plugins/chart.js/Chart.min.js"></script>
-  <script src="/dist/js/demo.js"></script>
-  <script src="/dist/js/pages/dashboard3.js"></script>
-
-  <script>
-    document.addEventListener('click', function (event) {
-      var sidebar = document.querySelector('.main-sidebar');
-      if (sidebar) {
-        var isClickInside = sidebar.contains(event.target);
-        if (!isClickInside && window.innerWidth < 990) {
-          var body = document.body;
-          if (body.classList.contains('sidebar-open')) {
-            body.classList.replace('sidebar-open', 'sidebar-closed');
-            body.classList.add('sidebar-collapse');
-          }
-        }
-      }
-    });
-  </script>
 </body>
+<!-- jQuery -->
+<script src="./plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap -->
+<script src="./plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- AdminLTE -->
+<script src="./dist/js/adminlte.js"></script>
+<!-- OPTIONAL SCRIPTS -->
+<script src="./plugins/chart.js/Chart.min.js"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="./dist/js/demo.js"></script>
+<!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+<script src="./dist/js/pages/dashboard3.js"></script>
+<!--openpay-->
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+
 </html>
