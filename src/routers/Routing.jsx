@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { map } from "lodash";
 import configRouting from "./configRouting";
 import LayoutAdminLTE from "../layout/adminlte/layout";
+import Error404 from "../page/Error404";
 
 const Routing = ({ setRefreshCheckLogin, userRole, turno, setTurno }) => {
   const routes =
