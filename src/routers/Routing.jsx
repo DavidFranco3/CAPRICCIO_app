@@ -1,36 +1,22 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { map } from "lodash";
 import configRouting from "./configRouting";
 import LayoutAdminLTE from "../layout/adminlte/layout";
 
-const adminRoutes = configRouting.filter((route) =>
-  route.roles.includes("administrador")
-);
+const Routing = ({ setRefreshCheckLogin, userRole, turno, setTurno }) => {
+  const routes =
+    userRole === "administrador"
+      ? configRouting.filter(r => r.roles.includes("administrador"))
+      : userRole === "vendedor"
+        ? configRouting.filter(r => r.roles.includes("vendedor"))
+        : userRole === "cajero"
+          ? configRouting.filter(r => r.roles.includes("cajero"))
+          : configRouting.filter(r => r.roles.includes("cliente"));
 
-const sellerRoutes = configRouting.filter((route) =>
-  route.roles.includes("vendedor")
-);
-
-const clientRoutes = configRouting.filter((route) =>
-  route.roles.includes("cliente")
-);
-
-const cashiersRoutes = configRouting.filter((route) =>
-  route.roles.includes("cajero")
-);
-
-const Routing = ({ setRefreshCheckLogin, userRole, turno, setTurno }) => (
-  <Router>
-    <Routes>
-      {map(
-        userRole === "administrador"
-          ? adminRoutes
-          : userRole === "vendedor"
-          ? sellerRoutes
-          : userRole === "cajero"
-          ? cashiersRoutes
-          : clientRoutes,
-        (route, index) => (
+  return (
+    <BrowserRouter>
+      <Routes>
+        {map(routes, (route, index) => (
           <Route
             key={index}
             path={route.path}
@@ -47,11 +33,14 @@ const Routing = ({ setRefreshCheckLogin, userRole, turno, setTurno }) => (
                 />
               </LayoutAdminLTE>
             }
-          ></Route>
-        )
-      )}
-    </Routes>
-  </Router>
-);
+          />
+        ))}
+
+        {/* 404 */}
+        <Route path="*" element={<Error404 />} />
+      </Routes>
+    </BrowserRouter>
+  );
+};
 
 export default Routing;
