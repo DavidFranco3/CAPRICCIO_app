@@ -1,31 +1,58 @@
+import { lazy, Suspense } from "react";
+import LayoutAdminLTE from "../layout/adminlte/layout";
+
 // Importaciones de paginas principales
-import Dashboard from "../page/Dashboard";
-import Productos from "../page/Productos";
-import Categorias from "../page/Categorias";
-import Error404 from "../page/Error404";
-import TerminalPV from "../page/TerminalPV";
-// import ModificarTerminalPV from "../page/ModificarTerminalPV";
-import Usuarios from "../page/Usuarios";
-import Logs from "../page/Logs";
-import Ingredientes from "../page/Ingredientes";
-import Historiales from "../page/Historiales";
-import HistorialesNoAdmin from "../page/HistorialesNoAdmin/HistorialesNoAdmin";
-import Cajas from "../page/Cajas";
-import MovimientosCajas from "../page/Cajas/MovimientosCajas";
-import PedidosClientes from "../page/PedidosClientes";
-// import TerminalPedidos from "../page/TerminalPedidos";
-import Clientes from "../page/Clientes";
-import MovimientosIngredientes from "../page/MovimientosIngredientes";
-import Pedidos from "../page/Pedidos/Pedidos";
+const Dashboard = lazy(() => import("../page/Dashboard"));
+const Productos = lazy(() => import("../page/Productos"));
+const Categorias = lazy(() => import("../page/Categorias"));
+const Error404 = lazy(() => import("../page/Error404"));
+const TerminalPV = lazy(() => import("../page/TerminalPV"));
+// const ModificarTerminalPV = lazy(() => import("../page/ModificarTerminalPV"));
+const Usuarios = lazy(() => import("../page/Usuarios"));
+const Logs = lazy(() => import("../page/Logs"));
+const Ingredientes = lazy(() => import("../page/Ingredientes"));
+const HistorialesNoAdmin = lazy(() =>
+  import("../page/HistorialesNoAdmin/HistorialesNoAdmin")
+);
+const Historiales = lazy(() =>
+  import("../page/Historiales")
+);
+const Cajas = lazy(() => import("../page/Cajas"));
+const MovimientosCajas = lazy(() =>
+  import("../page/Cajas/MovimientosCajas")
+);
+const PedidosClientes = lazy(() => import("../page/PedidosClientes"));
+// const TerminalPedidos = lazy(() => import("../page/TerminalPedidos"));
+const Clientes = lazy(() => import("../page/Clientes"));
+const MovimientosIngredientes = lazy(() =>
+  import("../page/MovimientosIngredientes")
+);
+const Pedidos = lazy(() => import("../page/Pedidos/Pedidos"));
 
 // Importaciones de productos
-import RegistraProductos from "../page/Productos/components/RegistraProductos/RegistraProductos";
-import ModificaProductos from "../page/Productos/components/ModificaProductos/ModificaProductos";
-import LayoutAdminLTE from "../layout/adminlte/layout";
-import VistaMesas from "../page/Mesas/VistaMesas/VistaMesas";
-import Historial from "../page/Historiales/Historial";
-import VistaTurnos from "../page/Turno/Turno";
-import Insumos from "../page/Insumos/Insumos";
+const RegistraProductos = lazy(() =>
+  import("../page/Productos/components/RegistraProductos/RegistraProductos")
+);
+const ModificaProductos = lazy(() =>
+  import("../page/Productos/components/ModificaProductos/ModificaProductos")
+);
+
+// Layouts
+// (se mantiene como import normal porque es base de la app)
+
+// Vistas adicionales
+const VistaMesas = lazy(() =>
+  import("../page/Mesas/VistaMesas/VistaMesas")
+);
+const Historial = lazy(() =>
+  import("../page/Historiales/Historial")
+);
+const VistaTurnos = lazy(() =>
+  import("../page/Turno/Turno")
+);
+const Insumos = lazy(() =>
+  import("../page/Insumos/Insumos")
+);
 
 const configRouting = [
   {

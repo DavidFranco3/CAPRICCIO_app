@@ -11,8 +11,6 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import Ventas from '../Ventas';
 import HistoricoVentasDia from '../HistoricoVentasDia';
-import HistoricoVentasMes from '../HistoricoVentasMes';
-import HistoricoVentasSemana from '../HistoricoVentasSemana';
 
 function HistorialesNoAdmin(props) {
     const { setRefreshCheckLogin, location, navigate } = props;

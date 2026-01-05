@@ -20,6 +20,22 @@ import {
 import { obtenerUsuario } from "../../../api/usuarios";
 import { toast } from "react-toastify";
 import { withRouter } from "../../../utils/withRouter";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Tooltip,
+  Legend,
+} from "chart.js";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Tooltip,
+  Legend
+);
 
 function ListVentas(props) {
   console.log(props);

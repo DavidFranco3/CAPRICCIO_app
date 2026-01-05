@@ -11,8 +11,6 @@ import { Spinner, Col, Button, Row, Alert } from "react-bootstrap";
 import Lottie from "react-lottie-player";
 import AnimacionLoading from "../../assets/json/loading.json";
 import { useNavigate } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowCircleLeft } from "@fortawesome/free-solid-svg-icons";
 
 function HistoricoVentasDia(props) {
     const { setRefreshCheckLogin, location, navigate } = props;
