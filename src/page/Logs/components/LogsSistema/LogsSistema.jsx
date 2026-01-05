@@ -3,10 +3,15 @@ import { registraLog } from "../../../../api/logsGenerales";
 import { obtenerUsuario } from "../../../../api/usuarios";
 import { getTokenApi, obtenidusuarioLogueado, logoutApi } from "../../../../api/auth";
 
-export function LogsInformativos(mensaje, datos){
+export function LogsInformativos(mensaje, datos) {
+    function obtenerDispositivo() {
+        if (navigator.userAgentData && navigator.userAgentData.platform) {
+            return navigator.userAgentData.platform;
+        }
+        return navigator.userAgent; // fallback seguro
+    }
     try {
-        obtenerUsuario(obtenidusuarioLogueado(getTokenApi())).then(response =>
-        {
+        obtenerUsuario(obtenidusuarioLogueado(getTokenApi())).then(response => {
             const { data: { usuario } } = response;
             obtenIP().then(response => {
                 const { data } = response;
@@ -17,11 +22,11 @@ export function LogsInformativos(mensaje, datos){
                     const { data: { noLog } } = response;
 
                     // Verifica si se reciben datos de información extra en los parametros
-                    if(datos){
+                    if (datos) {
                         const dataTemp = {
                             folio: noLog,
                             usuario: usuario,
-                            dispositivo: navigator.platform,
+                            dispositivo: obtenerDispositivo(),
                             ip: IpTemp,
                             descripcion: navigator.userAgent,
                             detalles: {
@@ -42,7 +47,7 @@ export function LogsInformativos(mensaje, datos){
                         const dataTemp = {
                             folio: noLog,
                             usuario: usuario,
-                            dispositivo: navigator.platform,
+                            dispositivo: obtenerDispositivo(),
                             ip: IpTemp,
                             descripcion: navigator.userAgent,
                             detalles: {
@@ -72,10 +77,9 @@ export function LogsInformativos(mensaje, datos){
     }
 }
 
-export function LogsInformativosLogout(mensaje, datos, setRefreshCheckLogin){
+export function LogsInformativosLogout(mensaje, datos, setRefreshCheckLogin) {
     try {
-        obtenerUsuario(obtenidusuarioLogueado(getTokenApi())).then(response =>
-        {
+        obtenerUsuario(obtenidusuarioLogueado(getTokenApi())).then(response => {
             const { data: { usuario } } = response;
             obtenIP().then(response => {
                 const { data } = response;
@@ -88,7 +92,7 @@ export function LogsInformativosLogout(mensaje, datos, setRefreshCheckLogin){
                     const dataTemp = {
                         folio: noLog,
                         usuario: usuario,
-                        dispositivo: navigator.platform,
+                        dispositivo: obtenerDispositivo(),
                         ip: IpTemp,
                         descripcion: navigator.userAgent,
                         detalles: {
