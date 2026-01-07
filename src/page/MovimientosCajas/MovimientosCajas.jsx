@@ -152,20 +152,18 @@ function MovimientosCajas(props) {
         cargarDatos();
     }, [location, page, rowsPerPage]);
 
-    return (
+    rreturn(
         <>
-            <Alert className="fondoPrincipalAlert">
-                <Row>
-                    <Col xs={12} md={4} className="titulo">
-                        <h1 className="font-bold">Movimientos de cajas</h1>
-                    </Col>
-                    <Col xs={6} md={8}>
-                        <div style={{ float: 'right' }}>
+            <div className="card card-outline m-3">
+                <div className="card-header bg-gray">
+                    <div className="d-flex justify-content-between align-items-center">
+                        <h4 className="mb-0 font-bold">Movimientos de cajas</h4>
 
-                            <Button
+                        <div className="d-flex align-items-center">
+                            <button
                                 title="Registrar un nuevo movimiento en la caja"
-                                className="btnRegistro"
-                                style={{ marginRight: '10px' }}
+                                className="btn btn-outline-light"
+                                style={{ marginRight: "10px" }}
                                 onClick={() => {
                                     registroMovimientos(
                                         <RegistroMovimientosCajas
@@ -175,32 +173,29 @@ function MovimientosCajas(props) {
                                             location={location}
                                             navigate={navigate}
                                         />
-                                    )
+                                    );
                                 }}
                             >
                                 <FontAwesomeIcon icon={faCirclePlus} /> Registrar
-                            </Button>
+                            </button>
 
-                            <Button
+                            <button
                                 title="Regresar a la pagina anterior"
-                                className="btnRegistro"
-                                style={{ marginRight: '10px' }}
+                                className="btn btn-outline-light"
                                 onClick={() => {
                                     rutaRegreso();
                                 }}
                             >
                                 <FontAwesomeIcon icon={faArrowCircleLeft} /> Regresar
-                            </Button>
+                            </button>
                         </div>
-                    </Col>
-                </Row>
-            </Alert>
+                    </div>
+                </div>
 
-            {
-                listMovimientos ?
-                    (
+                <div className="card-body">
+                    {listMovimientos ? (
                         <>
-                            <Suspense fallback={< Spinner />}>
+                            <Suspense fallback={<Spinner />}>
                                 <ListMovimientosCajas
                                     setRefreshCheckLogin={setRefreshCheckLogin}
                                     listMovimientos={listMovimientos}
@@ -214,14 +209,18 @@ function MovimientosCajas(props) {
                                 />
                             </Suspense>
                         </>
-                    )
-                    :
-                    (
+                    ) : (
                         <>
-                            <Lottie loop={true} play={true} animationData={AnimacionLoading} />
+                            <Lottie
+                                loop={true}
+                                play={true}
+                                animationData={AnimacionLoading}
+                            />
                         </>
-                    )
-            }
+                    )}
+                </div>
+            </div>
+
             <BasicModal show={showModal} setShow={setShowModal} title={titulosModal}>
                 {contentModal}
             </BasicModal>

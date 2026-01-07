@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { listarVentasRangoFechas } from "../../../../api/ventas";
 import { listarInsumos } from "../../../../api/insumos";
-import DataTable from "react-data-table-component";
+import DataTablecustom from "../../../../components/Generales/DataTable";
 import { estilos } from "../../../../utils/tableStyled";
 import { Form } from "react-bootstrap";
 
@@ -147,11 +147,7 @@ function ListUsoInsumos(props) {
             <span className="ms-2">Kg / Lt</span>
           </div>
         </Form>
-        <DataTable
-          columns={columns}
-          data={insumosContados}
-          customStyles={estilos}
-        />
+        <DataTablecustom datos={insumosContados} columnas={columns} title={"Uso de insumos"} />
       </div>
     </>
   );

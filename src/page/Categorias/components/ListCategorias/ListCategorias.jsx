@@ -1,23 +1,17 @@
 import { useState, useEffect } from 'react';
 import "../../../../scss/styles.scss";
-import { Badge, Container } from "react-bootstrap";
+import { Badge } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faTrashCan, faArrowDownLong } from "@fortawesome/free-solid-svg-icons";
 import BasicModal from "../../../../components/Modal/BasicModal";
 import EliminaCategorias from "../EliminaCategorias";
 import ModificaCategorias from "../ModificaCategorias";
 import CancelarCategorias from "../CancelarCategorias";
-import DataTable from "react-data-table-component";
-import { estilos } from "../../../../utils/tableStyled";
-import 'dayjs/locale/es';
-import dayjs from 'dayjs';
-import localizedFormat from 'dayjs/plugin/localizedFormat';
+import DataTablecustom from '../../../../components/Generales/DataTable';
+import { formatFecha } from '../../../../components/Generales/FormatFecha';
 
 function ListCategorias(props) {
-    const { listCategorias, location, navigate, setRowsPerPage, setPage, noTotalCategorias } = props;
-
-    dayjs.locale('es');
-    dayjs.extend(localizedFormat);
+    const { listCategorias, location, navigate } = props;
 
     //Para el modal
     const [showModal, setShowModal] = useState(false);
@@ -51,18 +45,6 @@ function ListCategorias(props) {
         setContentModal(content);
         setShowModal(true);
     }
-
-    const handleChangePage = (page) => {
-        // console.log("Nueva pagina "+ newPage)
-        setPage(page);
-    };
-
-    const handleChangeRowsPerPage = (newPerPage) => {
-        // console.log("Registros por pagina "+ parseInt(event.target.value, 10))
-        setRowsPerPage(newPerPage)
-        //setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(1);
-    };
 
     const columns = [
         {
@@ -132,7 +114,7 @@ function ListCategorias(props) {
         },
         {
             name: "Modificación",
-            selector: row => dayjs(row.fechaActualizacion).format('dddd, LL hh:mm A'),
+            selector: row => formatFecha(row.fechaActualizacion),
             sortable: false,
             center: true,
             reorder: false
@@ -202,32 +184,9 @@ function ListCategorias(props) {
         cargarDatos();
     }, []);
 
-    const paginationComponentOptions = {
-        rowsPerPageText: 'Filas por página',
-        rangeSeparatorText: 'de'
-    };
-
-    const [resetPaginationToogle, setResetPaginationToogle] = useState(false);
-
     return (
         <>
-            <Container fluid>
-                <DataTable
-                    columns={columns}
-                    noDataComponent="No hay registros para mostrar"
-                    data={listCategorias}
-                    progressPending={pending}
-                    paginationComponentOptions={paginationComponentOptions}
-                    paginationResetDefaultPage={resetPaginationToogle}
-                    customStyles={estilos}
-                    sortIcon={<FontAwesomeIcon icon={faArrowDownLong} />}
-                    pagination
-                    paginationServer
-                    paginationTotalRows={noTotalCategorias}
-                    onChangeRowsPerPage={handleChangeRowsPerPage}
-                    onChangePage={handleChangePage}
-                />
-            </Container>
+            <DataTablecustom datos={listCategorias} columnas={columns} title={"Categorias"} />
 
             <BasicModal show={showModal} setShow={setShowModal} title={titulosModal}>
                 {contentModal}

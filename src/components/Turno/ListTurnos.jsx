@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import { listarTurno } from "../../api/turnos";
 import { listarVentasTurno } from "../../api/ventas";
-import DataTable from "react-data-table-component";
+import DataTablecustom from "../Generales/DataTable";
+import { formatFecha } from "../Generales/FormatFecha";
 import { Badge } from "react-bootstrap";
-import { estilos } from "../../utils/tableStyled";
-import dayjs from "dayjs";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 import BasicModal from "../Modal/BasicModal";
@@ -34,13 +33,6 @@ function ListTurnos(params) {
     cargarVentas();
   }, []);
 
-  console.log(listVentas)
-
-  const adjustTimeToMexico = (dateString) => {
-    const date = dayjs(dateString);
-    return date.add(6, "hour").format("DD/MM/YYYY h:mm A"); // Ajuste manual de la hora
-  };
-
   // Para el modal
   const [showModal, setShowModal] = useState(false);
   const [contentModal, setContentModal] = useState(null);
@@ -69,7 +61,7 @@ function ListTurnos(params) {
     },
     {
       name: "Fecha Inicio",
-      selector: (row) => adjustTimeToMexico(row.fechaInicio),
+      selector: (row) => formatFecha(row.fechaInicio),
       sortable: false,
       center: true,
       reorder: false,
@@ -77,7 +69,7 @@ function ListTurnos(params) {
     {
       name: "Fecha Final",
       selector: (row) =>
-        row.fechaFinal ? adjustTimeToMexico(row.fechaFinal) : "Turno activo",
+        row.fechaFinal ? formatFecha(row.fechaFinal) : "Turno activo",
       sortable: false,
       center: true,
       reorder: false,
@@ -104,14 +96,7 @@ function ListTurnos(params) {
 
   return (
     <>
-      <DataTable
-        columns={columns}
-        data={listTurnos}
-        customStyles={estilos}
-        pagination
-        paginationPerPage={5}
-        paginationRowsPerPageOptions={[5, 10, 20]}
-      />
+      <DataTablecustom datos={listTurnos} columnas={columns} title={"Turnos"} />
       <BasicModal
         show={showModal}
         setShow={setShowModal}

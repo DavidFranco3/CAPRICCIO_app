@@ -314,7 +314,6 @@ function formatModelVentas(ventas) {
             tipoPedido: venta.tipoPedido,
             estado: venta.estado,
             atendido: !venta.atendido ? "false" : venta.atendido,
-            semana: venta.semana,
             año: !venta.año ? "2023" : venta.año,
             semana: !venta.semana ? "0" : venta.semana,
             fechaCreacion: venta.createdAt,

@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 import { listarVentasRangoFechas } from "../../../api/ventas";
 import CancelarVenta from "../../Ventas/components/CancelarVenta/CancelarVenta";
 import dayjs from "dayjs";
-import DataTable from "react-data-table-component";
-import { estilos } from "../../../utils/tableStyled";
+import DataTablecustom from "../../../components/Generales/DataTable";
 import { Badge, Button, Card, Col, Container, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleInfo, faTrashCan } from "@fortawesome/free-solid-svg-icons";
@@ -28,6 +27,8 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { formatFecha } from "../../../components/Generales/FormatFecha";
+import { formatMoneda } from "../../../components/Generales/FormatMoneda";
 
 ChartJS.register(
   CategoryScale,
@@ -192,8 +193,7 @@ function ListVentas(props) {
     },
     {
       name: "Fecha",
-      selector: (row) =>
-        dayjs(row.fecha).add(6, "hour").format("DD-MM-YYYY HH:mm A"),
+      selector: (row) => formatFecha(row.fecha),
       sortable: true,
       center: true,
       reorder: false,
@@ -219,18 +219,7 @@ function ListVentas(props) {
     },
     {
       name: "Total",
-      selector: (row) => (
-        <>
-          <Badge className="text-sm" bg="success">
-            $
-            {new Intl.NumberFormat("es-MX", {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            }).format(row.total)}{" "}
-            MXN
-          </Badge>
-        </>
-      ),
+      selector: (row) => formatMoneda(row.total),
       sortable: true,
       center: true,
       reorder: false,
@@ -386,14 +375,7 @@ function ListVentas(props) {
         </Col>
       </Row>
       <Row>
-        <DataTable
-          columns={columns}
-          data={ventasFiltradas}
-          customStyles={estilos}
-          pagination
-          paginationPerPage={10} // Cambia este número según tus necesidades
-          paginationRowsPerPageOptions={[5, 10, 20, 30]} // Opciones para filas por página
-        />
+        <DataTablecustom datos={ventasFiltradas} columnas={columns} title={"Ventas filtradas"} />
       </Row>
 
       <hr className="mt-0" />

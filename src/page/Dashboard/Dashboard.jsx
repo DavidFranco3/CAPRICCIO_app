@@ -7,24 +7,25 @@ import {
 } from "../../api/auth";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import { Card, Image } from "react-bootstrap";
+import { Card, Image, Row, Col, Container } from "react-bootstrap"; // Added Row, Col, Container
 import { obtenerUsuario } from "../../api/usuarios";
 import "../../scss/styles.scss";
 import { LogsInformativosLogout } from "../Logs/components/LogsSistema/LogsSistema";
 // Importaciones de imagenes del dashboard
 import LogoVentas from "../../assets/png/ventas.png";
 import LogoHistorial from "../../assets/png/facturas.png";
-import LogoProductos from "../../assets/png/productos.png";
-import LogoCategorias from "../../assets/png/categorias.png";
-import LogoUsuarios from "../../assets/png/usuarios.png";
 import LogoCajas from "../../assets/png/cajas.png";
-import LogoLogs from "../../assets/png/logs.png";
 import LogoIngredientes from "../../assets/png/ingredientes.png";
 import LogoPedidos from "../../assets/png/pedidos.png";
-import LogoClientes from "../../assets/png/clientes.png";
-import { obtenerUltimoTurno } from "../../api/turnos";
 import Turno from "../../components/Turno/Turno";
 import BasicModal from "../../components/Modal/BasicModal";
+
+// Nuevos Imports para Widgets
+import dayjs from "dayjs";
+import { listarVentasDia } from "../../api/ventas";
+import KPICards from "./components/KPICards";
+import TopProducts from "./components/TopProducts";
+import SalesChartWidget from "./components/SalesChartWidget";
 
 function Dashboard(props) {
   const { setRefreshCheckLogin, turno, setTurno } = props;
@@ -37,6 +38,9 @@ function Dashboard(props) {
   const [rolUsuario, setRolUsuario] = useState(null);
   const [datosUsuario, setDatosUsuario] = useState(null);
 
+  // State for Dashboard Data
+  const [ventasDia, setVentasDia] = useState([]);
+
   const obtenerDatosUsuario = () => {
     try {
       obtenerUsuario(obtenidusuarioLogueado(getTokenApi()))
@@ -48,6 +52,11 @@ function Dashboard(props) {
           setEstadoUsuario(admin);
           setRolUsuario(rol);
           setDatosUsuario(data);
+
+          // Trigger data fetch if admin
+          if (admin === "true") {
+            fetchDashboardData();
+          }
         })
         .catch((e) => {
           if (e.message === "Network Error") {
@@ -57,6 +66,18 @@ function Dashboard(props) {
         });
     } catch (e) {
       console.log(e);
+    }
+  };
+
+  const fetchDashboardData = async () => {
+    try {
+      const hoy = dayjs().format('YYYY-MM-DD');
+      const response = await listarVentasDia(hoy);
+      if (response && response.data) {
+        setVentasDia(response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching dashboard data", error);
     }
   };
 
@@ -106,7 +127,7 @@ function Dashboard(props) {
 
     if (!isTurnoActivo && path === "/TerminalPV") {
       return (
-        <Card className="contenidoCentrado">
+        <Card className="contenidoCentrado h-100 shadow-sm border-0 hover-lift cursor-pointer">
           <Card.Body>
             <div className="flex flex-col items-center justify-center">
               <div className="d-flex flex-col items-center justify-center">
@@ -132,16 +153,16 @@ function Dashboard(props) {
       );
     } else {
       return (
-        <Card className="contenidoCentrado">
-          <Card.Body onClick={() => goTo(path)}>
+        <Card className="contenidoCentrado h-100 shadow-sm border-0 hover-lift cursor-pointer" onClick={() => goTo(path)} style={{ cursor: 'pointer' }}>
+          <Card.Body className="p-3">
             <div className="flex flex-col items-center justify-center">
               <Image
                 title={title}
                 alt={title}
                 src={logo}
-                style={{ width: "100px" }}
+                style={{ width: "64px", marginBottom: '10px' }} // Reduced size slightly for cleaner look
               />
-              <span className="inline-block text-lg font-normal">{title}</span>
+              <span className="inline-block text-md font-semibold text-center">{title}</span>
             </div>
           </Card.Body>
         </Card>
@@ -153,51 +174,24 @@ function Dashboard(props) {
     <>
       {/*Vista del Dashboard para un usuario administrador*/}
       {estadoUsuario === "true" && (
-        <>
-          <div className="m-3 grid grid-cols-5 gap-5">
-            <ItemCard path={"/TerminalPV"} logo={LogoVentas} title={"Ventas"} />
-            <ItemCard
-              path={"/Historiales"}
-              logo={LogoHistorial}
-              title={"Historiales"}
-            />
-            <ItemCard
-              path={"/Productos"}
-              logo={LogoProductos}
-              title={"Productos"}
-            />
-            <ItemCard
-              path={"/Categorias"}
-              logo={LogoCategorias}
-              title={"Categorías"}
-            />
-            <ItemCard
-              path={"/Insumos"}
-              logo={LogoIngredientes}
-              title={"Insumos"}
-            />
-            <ItemCard
-              path={"/Turnos"}
-              logo={LogoCajas}
-              title={"Turnos y Cajas"}
-            />
-            <ItemCard
-              path={"/Usuarios"}
-              logo={LogoUsuarios}
-              title={"Usuarios"}
-            />
-            <ItemCard
-              path={"/Clientes"}
-              logo={LogoClientes}
-              title={"Clientes"}
-            />
-            <ItemCard
-              path={"/PedidosClientes"}
-              logo={LogoPedidos}
-              title={"Pedidos en línea"}
-            />
-            <ItemCard path={"/Logs"} logo={LogoLogs} title={"Logs"} />
+        <Container fluid className="p-4">
+
+          <div className="mb-4">
+            <h2 className="fw-bold text-gray-800">Panel de Control</h2>
+            <p className="text-muted">Resumen de actividad del día {dayjs().format('DD/MM/YYYY')}</p>
           </div>
+
+          <KPICards ventas={ventasDia} />
+
+          <Row className="mb-4">
+            <Col lg={8} md={12}>
+              <SalesChartWidget ventas={ventasDia} />
+            </Col>
+            <Col lg={4} md={12} className="mt-4 mt-lg-0">
+              <TopProducts ventas={ventasDia} />
+            </Col>
+          </Row>
+
           <BasicModal
             size={"md"}
             show={showModal}
@@ -206,8 +200,9 @@ function Dashboard(props) {
           >
             {contentMod}
           </BasicModal>
-        </>
+        </Container>
       )}
+
       {/*Vista del Dashboard para un usuario cajero*/}
       {estadoUsuario === "false" &&
         rolUsuario === "cajero" &&

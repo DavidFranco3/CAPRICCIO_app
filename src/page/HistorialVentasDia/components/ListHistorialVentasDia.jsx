@@ -3,10 +3,10 @@ import { Badge, Container } from "react-bootstrap";
 import "../../../scss/styles.scss";
 import BasicModal from "../../../components/Modal/BasicModal";
 import ListProductoTiquet from "../../Ventas/components/DetallesVenta";
-import DataTable from "react-data-table-component";
+import DataTablecustom from '../../../components/Generales/DataTable';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faArrowDownLong } from "@fortawesome/free-solid-svg-icons";
-import { estilos } from "../../../utils/tableStyled";
+import { formatMoneda } from '../../../components/Generales/FormatMoneda';
 
 function ListHistorialVentasDia(props) {
     const { listDetallesDia, rowsPerPage, setRowsPerPage, page, setPage, noTotalVentas } = props;
@@ -22,18 +22,6 @@ function ListHistorialVentasDia(props) {
         setContentModal(content);
         setShowModal(true);
     }
-
-    const handleChangePage = (page) => {
-        // console.log("Nueva pagina "+ newPage)
-        setPage(page);
-    };
-
-    const handleChangeRowsPerPage = (newPerPage) => {
-        // console.log("Registros por pagina "+ parseInt(event.target.value, 10))
-        setRowsPerPage(newPerPage)
-        //setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(1);
-    };
 
     const columns = [
         {
@@ -52,18 +40,7 @@ function ListHistorialVentasDia(props) {
         },
         {
             name: "Total",
-            selector: row => (
-                <>
-                    <Badge
-                        bg="success">
-                        ${''}
-                        {new Intl.NumberFormat('es-MX', {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                        }).format(row.total)} MXN
-                    </Badge>
-                </>
-            ),
+            selector: row => formatMoneda(row.total),
             sortable: false,
             center: true,
             reorder: false
@@ -98,49 +75,9 @@ function ListHistorialVentasDia(props) {
         },
     ];
 
-    // Definiendo estilos para data table
-    // Configurando animacion de carga
-    const [pending, setPending] = useState(true);
-    const [rows, setRows] = useState([]);
-
-    const cargarDatos = () => {
-        const timeout = setTimeout(() => {
-            setRows(listDetallesDia);
-            setPending(false);
-        }, 2000);
-        return () => clearTimeout(timeout);
-    }
-
-    useEffect(() => {
-        cargarDatos();
-    }, []);
-
-    const paginationComponentOptions = {
-        rowsPerPageText: 'Filas por página',
-        rangeSeparatorText: 'de'
-    };
-
-    const [resetPaginationToogle, setResetPaginationToogle] = useState(false);
-
     return (
         <>
-            <Container fluid>
-                <DataTable
-                    columns={columns}
-                    noDataComponent="No hay registros para mostrar"
-                    data={listDetallesDia}
-                    progressPending={pending}
-                    paginationComponentOptions={paginationComponentOptions}
-                    paginationResetDefaultPage={resetPaginationToogle}
-                    customStyles={estilos}
-                    sortIcon={<FontAwesomeIcon icon={faArrowDownLong} />}
-                    pagination
-                    paginationServer
-                    paginationTotalRows={noTotalVentas}
-                    onChangeRowsPerPage={handleChangeRowsPerPage}
-                    onChangePage={handleChangePage}
-                />
-            </Container>
+            <DataTablecustom datos={listDetallesDia} columnas={columns} title={"Detalles del día"} />
 
             <BasicModal show={showModal} setShow={setShowModal} title={titulosModal}>
                 {contentModal}

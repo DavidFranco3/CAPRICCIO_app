@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { Badge, Container } from "react-bootstrap";
-import DataTable from "react-data-table-component";
+import DataTablecustom from "../../../components/Generales/DataTable";
 import { estilos } from "../../../utils/tableStyled";
 
 function DetallesListaVentas(props) {
@@ -67,13 +67,7 @@ function DetallesListaVentas(props) {
         <span className="bg-warning">{fechaInicial}</span> y{" "}
         <span className="bg-warning">{fechaFinal}</span>{" "}
       </h5>
-      <Container className="d-flex justify-content-center">
-        <DataTable
-          columns={columns}
-          data={categoriasContadas}
-          customStyles={estilos}
-        />
-      </Container>
+      <DataTablecustom datos={categoriasContadas} columnas={columns} title={"Detalles de ventas"} />
     </div>
   );
 }

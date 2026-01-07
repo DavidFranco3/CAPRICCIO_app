@@ -1,16 +1,14 @@
 import { useState, useEffect } from 'react';
-import { map } from "lodash";
 import { Badge, Container } from "react-bootstrap";
 import "../../../scss/styles.scss";
 import BasicModal from "../../../components/Modal/BasicModal";
 import ListProductoTiquet from "../../Ventas/components/DetallesVenta";
-import DataTable from "react-data-table-component";
+import DataTablecustom from '../../../components/Generales/DataTable';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faArrowDownLong } from "@fortawesome/free-solid-svg-icons";
-import { estilos } from "../../../utils/tableStyled";
+import { faEye } from "@fortawesome/free-solid-svg-icons";
 
 function ListHistorialVentasSemana(props) {
-    const { listDetallesSemana, rowsPerPage, setRowsPerPage, page, setPage, noTotalVentas } = props;
+    const { listDetallesSemana } = props;
 
     //Para el modal
     const [showModal, setShowModal] = useState(false);
@@ -23,18 +21,6 @@ function ListHistorialVentasSemana(props) {
         setContentModal(content);
         setShowModal(true);
     }
-
-    const handleChangePage = (page) => {
-        // console.log("Nueva pagina "+ newPage)
-        setPage(page);
-    };
-
-    const handleChangeRowsPerPage = (newPerPage) => {
-        // console.log("Registros por pagina "+ parseInt(event.target.value, 10))
-        setRowsPerPage(newPerPage)
-        //setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(1);
-    };
 
     const columns = [
         {
@@ -116,32 +102,9 @@ function ListHistorialVentasSemana(props) {
         cargarImagen();
     }, []);
 
-    const paginationComponentOptions = {
-        rowsPerPageText: 'Filas por página',
-        rangeSeparatorText: 'de'
-    };
-
-    const [resetPaginationToogle, setResetPaginationToogle] = useState(false);
-
     return (
         <>
-            <Container fluid>
-                <DataTable
-                    columns={columns}
-                    noDataComponent="No hay registros para mostrar"
-                    data={listDetallesSemana}
-                    progressPending={pending}
-                    paginationComponentOptions={paginationComponentOptions}
-                    paginationResetDefaultPage={resetPaginationToogle}
-                    customStyles={estilos}
-                    sortIcon={<FontAwesomeIcon icon={faArrowDownLong} />}
-                    pagination
-                    paginationServer
-                    paginationTotalRows={noTotalVentas}
-                    onChangeRowsPerPage={handleChangeRowsPerPage}
-                    onChangePage={handleChangePage}
-                />
-            </Container>
+            <DataTablecustom datos={listDetallesSemana} columnas={columns} title={"Ventas de la semana"} />
 
             <BasicModal show={showModal} setShow={setShowModal} title={titulosModal}>
                 {contentModal}

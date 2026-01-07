@@ -4,7 +4,7 @@ import { Badge, Container } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faArrowDownLong } from "@fortawesome/free-solid-svg-icons";
 import BasicModal from "../../../../../components/Modal/BasicModal";
-import DataTable from "react-data-table-component";
+import DataTablecustom from '../../../../../components/Generales/DataTable';
 import { estilos } from "../../../../../utils/tableStyled";
 import 'dayjs/locale/es';
 import dayjs from 'dayjs';
@@ -23,20 +23,6 @@ function ListMovimientosCajas(props) {
     const [contentModal, setContentModal] = useState(null);
     const [titulosModal, setTitulosModal] = useState(null);
 
-    //Para la eliminacion de categorias
-    const eliminaCategorias = (content) => {
-        setTitulosModal("Eliminación categoría");
-        setContentModal(content);
-        setShowModal(true);
-    }
-
-    //Para la modificacion de categorias
-    const modificaCategorias = (content) => {
-        setTitulosModal("Modificación categoría");
-        setContentModal(content);
-        setShowModal(true);
-    }
-
     // Para cancelar la venta
     const cancelarMovimiento = (content) => {
         setTitulosModal("Cancelar movimiento");
@@ -47,13 +33,6 @@ function ListMovimientosCajas(props) {
     // Para cancelar la venta
     const movimientos = (content) => {
         setTitulosModal("Detalles");
-        setContentModal(content);
-        setShowModal(true);
-    }
-
-    // Para cancelar la venta
-    const recuperarCategoria = (content) => {
-        setTitulosModal("Recuperar categoría");
         setContentModal(content);
         setShowModal(true);
     }
@@ -80,18 +59,7 @@ function ListMovimientosCajas(props) {
         },
         {
             name: "Monto",
-            selector: row => (
-                <>
-                    <Badge
-                        bg="success" className="estado">
-                        ${''}
-                        {new Intl.NumberFormat('es-MX', {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                        }).format(row.monto)} MXN
-                    </Badge>
-                </>
-            ),
+            selector: row => formatMoneda(row.monto),
             sortable: false,
             center: true,
             reorder: false
@@ -199,32 +167,9 @@ function ListMovimientosCajas(props) {
         cargarDatos();
     }, []);
 
-    const paginationComponentOptions = {
-        rowsPerPageText: 'Filas por página',
-        rangeSeparatorText: 'de'
-    };
-
-    const [resetPaginationToogle, setResetPaginationToogle] = useState(false);
-
     return (
         <>
-            <Container fluid>
-                <DataTable
-                    columns={columns}
-                    noDataComponent="No hay registros para mostrar"
-                    data={listMovimientos}
-                    progressPending={pending}
-                    paginationComponentOptions={paginationComponentOptions}
-                    paginationResetDefaultPage={resetPaginationToogle}
-                    customStyles={estilos}
-                    sortIcon={<FontAwesomeIcon icon={faArrowDownLong} />}
-                    pagination
-                    paginationServer
-                    paginationTotalRows={noTotalMovimientos}
-                    onChangeRowsPerPage={handleChangeRowsPerPage}
-                    onChangePage={handleChangePage}
-                />
-            </Container>
+            <DataTablecustom datos={listMovimientos} columnas={columns} title={"Movimientos de cajas"} />
 
             <BasicModal show={showModal} setShow={setShowModal} title={titulosModal}>
                 {contentModal}

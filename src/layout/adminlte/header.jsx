@@ -86,7 +86,31 @@ const Header = (props) => {
         {/* Left navbar links */}
         <ul className="navbar-nav">
           <li className="nav-item">
-            <span className="nav-link" data-widget="pushmenu" role="button">
+            <span
+              className="nav-link"
+              role="button"
+              onClick={(e) => {
+                e.preventDefault();
+                const body = document.querySelector('body');
+                if (window.innerWidth <= 991) {
+                  if (body.classList.contains('sidebar-open')) {
+                    body.classList.remove('sidebar-open');
+                    body.classList.add('sidebar-closed');
+                    body.classList.add('sidebar-collapse');
+                  } else {
+                    body.classList.add('sidebar-open');
+                    body.classList.remove('sidebar-closed');
+                    body.classList.remove('sidebar-collapse');
+                  }
+                } else {
+                  if (body.classList.contains('sidebar-collapse')) {
+                    body.classList.remove('sidebar-collapse');
+                  } else {
+                    body.classList.add('sidebar-collapse');
+                  }
+                }
+              }}
+            >
               <i className="fas fa-bars" />
             </span>
           </li>
