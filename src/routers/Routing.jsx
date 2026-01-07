@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import { map } from "lodash";
 import configRouting from "./configRouting";
 import LayoutAdminLTE from "../layout/adminlte/layout";
@@ -26,10 +26,10 @@ const Routing = ({ setRefreshCheckLogin, userRole, turno, setTurno }) => (
         userRole === "administrador"
           ? adminRoutes
           : userRole === "vendedor"
-          ? sellerRoutes
-          : userRole === "cajero"
-          ? cashiersRoutes
-          : clientRoutes,
+            ? sellerRoutes
+            : userRole === "cajero"
+              ? cashiersRoutes
+              : clientRoutes,
         (route, index) => (
           <Route
             key={index}
