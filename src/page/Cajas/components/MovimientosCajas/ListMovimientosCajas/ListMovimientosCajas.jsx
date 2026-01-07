@@ -11,6 +11,7 @@ import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import CancelarMovimientosCajas from '../CancelarMovimientosCajas';
 import GeneraPDF from '../GeneraPDF';
+import { formatMoneda } from "../../../../../components/Generales/FormatMoneda";
 
 function ListMovimientosCajas(props) {
     const { listMovimientos, location, navigate, setRowsPerPage, setPage, noTotalMovimientos } = props;

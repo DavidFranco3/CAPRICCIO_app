@@ -5,7 +5,7 @@ import BasicModal from "../../../../components/Modal/BasicModal";
 import GeneraPDF from "../GeneraPDF";
 import GeneraPdfProductosAdicionales from '../GeneraPDFProductosAdicionales';
 import GeneraPdfFinal from '../GeneraPDFFinal';
-import DataTable from "react-data-table-component";
+import DataTablecustom from "../../../../components/Generales/DataTable";
 import { estilos } from "../../../../utils/tableStyled";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowDownLong } from "@fortawesome/free-solid-svg-icons";
@@ -51,17 +51,7 @@ function DetallesVenta(props) {
         },
         {
             name: ' Precio',
-            selector: row => (
-                <>
-                    <Badge bg="success">
-                        ${''}
-                        {new Intl.NumberFormat('es-MX', {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                        }).format(row.precio)} MXN
-                    </Badge>
-                </>
-            ),
+            selector: row => formatMoneda(row.precio),
             sortable: false,
             center: true,
             reorder: false
@@ -95,15 +85,10 @@ function DetallesVenta(props) {
         <>
             <Container fluid>
                 Mesa: {cliente}
-                <DataTable
-                    columns={columns}
-                    data={articulosVendidos}
-                    progressPending={pending}
-                    pagination
-                    paginationComponentOptions={paginationComponentOptions}
-                    paginationResetDefaultPage={resetPaginationToogle}
-                    customStyles={estilos}
-                    sortIcon={<FontAwesomeIcon icon={faArrowDownLong} />}
+                <DataTablecustom
+                    columnas={columns}
+                    datos={articulosVendidos}
+                    title="Detalles de Venta"
                 />
                 <br />
                 <br />

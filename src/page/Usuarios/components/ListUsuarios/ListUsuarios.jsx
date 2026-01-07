@@ -7,7 +7,8 @@ import BasicModal from "../../../../components/Modal/BasicModal";
 import CancelarUsuarios from '../CancelarUsuarios';
 import EliminaUsuarios from '../EliminaUsuarios';
 import ModificaUsuarios from '../ModificaUsuarios';
-import DataTable from "react-data-table-component";
+import DataTablecustom from "../../../../components/Generales/DataTable";
+import { formatFecha } from "../../../../components/Generales/FormatFecha";
 import { estilos } from "../../../../utils/tableStyled";
 import 'dayjs/locale/es';
 import dayjs from 'dayjs';
@@ -153,7 +154,7 @@ function ListUsuarios(props) {
         },
         {
             name: "Modificación",
-            selector: row => dayjs(row.fechaActualizacion).format('dddd, LL hh:mm A'),
+            selector: row => formatFecha(row.fechaActualizacion),
             sortable: false,
             center: true,
             reorder: false
@@ -232,20 +233,10 @@ function ListUsuarios(props) {
     return (
         <>
             <Container fluid>
-                <DataTable
-                    columns={columns}
-                    noDataComponent="No hay registros para mostrar"
-                    data={listUsuarios}
-                    progressPending={pending}
-                    paginationComponentOptions={paginationComponentOptions}
-                    paginationResetDefaultPage={resetPaginationToogle}
-                    customStyles={estilos}
-                    sortIcon={<FontAwesomeIcon icon={faArrowDownLong} />}
-                    pagination
-                    paginationServer
-                    paginationTotalRows={noTotalUsuarios}
-                    onChangeRowsPerPage={handleChangeRowsPerPage}
-                    onChangePage={handleChangePage}
+                <DataTablecustom
+                    columnas={columns}
+                    datos={listUsuarios}
+                    title="Lista de Usuarios"
                 />
             </Container>
 

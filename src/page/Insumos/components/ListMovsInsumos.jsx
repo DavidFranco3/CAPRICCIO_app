@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { listarMovsInsumo } from "../../../api/insumos";
 import { Container, Button, Collapse, Fade } from "react-bootstrap";
-import DataTable from "react-data-table-component";
+import DataTablecustom from "../../../components/Generales/DataTable";
+import { formatFecha } from "../../../components/Generales/FormatFecha";
 import { estilos } from "../../../utils/tableStyled";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -59,7 +60,7 @@ function ListMovsInsumos(props) {
     {
       name: "Fecha",
       selector: (row) =>
-        dayjs(row.fecha).tz("America/Mexico_City").format("DD-MM-YYYY HH:mm A"),
+        formatFecha(row.fecha),
       sortable: false,
       center: true,
       reorder: false,
@@ -78,14 +79,10 @@ function ListMovsInsumos(props) {
         </Button>
         <Fade in={open}>
           <div id="example-fade-text">
-            <DataTable
-              columns={columns}
-              noDataComponent="No hay registros de movimientos"
-              data={listMovsInsumos}
-              customStyles={estilos}
-              pagination
-              paginationPerPage={10}
-              paginationRowsPerPageOptions={[5, 10]}
+            <DataTablecustom
+              columnas={columns}
+              datos={listMovsInsumos}
+              title="Movimientos de Insumos"
             />
           </div>
         </Fade>

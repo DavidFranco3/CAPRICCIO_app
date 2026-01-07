@@ -6,7 +6,8 @@ import DetallesVenta from "../DetallesVenta";
 import CancelarVenta from "../CancelarVenta";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faX, faRotateLeft, faArrowDownLong, faPenToSquare, faCheck } from "@fortawesome/free-solid-svg-icons";
-import DataTable from "react-data-table-component";
+import DataTablecustom from "../../../../components/Generales/DataTable";
+import { formatMoneda } from "../../../../components/Generales/FormatMoneda";
 import { estilos } from "../../../../utils/tableStyled";
 import { atenderVenta } from "../../../../api/ventas"
 
@@ -270,18 +271,7 @@ function ListVentas(props) {
             sortable: false,
             center: true,
             reorder: false,
-            selector: row => (
-                <>
-                    <Badge
-                        bg="success">
-                        ${''}
-                        {new Intl.NumberFormat('es-MX', {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                        }).format(row.total)} MXN
-                    </Badge>
-                </>
-            ),
+            selector: row => formatMoneda(row.total),
         },
         {
             name: "Acciones",
@@ -447,21 +437,10 @@ function ListVentas(props) {
     return (
         <>
             <Container fluid>
-                <DataTable
-                    columns={columns}
-                    noDataComponent="No hay registros para mostrar"
-                    data={listVentas}
-                    progressPending={pending}
-                    paginationComponentOptions={paginationComponentOptions}
-                    paginationResetDefaultPage={resetPaginationToogle}
-                    customStyles={estilos}
-                    sortIcon={<FontAwesomeIcon icon={faArrowDownLong} />}
-                    conditionalRowStyles={conditionalRowStyles}
-                    pagination
-                    paginationServer
-                    paginationTotalRows={noTotalVentas}
-                    onChangeRowsPerPage={handleChangeRowsPerPage}
-                    onChangePage={handleChangePage}
+                <DataTablecustom
+                    columnas={columns}
+                    datos={listVentas}
+                    title="Lista de Ventas"
                 />
             </Container>
 

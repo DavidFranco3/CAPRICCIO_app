@@ -12,7 +12,9 @@ import { Badge, Container } from "react-bootstrap";
 import CancelarProductos from "../CancelarProductos";
 import ListIngredientesProductos from "../ListIngredientesProductos";
 import "../../../../scss/styles.scss";
-import DataTable from "react-data-table-component";
+import DataTablecustom from "../../../../components/Generales/DataTable";
+import { formatMoneda } from "../../../../components/Generales/FormatMoneda";
+import { formatFecha } from "../../../../components/Generales/FormatFecha";
 import { estilos } from "../../../../utils/tableStyled";
 import Categoria from "./Categoria";
 import "dayjs/locale/es";
@@ -118,54 +120,21 @@ function ListProductos(props) {
     },
     {
       name: "Precio de venta",
-      selector: (row) => (
-        <>
-          <Badge bg="success" className="estado">
-            ${""}
-            {new Intl.NumberFormat("es-MX", {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            }).format(row.precio)}{" "}
-            MXN
-          </Badge>
-        </>
-      ),
+      selector: (row) => formatMoneda(row.precio),
       sortable: false,
       center: true,
       reorder: false,
     },
     {
       name: "Costo de producción",
-      selector: (row) => (
-        <>
-          <Badge bg="success" className="estado">
-            ${""}
-            {new Intl.NumberFormat("es-MX", {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            }).format(row.costoProduccion)}{" "}
-            MXN
-          </Badge>
-        </>
-      ),
+      selector: (row) => formatMoneda(row.costoProduccion),
       sortable: false,
       center: true,
       reorder: false,
     },
     {
       name: "Utilidad",
-      selector: (row) => (
-        <>
-          <Badge bg="success" className="estado">
-            ${""}
-            {new Intl.NumberFormat("es-MX", {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            }).format(row.precio - row.costoProduccion)}{" "}
-            MXN
-          </Badge>
-        </>
-      ),
+      selector: (row) => formatMoneda(row.precio - row.costoProduccion),
       sortable: false,
       center: true,
       reorder: false,
@@ -229,7 +198,7 @@ function ListProductos(props) {
     {
       name: "Modificación",
       selector: (row) =>
-        dayjs(row.fechaActualizacion).format("dddd, LL hh:mm A"),
+        formatFecha(row.fechaActualizacion),
       sortable: false,
       center: true,
       reorder: false,
@@ -319,20 +288,10 @@ function ListProductos(props) {
   return (
     <>
       <Container fluid>
-        <DataTable
-          columns={columns}
-          noDataComponent="No hay registros para mostrar"
-          data={listProductos}
-          progressPending={pending}
-          paginationComponentOptions={paginationComponentOptions}
-          paginationResetDefaultPage={resetPaginationToogle}
-          customStyles={estilos}
-          sortIcon={<FontAwesomeIcon icon={faArrowDownLong} />}
-          pagination
-          paginationServer
-          paginationTotalRows={noTotalProductos}
-          onChangeRowsPerPage={handleChangeRowsPerPage}
-          onChangePage={handleChangePage}
+        <DataTablecustom
+          columnas={columns}
+          datos={listProductos}
+          title="Lista de Productos"
         />
       </Container>
 

@@ -3,7 +3,8 @@ import "../../../../scss/styles.scss";
 import { Badge, Col, Row, Container, Button } from "react-bootstrap";
 import BasicModal from "../../../../components/Modal/BasicModal";
 import GeneraPDF from "../GeneraPDF";
-import DataTable from "react-data-table-component";
+import DataTablecustom from "../../../../components/Generales/DataTable";
+import { formatMoneda } from "../../../../components/Generales/FormatMoneda";
 import { estilos } from "../../../../utils/tableStyled";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowDownLong } from "@fortawesome/free-solid-svg-icons";
@@ -35,17 +36,7 @@ function DetallesPedido(props) {
         },
         {
             name: ' Precio',
-            selector: row => (
-                <>
-                    <Badge bg="success">
-                        ${''}
-                        {new Intl.NumberFormat('es-MX', {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                        }).format(row.precio)} MXN
-                    </Badge>
-                </>
-            ),
+            selector: row => formatMoneda(row.precio),
             sortable: false,
             center: true,
             reorder: false
@@ -80,15 +71,10 @@ function DetallesPedido(props) {
         <>
             <Container fluid>
                 Cliente: {cliente}
-                <DataTable
-                    columns={columns}
-                    data={articulosVendidos}
-                    progressPending={pending}
-                    pagination
-                    paginationComponentOptions={paginationComponentOptions}
-                    paginationResetDefaultPage={resetPaginationToogle}
-                    customStyles={estilos}
-                    sortIcon={<FontAwesomeIcon icon={faArrowDownLong} />}
+                <DataTablecustom
+                    columnas={columns}
+                    datos={articulosVendidos}
+                    title="Detalles del Pedido"
                 />
                 <br />
                 <br />

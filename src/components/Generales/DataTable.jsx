@@ -34,7 +34,14 @@ const DataTablecustom = ({
     const csvContent = datos.map(item => {
         return keys
             .map(key => {
-                const value = item[key]
+                const col = columnas.find(c => c.name === key) || {};
+                let value;
+
+                if (typeof col.exportSelector === "function") {
+                    value = col.exportSelector(item);
+                } else {
+                    value = item[key];
+                }
                 // Formatea solo si es número
                 if (typeof value === "number" || (!isNaN(value) && value !== "")) {
                     return Number(value).toFixed(2)
@@ -89,7 +96,9 @@ const DataTablecustom = ({
                 const rowData = columnasFiltradas.map(col => {
                     let value;
 
-                    if (typeof col.selector === "function") {
+                    if (typeof col.exportSelector === "function") {
+                        value = col.exportSelector(row);
+                    } else if (typeof col.selector === "function") {
                         try {
                             value = col.selector(row);
 

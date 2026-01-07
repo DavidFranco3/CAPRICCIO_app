@@ -117,12 +117,6 @@ const Header = (props) => {
               <i className="fas fa-bars" />
             </span>
           </li>
-          {/* Ensure Dashboard link is visible on mobile too */}
-          <li className="nav-item d-none d-sm-inline-block">
-            <a href="/" className="nav-link">
-              Home
-            </a>
-          </li>
         </ul>
         {/* Right navbar links */}
         <ul className="navbar-nav ml-auto">

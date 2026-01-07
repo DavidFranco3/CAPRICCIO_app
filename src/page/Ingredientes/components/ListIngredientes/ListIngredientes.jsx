@@ -4,7 +4,9 @@ import { Badge, Container } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faTrashCan, faArrowDownLong, faEye } from "@fortawesome/free-solid-svg-icons";
 import BasicModal from "../../../../components/Modal/BasicModal";
-import DataTable from "react-data-table-component";
+import DataTablecustom from "../../../../components/Generales/DataTable";
+import { formatMoneda } from "../../../../components/Generales/FormatMoneda";
+import { formatFecha } from "../../../../components/Generales/FormatFecha";
 import { estilos } from "../../../../utils/tableStyled";
 import CancelarIngredientes from '../CancelarIngredientes';
 import EliminaIngredientes from '../EliminaIngredientes';
@@ -82,18 +84,7 @@ function ListIngredientes(props) {
         },
         {
             name: "Precio de adquisición",
-            selector: row => (
-                <>
-                    <Badge
-                        bg="success" className="estado">
-                        ${''}
-                        {new Intl.NumberFormat('es-MX', {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                        }).format(row.costoAdquisicion)} MXN
-                    </Badge>
-                </>
-            ),
+            selector: row => formatMoneda(row.costoAdquisicion),
             sortable: false,
             center: true,
             reorder: false
@@ -179,7 +170,7 @@ function ListIngredientes(props) {
         },
         {
             name: "Modificación",
-            selector: row => dayjs(row.fechaActualizacion).format('dddd, LL hh:mm A'),
+            selector: row => formatFecha(row.fechaActualizacion),
             sortable: false,
             center: true,
             reorder: false
@@ -269,20 +260,10 @@ function ListIngredientes(props) {
     return (
         <>
             <Container fluid>
-                <DataTable
-                    columns={columns}
-                    noDataComponent="No hay registros para mostrar"
-                    data={listIngredientes}
-                    progressPending={pending}
-                    paginationComponentOptions={paginationComponentOptions}
-                    paginationResetDefaultPage={resetPaginationToogle}
-                    customStyles={estilos}
-                    sortIcon={<FontAwesomeIcon icon={faArrowDownLong} />}
-                    pagination
-                    paginationServer
-                    paginationTotalRows={noTotalIngredientes}
-                    onChangeRowsPerPage={handleChangeRowsPerPage}
-                    onChangePage={handleChangePage}
+                <DataTablecustom
+                    columnas={columns}
+                    datos={listIngredientes}
+                    title="Lista de Ingredientes"
                 />
             </Container>
 

@@ -1,5 +1,5 @@
 import React from "react";
-import DataTable from "react-data-table-component";
+import DataTablecustom from "../../../components/Generales/DataTable";
 
 const ModalProductos = (props) => {
   const productosv = props.productos;
@@ -23,7 +23,7 @@ const ModalProductos = (props) => {
   ];
   return (
     <>
-      <DataTable columns={columns} title={"Productos"} data={productosv} />
+      <DataTablecustom columnas={columns} title={"Productos"} datos={productosv} />
     </>
   );
 };

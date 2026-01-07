@@ -4,7 +4,7 @@ import { Badge, Container, Button, Col } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faTrashCan, faArrowDownLong } from "@fortawesome/free-solid-svg-icons";
 import BasicModal from "../../Modal/BasicModal";
-import DataTable from "react-data-table-component";
+import DataTablecustom from "../../../components/Generales/DataTable";
 import { estilos } from "../../../utils/tableStyled";
 import 'dayjs/locale/es';
 import dayjs from 'dayjs';
@@ -159,16 +159,10 @@ function ListIngredientesConsumidosDia(props) {
                         Registrar los movimientos del dia
                     </Button>
                 </Col>
-                <DataTable
-                    columns={columns}
-                    noDataComponent="No hay registros para mostrar"
-                    data={listIngredientesSinDuplicados}
-                    progressPending={pending}
-                    paginationComponentOptions={paginationComponentOptions}
-                    paginationResetDefaultPage={resetPaginationToogle}
-                    customStyles={estilos}
-                    sortIcon={<FontAwesomeIcon icon={faArrowDownLong} />}
-                    pagination
+                <DataTablecustom
+                    columnas={columns}
+                    datos={listIngredientesSinDuplicados}
+                    title="Ingredientes Consumidos"
                 />
             </Container>
 

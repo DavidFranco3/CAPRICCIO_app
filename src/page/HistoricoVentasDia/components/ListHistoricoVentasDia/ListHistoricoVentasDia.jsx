@@ -10,7 +10,8 @@ import LogoGrafica from "../../../../assets/png/graficas.png";
 import ProcesamientoCSV from "../ProcesamientoCSV";
 import GraficaDiaria from '../../../GraficaDiaria';
 import { estilos } from "../../../../utils/tableStyled";
-import DataTable from "react-data-table-component";
+import DataTablecustom from "../../../../components/Generales/DataTable";
+import { formatFecha } from "../../../../components/Generales/FormatFecha";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowDownLong } from "@fortawesome/free-solid-svg-icons";
 import 'dayjs/locale/es';
@@ -75,7 +76,7 @@ function ListHistoricoVentasDia(props) {
     const columns = [
         {
             name: "Ventas del día",
-            selector: row => dayjs(row).format('dddd, LL'),
+            selector: row => formatFecha(row),
             sortable: false,
             center: true,
             reorder: false
@@ -177,20 +178,10 @@ function ListHistoricoVentasDia(props) {
     return (
         <>
             <Container fluid>
-                <DataTable
-                    columns={columns}
-                    noDataComponent="No hay registros para mostrar"
-                    data={listaDias}
-                    progressPending={pending}
-                    paginationComponentOptions={paginationComponentOptions}
-                    paginationResetDefaultPage={resetPaginationToogle}
-                    customStyles={estilos}
-                    sortIcon={<FontAwesomeIcon icon={faArrowDownLong} />}
-                    pagination
-                    paginationServer
-                    paginationTotalRows={noTotalVentas}
-                    onChangeRowsPerPage={handleChangeRowsPerPage}
-                    onChangePage={handleChangePage}
+                <DataTablecustom
+                    columnas={columns}
+                    datos={listaDias}
+                    title="Historial Ventas Día"
                 />
             </Container>
 

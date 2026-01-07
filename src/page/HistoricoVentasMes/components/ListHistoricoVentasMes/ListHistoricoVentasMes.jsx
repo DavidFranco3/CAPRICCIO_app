@@ -10,7 +10,7 @@ import LogoGrafica from "../../../../assets/png/graficas.png";
 import GraficaMensual from '../../../GraficaMensual';
 import ProcesamientoCSV from "../ProcesamientoCSV";
 import { estilos } from "../../../../utils/tableStyled";
-import DataTable from "react-data-table-component";
+import DataTablecustom from "../../../../components/Generales/DataTable";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowDownLong } from "@fortawesome/free-solid-svg-icons";
 import 'dayjs/locale/es';
@@ -199,19 +199,10 @@ function ListHistoricoVentasMes(props) {
     return (
         <>
             <Container fluid>
-                <DataTable
-                    columns={columns}
-                    data={listaDias}
-                    progressPending={pending}
-                    paginationComponentOptions={paginationComponentOptions}
-                    paginationResetDefaultPage={resetPaginationToogle}
-                    customStyles={estilos}
-                    sortIcon={<FontAwesomeIcon icon={faArrowDownLong} />}
-                    pagination
-                    paginationServer
-                    paginationTotalRows={noTotalVentas}
-                    onChangeRowsPerPage={handleChangeRowsPerPage}
-                    onChangePage={handleChangePage}
+                <DataTablecustom
+                    columnas={columns}
+                    datos={listaDias}
+                    title="Historial Ventas Mes"
                 />
             </Container>
 

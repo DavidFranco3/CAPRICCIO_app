@@ -4,7 +4,8 @@ import { Badge, Container } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faTrashCan, faArrowDownLong } from "@fortawesome/free-solid-svg-icons";
 import BasicModal from "../../../../../components/Modal/BasicModal";
-import DataTable from "react-data-table-component";
+import DataTablecustom from "../../../../../components/Generales/DataTable";
+import { formatFecha } from "../../../../../components/Generales/FormatFecha";
 import { estilos } from "../../../../../utils/tableStyled";
 import 'dayjs/locale/es';
 import dayjs from 'dayjs';
@@ -85,7 +86,7 @@ function ListMovimientosIngredientes(props) {
         },
         {
             name: "Fecha",
-            selector: row => dayjs(row.fecha).format('dddd, LL hh:mm A'),
+            selector: row => formatFecha(row.fecha),
             sortable: false,
             center: true,
             reorder: false
@@ -119,20 +120,10 @@ function ListMovimientosIngredientes(props) {
     return (
         <>
             <Container fluid>
-                <DataTable
-                    columns={columns}
-                    noDataComponent="No hay registros para mostrar"
-                    data={listIngredientes}
-                    progressPending={pending}
-                    paginationComponentOptions={paginationComponentOptions}
-                    paginationResetDefaultPage={resetPaginationToogle}
-                    customStyles={estilos}
-                    sortIcon={<FontAwesomeIcon icon={faArrowDownLong} />}
-                    pagination
-                    paginationServer
-                    paginationTotalRows={noTotalIngredientes}
-                    onChangeRowsPerPage={handleChangeRowsPerPage}
-                    onChangePage={handleChangePage}
+                <DataTablecustom
+                    columnas={columns}
+                    datos={listIngredientes}
+                    title="Movimientos de Ingredientes"
                 />
             </Container>
 

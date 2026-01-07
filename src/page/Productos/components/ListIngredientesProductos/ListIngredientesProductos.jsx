@@ -3,7 +3,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowDownLong } from "@fortawesome/free-solid-svg-icons";
 import { Badge, Container } from "react-bootstrap";
 import "../../../../scss/styles.scss";
-import DataTable from "react-data-table-component";
+import DataTablecustom from "../../../../components/Generales/DataTable";
+import { formatMoneda } from "../../../../components/Generales/FormatMoneda";
 import { estilos } from "../../../../utils/tableStyled";
 
 function ListIngredientesProductos(props) {
@@ -34,18 +35,7 @@ function ListIngredientesProductos(props) {
     },
     {
       name: "Precio",
-      selector: (row) => (
-        <>
-          <Badge bg="success" className="estado text-sm">
-            ${""}
-            {new Intl.NumberFormat("es-MX", {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            }).format(row.precioCompra)}{" "}
-            MXN
-          </Badge>
-        </>
-      ),
+      selector: (row) => formatMoneda(row.precioCompra),
       sortable: false,
       center: true,
       reorder: false,
@@ -53,18 +43,7 @@ function ListIngredientesProductos(props) {
 
     {
       name: "Total",
-      selector: (row) => (
-        <>
-          <Badge bg="success" className="estado text-sm">
-            ${""}
-            {new Intl.NumberFormat("es-MX", {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            }).format(row.total)}{" "}
-            MXN
-          </Badge>
-        </>
-      ),
+      selector: (row) => formatMoneda(row.total),
       sortable: false,
       center: true,
       reorder: false,
@@ -97,15 +76,10 @@ function ListIngredientesProductos(props) {
   return (
     <>
       <Container fluid>
-        <DataTable
-          columns={columns}
-          noDataComponent="No hay registros para mostrar"
-          data={listInsumos}
-          progressPending={pending}
-          paginationComponentOptions={paginationComponentOptions}
-          paginationResetDefaultPage={resetPaginationToogle}
-          customStyles={estilos}
-          sortIcon={<FontAwesomeIcon icon={faArrowDownLong} />}
+        <DataTablecustom
+          columnas={columns}
+          datos={listInsumos}
+          title="Ingredientes del Producto"
         />
       </Container>
     </>

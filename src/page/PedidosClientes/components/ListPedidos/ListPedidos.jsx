@@ -6,7 +6,8 @@ import DetallesPedido from "../DetallesPedido";
 import CancelarPedido from "../CancelarPedido";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faX, faRotateLeft, faArrowDownLong, faMessage, faCheck } from "@fortawesome/free-solid-svg-icons";
-import DataTable from "react-data-table-component";
+import DataTablecustom from "../../../../components/Generales/DataTable";
+import { formatMoneda } from "../../../../components/Generales/FormatMoneda";
 import { estilos } from "../../../../utils/tableStyled";
 import 'dayjs/locale/es';
 import dayjs from 'dayjs';
@@ -144,18 +145,7 @@ function ListPedidos(props) {
             sortable: false,
             center: true,
             reorder: false,
-            selector: row => (
-                <>
-                    <Badge
-                        bg="success">
-                        ${''}
-                        {new Intl.NumberFormat('es-MX', {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                        }).format(row.total)} MXN
-                    </Badge>
-                </>
-            ),
+            selector: row => formatMoneda(row.total),
         },
         {
             name: "Confirmar",
@@ -294,20 +284,10 @@ function ListPedidos(props) {
     return (
         <>
             <Container fluid>
-                <DataTable
-                    columns={columns}
-                    noDataComponent="No hay registros para mostrar"
-                    data={listPedidos}
-                    progressPending={pending}
-                    paginationComponentOptions={paginationComponentOptions}
-                    paginationResetDefaultPage={resetPaginationToogle}
-                    customStyles={estilos}
-                    sortIcon={<FontAwesomeIcon icon={faArrowDownLong} />}
-                    pagination
-                    paginationServer
-                    paginationTotalRows={noTotalPedidos}
-                    onChangeRowsPerPage={handleChangeRowsPerPage}
-                    onChangePage={handleChangePage}
+                <DataTablecustom
+                    columnas={columns}
+                    datos={listPedidos}
+                    title="Lista de Pedidos"
                 />
             </Container>
 
