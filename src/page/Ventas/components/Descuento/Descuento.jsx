@@ -3,7 +3,7 @@ import { Button, Col, Form, Row, Spinner } from "react-bootstrap";
 import "../../../scss/styles.scss";
 import { faX, faSave } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 
 function Descuento(props) {
     const { setShowModal, tipoDescuento, setTipoDescuento, dineroDescontado, setDineroDescontado, porcentajeDescontado, setPorcentajeDescontado } = props;
@@ -21,7 +21,7 @@ function Descuento(props) {
         e.preventDefault();
 
         if (!formData.tipoDescuento) {
-            toast.warning("Completa el formulario")
+            Swal.fire({ icon: 'warning', title: "Completa el formulario", timer: 1600, showConfirmButton: false })
         } else {
             setLoading(true);
             setTipoDescuento(formData.tipoDescuento);
@@ -121,3 +121,4 @@ function initialFormValue(data) {
 }
 
 export default Descuento;
+

@@ -6,7 +6,7 @@ import { actualizaCaja, listarCajas } from "../../api/cajas";
 import ListTurnos from "../../components/Turno/ListTurnos";
 import obtenerFechaHoraMexico from "../../components/Fecha/FechaHoraMexico";
 import { cerrarTurno } from "../../api/turnos";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import BasicModal from "../../components/Modal/BasicModal";
 import EntradaSalidaEfec from "./MovsEfectivo/EntradaSalidaEfec";
 import MovimientosTurnos from "../../components/Turno/MovimientosTurno/MovimientosTurnos";
@@ -89,14 +89,14 @@ function VistaTurnos(props) {
         const response = await actualizaCaja(idCaja, { saldo });
         const { data } = response;
         console.log(data);
-        toast.success(data.mensaje);
+        Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
       } catch (error) {
         console.error("Error al actualizar la caja:", error);
-        toast.error("No se pudo actualizar la caja.");
+        Swal.fire({ icon: 'error', title: "No se pudo actualizar la caja.", timer: 1600, showConfirmButton: false });
       }
     } else {
       console.error("Caja no encontrada");
-      toast.error("Caja no encontrada.");
+      Swal.fire({ icon: 'error', title: "Caja no encontrada.", timer: 1600, showConfirmButton: false });
     }
   };
 
@@ -119,7 +119,7 @@ function VistaTurnos(props) {
       const response = await cerrarTurno(turno._id, dataTemp);
       const { data } = response;
       await añadirDineroACaja(dataTemp.caja, 0, listCajas);
-      toast.success(data.mensaje);
+      Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
       setTurno(null);
     } catch (error) {
       console.error(error);
@@ -267,3 +267,4 @@ function VistaTurnos(props) {
 }
 
 export default VistaTurnos;
+

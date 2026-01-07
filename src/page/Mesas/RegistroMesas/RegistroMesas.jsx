@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import { registraMesas } from "../../../api/mesas";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 
 const RegistroMesas = () => {
   const [numeroMesa, setNumeroMesa] = useState("");
@@ -10,7 +10,7 @@ const RegistroMesas = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!numeroMesa || !numeroPersonas || !descripcion) {
-      toast.warning("Todos los campos son obligatorios");
+      Swal.fire({ icon: 'warning', title: "Todos los campos son obligatorios", timer: 1600, showConfirmButton: false });
       return;
     }
     try {
@@ -23,7 +23,7 @@ const RegistroMesas = () => {
 
       if (response.status === 200) {
         console.log("Registro exitoso");
-        toast.success("Registro exitoso");
+        Swal.fire({ icon: 'success', title: "Registro exitoso", timer: 1600, showConfirmButton: false });
         setNumeroMesa("");
         setNumeroPersonas("");
         setDescripcion("");
@@ -99,3 +99,4 @@ const RegistroMesas = () => {
 };
 
 export default RegistroMesas;
+

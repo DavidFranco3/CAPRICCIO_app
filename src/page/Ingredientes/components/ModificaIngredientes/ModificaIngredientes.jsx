@@ -2,7 +2,7 @@ import { useState } from 'react';
 import "../../../../scss/styles.scss";
 import { Button, Col, Form, Row, Spinner } from "react-bootstrap";
 import { subeArchivosCloudinary } from '../../../../api/cloudinary';
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import { actualizaIngrediente } from '../../../../api/ingredientes';
 import queryString from "query-string";
 import { faX, faSave } from "@fortawesome/free-solid-svg-icons";
@@ -32,7 +32,7 @@ function ModificaIngredientes(props) {
         e.preventDefault();
 
         if (!formData.nombre || !formData.umPrimaria || !formData.costoAdquisicion) {
-            toast.warning("Completa el formulario");
+            Swal.fire({ icon: 'warning', title: "Completa el formulario", timer: 1600, showConfirmButton: false });
         } else {
             try {
                 setLoading(true);
@@ -59,7 +59,7 @@ function ModificaIngredientes(props) {
                                 search: queryString.stringify(""),
                             });
                             LogsInformativos("Se ha modificado el ingrediente " + datosIngredientes.nombre, datosIngredientes);
-                            toast.success(data.mensaje);
+                            Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
                             cancelarRegistro();
                         })
                     }).then(e => {
@@ -84,7 +84,7 @@ function ModificaIngredientes(props) {
                             search: queryString.stringify(""),
                         });
                         LogsInformativos("Se ha modificado el ingrediente " + datosIngredientes.nombre, datosIngredientes);
-                        toast.success(data.mensaje);
+                        Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
                         cancelarRegistro();
                     })
                 }
@@ -288,3 +288,4 @@ function initialFormData(data) {
 }
 
 export default ModificaIngredientes;
+

@@ -14,7 +14,7 @@ import { registraProductos } from "../../../../api/productos";
 import { subeArchivosCloudinary } from "../../../../api/cloudinary";
 import RegistraProductos from "./RegistraProductos";
 import { LogsInformativos } from "../../../Logs/components/LogsSistema/LogsSistema";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 
 function RegsitroProds(props) {
   const { setShow } = props;
@@ -171,11 +171,11 @@ function RegsitroProds(props) {
       "Se ha registrado el producto " + formData.nombreProducto,
       productoData.datos
     );
-    toast.success(productoData.mensaje);
+    Swal.fire({ icon: 'success', title: productoData.mensaje, timer: 1600, showConfirmButton: false });
     cancelarRegistro();
   } catch (error) {
     console.log(error);
-    toast.error("Error al registrar el producto");
+    Swal.fire({ icon: 'error', title: "Error al registrar el producto", timer: 1600, showConfirmButton: false });
   }
 };
   return (
@@ -378,3 +378,4 @@ function RegsitroProds(props) {
 }
 
 export default RegsitroProds;
+

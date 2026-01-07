@@ -3,7 +3,7 @@ import { registraIngredientes } from '../../../../api/ingredientes';
 import "../../../../scss/styles.scss";
 import { Button, Col, Form, Row, Spinner } from "react-bootstrap";
 import { subeArchivosCloudinary } from '../../../../api/cloudinary';
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import queryString from "query-string";
 import { faX, faSave } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -26,7 +26,7 @@ function RegistroIngredientes(props) {
         e.preventDefault();
 
         if (!formData.nombre || !formData.umPrimaria || !formData.costoAdquisicion) {
-            toast.warning("Completa el formulario");
+            Swal.fire({ icon: 'warning', title: "Completa el formulario", timer: 1600, showConfirmButton: false });
         } else {
             try {
                 setLoading(true);
@@ -56,7 +56,7 @@ function RegistroIngredientes(props) {
                             search: queryString.stringify(""),
                         });
                         LogsInformativos("Se ha registrado el ingrediente " + formData.nombre, data.datos);
-                        toast.success(data.mensaje);
+                        Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
                         cancelarRegistro();
                     })
                 }).then(e => {
@@ -84,7 +84,7 @@ function RegistroIngredientes(props) {
                             search: queryString.stringify(""),
                         });
                         LogsInformativos("Se ha registrado el ingrediente " + formData.nombre, data.datos);
-                        toast.success(data.mensaje);
+                        Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
                         cancelarRegistro();
                     })
             }
@@ -290,3 +290,4 @@ function initialFormValue() {
 }
 
 export default RegistroIngredientes;
+

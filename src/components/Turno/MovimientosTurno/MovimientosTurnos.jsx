@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Container, Table, Image, Modal, Button, Form } from "react-bootstrap";
 import { listarMovimientoTurno } from "../../../api/movimientosTurnoCajas";
 import { listarVentasTurno } from "../../../api/ventas";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import printJS from 'print-js';
 import BasicModal from "../../Modal/BasicModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -72,7 +72,7 @@ function MovimientosTurnos(params) {
 
   const handlePrint = () => {
     if (listMovs.length === 0 && listVentas.length === 0) {
-      toast.warning("No hay información para imprimir");
+      Swal.fire({ icon: 'warning', title: "No hay información para imprimir", timer: 1600, showConfirmButton: false });
     } else {
       printJS({
         printable: "ticketCorteCaja", // Usamos el ID del contenedor de la tabla
@@ -298,3 +298,4 @@ function MovimientosTurnos(params) {
 }
 
 export default MovimientosTurnos;
+

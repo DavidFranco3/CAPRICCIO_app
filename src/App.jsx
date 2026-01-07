@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Routing from "./routers/Routing";
 import Login from "./page/Login";
 import { AuthContext } from "./utils/contexts";
-import { ToastContainer } from "react-toastify";
+
 import "./App.scss";
 import {
   isUserLogedApi,
@@ -94,16 +94,7 @@ function App() {
           </>
         )}
 
-        <ToastContainer
-          position="top-right"
-          autoClose={5000}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnVisibilityChange
-          draggable
-          pauseOnHover
-        />
+
       </AuthContext.Provider>
     </>
   );

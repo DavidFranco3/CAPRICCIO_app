@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Container, Form } from "react-bootstrap";
 import obtenerFechaHoraMexico from "../../../components/Fecha/FechaHoraMexico";
 import { registrarMovimientoTurnoCaja } from "../../../api/movimientosTurnoCajas";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 
 function EntradaSalidaEfec(params) {
   const { entrada, caja, turno, añadirDineroACaja, listCajas } = params;
@@ -32,7 +32,7 @@ function EntradaSalidaEfec(params) {
 
       const response = await registrarMovimientoTurnoCaja(dataTemp);
       const { data } = response;
-      toast.success(data.mensaje);
+      Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
     } catch (error) {}
   };
 
@@ -77,3 +77,4 @@ function EntradaSalidaEfec(params) {
 }
 
 export default EntradaSalidaEfec;
+

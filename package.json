@@ -60,11 +60,11 @@
     "react-lottie-player": "2.1.0",
     "react-router-dom": "7.11.0",
     "react-to-print": "^3.2.0",
-    "react-toastify": "11.0.5",
     "sass": "^1.97.1",
     "socket.io-client": "^4.8.3",
     "stream-browserify": "^3.0.0",
     "styled-components": "6.1.19",
+    "sweetalert2": "^11.26.17",
     "util": "^0.12.5",
     "xlsx": "^0.18.5"
   },

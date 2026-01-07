@@ -3,7 +3,7 @@ import { Button, Col, Form, Row, Spinner, Badge } from "react-bootstrap";
 import "../../../scss/styles.scss";
 import { faX, faSave, faCirclePlus, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import {map} from "lodash";
 
 function MetodosPago(props) {
@@ -21,7 +21,7 @@ console.log(formData.tipoPago)
     const addItems = () => {
 
         if (!formData.tipoPago) {
-            toast.warning("Completa la información del metodo de pago");
+            Swal.fire({ icon: 'warning', title: "Completa la información del metodo de pago", timer: 1600, showConfirmButton: false });
         } else {
 
             const dataTemp = {
@@ -222,3 +222,4 @@ function initialFormValue(data) {
 }
 
 export default MetodosPago;
+

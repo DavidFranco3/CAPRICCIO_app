@@ -6,7 +6,7 @@ import {
   registrarTurno,
   cerrarTurno,
 } from "../../api/turnos"; // Asegúrate de tener esta función en tu archivo de API
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import { toInteger } from "lodash";
 import obtenerFechaHoraMexico from "../Fecha/FechaHoraMexico"; // Ajusta la ruta según tu estructura de carpetas
 
@@ -65,14 +65,14 @@ function Turno(params) {
         const response = await actualizaCaja(idCaja, { saldo });
         const { data } = response;
         console.log(data);
-        toast.success(data.mensaje);
+        Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
       } catch (error) {
         console.error("Error al actualizar la caja:", error);
-        toast.error("No se pudo actualizar la caja.");
+        Swal.fire({ icon: 'error', title: "No se pudo actualizar la caja.", timer: 1600, showConfirmButton: false });
       }
     } else {
       console.error("Caja no encontrada");
-      toast.error("Caja no encontrada.");
+      Swal.fire({ icon: 'error', title: "Caja no encontrada.", timer: 1600, showConfirmButton: false });
     }
   };
 
@@ -101,7 +101,7 @@ function Turno(params) {
       const { data } = response;
       setTurno(dataTemp);
       await añadirDineroACaja(dataTemp.caja, dataTemp.fondoCaja, listCajas);
-      toast.success(data.mensaje);
+      Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
       setShow(false);
     } catch (error) {
       console.error(error);
@@ -198,3 +198,4 @@ function initialFormData() {
     estado: "abierto",
   };
 }
+

@@ -12,7 +12,7 @@ import {
 } from "react-bootstrap";
 import { map } from "lodash";
 import { subeArchivosCloudinary } from "../../../../api/cloudinary";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import {
   actualizaProductos,
   obtenerProductos,
@@ -139,7 +139,7 @@ function ModificaProductos(props) {
       !formData.categoria ||
       !formData.precioVenta
     ) {
-      toast.warning("Completa el formulario");
+      Swal.fire({ icon: 'warning', title: "Completa el formulario", timer: 1600, showConfirmButton: false });
     } else {
       try {
         setLoading(true);
@@ -162,7 +162,7 @@ function ModificaProductos(props) {
                 "Se ha modificado el producto " + formData.nombreProducto,
                 formData
               );
-              toast.success(data.mensaje);
+              Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
               cancelarRegistro();
             });
           })
@@ -208,7 +208,7 @@ function ModificaProductos(props) {
       !cargaProductos.precio ||
       !cargaProductos.cantidad
     ) {
-      toast.warning("Completa la información del ingrediente");
+      Swal.fire({ icon: 'warning', title: "Completa la información del ingrediente", timer: 1600, showConfirmButton: false });
     } else {
       const temp = nombre.split("/");
 
@@ -690,3 +690,4 @@ function formatModelIngredientes(ingredientes) {
 }
 
 export default ModificaProductos;
+

@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import VistaMesasVenta from "./components/Mesas/VistaMesasVenta";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 
 const TerminalVenta = (props) => {
   const { turno } = props;
@@ -10,7 +10,7 @@ const TerminalVenta = (props) => {
 
   const rutaRegreso = () => {
     enrutamiento("/");
-    toast.warning("Se necesita un turno activo para agregar la venta");
+    Swal.fire({ icon: 'warning', title: "Se necesita un turno activo para agregar la venta", timer: 1600, showConfirmButton: false });
   };
 
   useEffect(() => {
@@ -27,3 +27,4 @@ const TerminalVenta = (props) => {
 };
 
 export default TerminalVenta;
+

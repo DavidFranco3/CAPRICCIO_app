@@ -3,7 +3,7 @@ import { faUpload } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Col, Container, Form, Row } from "react-bootstrap";
 import { registraInsumo } from "../../../api/insumos";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import { data } from "autoprefixer";
 
 function RegistroInsumo(props) {
@@ -52,18 +52,18 @@ function RegistroInsumo(props) {
         };
         const response = await registraInsumo(dataTemp);
         const { data } = response;
-        toast.success(data.mensaje);
+        Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
         setShow(false);
       } catch (error) {
         console.log(error);
-        toast.error("Error al registrar el insumo");
+        Swal.fire({ icon: 'error', title: "Error al registrar el insumo", timer: 1600, showConfirmButton: false });
       }
 
       // Aquí puedes manejar el envío del formulario
       console.log("Formulario enviado:" + data);
     } else {
       console.log("Formulario incompleto");
-      toast.error("Formulario incompleto");
+      Swal.fire({ icon: 'error', title: "Formulario incompleto", timer: 1600, showConfirmButton: false });
     }
   };
 
@@ -185,3 +185,4 @@ function RegistroInsumo(props) {
 }
 
 export default RegistroInsumo;
+

@@ -3,7 +3,7 @@ import { withRouter } from "../../utils/withRouter";
 import { getTokenApi, isExpiredToken, logoutApi, obtenidusuarioLogueado } from "../../api/auth";
 import { obtenerUsuario } from "../../api/usuarios";
 import { LogsInformativosLogout } from '../../components/Logs/LogsSistema/LogsSistema';
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import { listarPaginacionProductosActivos, totalProductosActivos, listarPaginacionProductosCancelados, totalProductosCancelados } from "../../api/productos";
 import ListProductos from "../../components/Productos/ListProductos";
 import { listarCategorias } from "../../api/categorias";
@@ -39,3 +39,4 @@ function Slider(props) {
 }
 
 export default withRouter(Slider);
+

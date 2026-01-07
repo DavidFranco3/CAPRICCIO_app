@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import "./ticket.css";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import { faCircleInfo, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import BasicModal from "../../../../components/Modal/BasicModal";
 import {
@@ -205,7 +205,7 @@ function Tiquet(props) {
       };
       ocuparDesocuparMesas(props.mesaId, dataTemp).then((response) => {
         const { data } = response;
-        toast.success(data.mensaje);
+        Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
       });
     } catch (e) {
       console.log(e);
@@ -254,7 +254,7 @@ function Tiquet(props) {
     const formattedDate = dayjs(fechayHoraSinFormato).tz('America/Mexico_City').format('YYYY-MM-DDTHH:mm:ss.SSSZ');
 
     if (products.length === 0) {
-      toast.warning("Debe cargar productos al ticket");
+      Swal.fire({ icon: 'warning', title: "Debe cargar productos al ticket", timer: 1600, showConfirmButton: false });
     } else {
       try {
         const dataTemp = {
@@ -286,7 +286,7 @@ function Tiquet(props) {
             data.datos
           );
           await ocuparMesa();
-          toast.success("Se ha puesto la orden en mesa con éxito");
+          Swal.fire({ icon: 'success', title: "Se ha puesto la orden en mesa con éxito", timer: 1600, showConfirmButton: false });
         });
       } catch (e) {}
     }
@@ -295,7 +295,7 @@ function Tiquet(props) {
   // FUNCIÓN PARA ACTUALIZAR LA ORDEN
   const actualizarOrden = async () => {
     if (products.length === 0) {
-      toast.warning("Debe cargar productos al ticket");
+      Swal.fire({ icon: 'warning', title: "Debe cargar productos al ticket", timer: 1600, showConfirmButton: false });
     } else {
       try {
         const dataTemp = {
@@ -314,7 +314,7 @@ function Tiquet(props) {
                 props.numMesa,
               data.datos
             );
-            toast.success("Se ha actualizado la orden con éxito");
+            Swal.fire({ icon: 'success', title: "Se ha actualizado la orden con éxito", timer: 1600, showConfirmButton: false });
           }
         );
       } catch (e) {}
@@ -483,7 +483,7 @@ function Tiquet(props) {
                 );
               }
             } else {
-              toast.error("Debes agregar productos al ticket");
+              Swal.fire({ icon: 'error', title: "Debes agregar productos al ticket", timer: 1600, showConfirmButton: false });
             }
           }}
         >
@@ -627,3 +627,4 @@ const generarLetrasAleatorias = () => {
   }
   return letrasAleatorias;
 };
+

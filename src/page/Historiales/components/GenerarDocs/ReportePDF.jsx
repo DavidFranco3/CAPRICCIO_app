@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from "react";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 
 function ReporteCSV(params) {
   const { listCategorias, listVentas, fechaInicial, fechaFinal } = params;
@@ -46,7 +46,7 @@ function ReporteCSV(params) {
 
   const generateCSV = () => {
     if (listVentas.length === 0) {
-      toast.warning("No hay lista para descargar");
+      Swal.fire({ icon: 'warning', title: "No hay lista para descargar", timer: 1600, showConfirmButton: false });
     } else {
       const headerKeys = Object.keys(headers);
       const headerLabels = headerKeys.map((key) => headers[key]);
@@ -106,3 +106,4 @@ function ReporteCSV(params) {
   );
 }
 export default ReporteCSV;
+

@@ -3,7 +3,7 @@ import { eliminarMesa, obtenerMesa } from "../../../api/mesas";
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDeleteLeft } from "@fortawesome/free-solid-svg-icons";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 
 function EliminarMesa(props) {
   const { mesaId, setShow } = props;
@@ -24,7 +24,7 @@ function EliminarMesa(props) {
     try {
       const response = await eliminarMesa(mesaId);
       const { data } = response;
-      toast.success(data.mensaje);
+      Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
       setShow(false);
     } catch (e) {
       console.log(e);
@@ -49,3 +49,4 @@ function EliminarMesa(props) {
 }
 
 export default EliminarMesa;
+

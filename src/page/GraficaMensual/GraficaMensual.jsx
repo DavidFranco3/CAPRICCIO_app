@@ -8,7 +8,7 @@ import localizedFormat from 'dayjs/plugin/localizedFormat';
 import { getTokenApi, isExpiredToken, logoutApi, obtenidusuarioLogueado } from "../../api/auth";
 import { obtenerUsuario } from "../../api/usuarios";
 import { LogsInformativosLogout } from '../Logs/components/LogsSistema/LogsSistema';
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import "../../scss/styles.scss";
 import { Spinner, Tabs, Tab, Alert, Row, Col } from "react-bootstrap";
 import Lottie from "react-lottie-player";
@@ -33,7 +33,7 @@ function GraficaMensual(props) {
             }).catch((e) => {
                 if (e.message === 'Network Error') {
                     //console.log("No hay internet")
-                    toast.error("Conexión al servidor no disponible");
+                    Swal.fire({ icon: 'error', title: "Conexión al servidor no disponible", timer: 1600, showConfirmButton: false });
                 }
             })
         } catch (e) {
@@ -51,8 +51,8 @@ function GraficaMensual(props) {
                 LogsInformativosLogout("Sesión finalizada", datosUsuario, setRefreshCheckLogin);
                 logoutApi();
                 setRefreshCheckLogin(true);
-                toast.warning('Sesión expirada');
-                toast.success('Sesión cerrada por seguridad');
+                Swal.fire({ icon: 'warning', title: 'Sesión expirada', timer: 1600, showConfirmButton: false });
+                Swal.fire({ icon: 'success', title: 'Sesión cerrada por seguridad', timer: 1600, showConfirmButton: false });
             }
         }
     }

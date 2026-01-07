@@ -5,7 +5,7 @@ import {
   logoutApi,
   obtenidusuarioLogueado,
 } from "../../api/auth";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import { useNavigate } from "react-router-dom";
 import { Card, Image, Row, Col, Container } from "react-bootstrap"; // Added Row, Col, Container
 import { obtenerUsuario } from "../../api/usuarios";
@@ -61,7 +61,7 @@ function Dashboard(props) {
         .catch((e) => {
           if (e.message === "Network Error") {
             //console.log("No hay internet")
-            toast.error("Conexión al servidor no disponible");
+            Swal.fire({ icon: 'error', title: "Conexión al servidor no disponible", timer: 1600, showConfirmButton: false });
           }
         });
     } catch (e) {
@@ -95,8 +95,8 @@ function Dashboard(props) {
         );
         logoutApi();
         setRefreshCheckLogin(true);
-        toast.warning("Sesión expirada");
-        toast.success("Sesión cerrada por seguridad");
+        Swal.fire({ icon: 'warning', title: "Sesión expirada", timer: 1600, showConfirmButton: false });
+        Swal.fire({ icon: 'success', title: "Sesión cerrada por seguridad", timer: 1600, showConfirmButton: false });
       }
     }
   };
@@ -279,3 +279,4 @@ function Dashboard(props) {
 }
 
 export default Dashboard;
+

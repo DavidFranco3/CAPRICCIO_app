@@ -3,7 +3,7 @@ import "../../../../scss/styles.scss";
 import Dropzone from "../../../../components/Dropzone";
 import { Button, Col, Form, Row, Spinner } from "react-bootstrap";
 import { subeArchivosCloudinary } from "../../../../api/cloudinary";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import { actualizaCategoria } from "../../../../api/categorias";
 import queryString from "query-string";
 import { faX, faSave } from "@fortawesome/free-solid-svg-icons";
@@ -33,7 +33,7 @@ function ModificaCategorias(props) {
         e.preventDefault();
 
         if (!imagenFile || !formData.nombre) {
-            toast.warning("Completa el formulario");
+            Swal.fire({ icon: 'warning', title: "Completa el formulario", timer: 1600, showConfirmButton: false });
         } else {
             try {
                 setLoading(true);
@@ -51,7 +51,7 @@ function ModificaCategorias(props) {
                             search: queryString.stringify(""),
                         });
                         LogsInformativos("Se ha modificado la categoría " + datosCategorias.nombre, datosCategorias);
-                        toast.success(data.mensaje);
+                        Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
                         cancelarRegistro();
                     })
                 }).then(e => {
@@ -132,3 +132,4 @@ function initialFormData(data) {
 }
 
 export default ModificaCategorias;
+

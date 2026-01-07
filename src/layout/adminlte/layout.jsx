@@ -4,7 +4,7 @@ import { getTokenApi, obtenidusuarioLogueado } from "../../api/auth";
 import Header from "./header";
 import Menu from "./menu";
 import Footer from "./footer";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import { obtenerUltimoTurno } from "../../api/turnos";
 
 const LayoutAdminLTE = (props) => {
@@ -50,3 +50,4 @@ const LayoutAdminLTE = (props) => {
 };
 
 export default LayoutAdminLTE;
+

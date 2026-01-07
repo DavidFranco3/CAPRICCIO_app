@@ -7,7 +7,7 @@ import {
   logoutApi,
   obtenidusuarioLogueado,
 } from "../../api/auth";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import { LogsInformativosLogout } from "../Logs/components/LogsSistema/LogsSistema";
 import ListVentas from "./components/ListaVentas";
 import dayjs from "dayjs";
@@ -38,7 +38,7 @@ function Historial(props) {
         })
         .catch((e) => {
           if (e.message === "Network Error") {
-            toast.error("Conexión al servidor no disponible");
+            Swal.fire({ icon: 'error', title: "Conexión al servidor no disponible", timer: 1600, showConfirmButton: false });
           }
         });
     } catch (e) {
@@ -60,8 +60,8 @@ function Historial(props) {
         );
         logoutApi();
         setRefreshCheckLogin(true);
-        toast.warning("Sesión expirada");
-        toast.success("Sesión cerrada por seguridad");
+        Swal.fire({ icon: 'warning', title: "Sesión expirada", timer: 1600, showConfirmButton: false });
+        Swal.fire({ icon: 'success', title: "Sesión cerrada por seguridad", timer: 1600, showConfirmButton: false });
       }
     }
   };
@@ -237,3 +237,4 @@ function Historial(props) {
 }
 
 export default Historial;
+

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import { listarDetallesProductosVentasPorSemana, listarVentasPorSemana } from "../../../../api/ventas";
 import { Badge, Image } from "react-bootstrap";
 import LogoExcel from "../../../../assets/png/excel.png";   
@@ -125,7 +125,7 @@ function ProcesamientoCsv(props) {
 
     const generacionCSV = () => {
         try {
-            toast.info("Generando contenido, espere por favor ....")
+            Swal.fire({ icon: 'info', title: "Generando contenido, espere por favor ....", timer: 1600, showConfirmButton: false })
             const timer = setTimeout(() => {
             const dataConcatTitulos = titulos.concat(totales)
             const datosTemp = listDetallesMes.concat(dataConcatTitulos)
@@ -158,3 +158,4 @@ function ProcesamientoCsv(props) {
 }
 
 export default ProcesamientoCsv;
+

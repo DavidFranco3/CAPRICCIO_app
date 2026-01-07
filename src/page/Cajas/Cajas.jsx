@@ -13,7 +13,7 @@ import {
   obtenidusuarioLogueado,
 } from "../../api/auth";
 import { obtenerUsuario } from "../../api/usuarios";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import { Spinner, Button, Col, Row, Alert } from "react-bootstrap";
 import RegistroCajas from "./components/RegistroCajas";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -54,7 +54,7 @@ function Cajas(props) {
         .catch((e) => {
           if (e.message === "Network Error") {
             //console.log("No hay internet")
-            toast.error("Conexión al servidor no disponible");
+            Swal.fire({ icon: 'error', title: "Conexión al servidor no disponible", timer: 1600, showConfirmButton: false });
           }
         });
 
@@ -67,7 +67,7 @@ function Cajas(props) {
         .catch((e) => {
           if (e.message === "Network Error") {
             //console.log("No hay internet")
-            toast.error("Conexión al servidor no disponible");
+            Swal.fire({ icon: 'error', title: "Conexión al servidor no disponible", timer: 1600, showConfirmButton: false });
           }
         });
     } catch (e) {
@@ -272,3 +272,4 @@ function formatModelUsuarios(usuarios) {
 }
 
 export default withRouter(Cajas);
+

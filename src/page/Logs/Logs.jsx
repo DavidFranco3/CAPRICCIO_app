@@ -12,7 +12,7 @@ import {
 } from "../../api/auth";
 import { obtenerUsuario } from "../../api/usuarios";
 import { LogsInformativosLogout } from "./components/LogsSistema/LogsSistema";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import Lottie from "react-lottie-player";
 import AnimacionLoading from "../../assets/json/loading.json";
 import { useNavigate } from "react-router-dom";
@@ -40,7 +40,7 @@ function Logs(props) {
         .catch((e) => {
           if (e.message === "Network Error") {
             //console.log("No hay internet")
-            toast.error("Conexión al servidor no disponible");
+            Swal.fire({ icon: 'error', title: "Conexión al servidor no disponible", timer: 1600, showConfirmButton: false });
           }
         });
     } catch (e) {
@@ -62,8 +62,8 @@ function Logs(props) {
         );
         logoutApi();
         setRefreshCheckLogin(true);
-        toast.warning("Sesión expirada");
-        toast.success("Sesión cerrada por seguridad");
+        Swal.fire({ icon: 'warning', title: "Sesión expirada", timer: 1600, showConfirmButton: false });
+        Swal.fire({ icon: 'success', title: "Sesión cerrada por seguridad", timer: 1600, showConfirmButton: false });
       }
     }
   };
@@ -197,3 +197,4 @@ function formatModelLogs(data) {
 }
 
 export default withRouter(Logs);
+

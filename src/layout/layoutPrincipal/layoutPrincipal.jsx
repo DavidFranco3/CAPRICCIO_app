@@ -3,7 +3,7 @@ import { Image, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import LogoLANENA from "../../assets/png/logo-layout.png";
 import ImagenPerfil from "../../assets/png/user-avatar.png";
 import "../../scss/styles.scss";
@@ -67,8 +67,8 @@ function LayoutPrincipal(props) {
         );
         logoutApi();
         setRefreshCheckLogin(true);
-        toast.warning("Sesión expirada");
-        toast.success("Sesión cerrada por seguridad");
+        Swal.fire({ icon: 'warning', title: "Sesión expirada", timer: 1600, showConfirmButton: false });
+        Swal.fire({ icon: 'success', title: "Sesión cerrada por seguridad", timer: 1600, showConfirmButton: false });
       }
     }
   };
@@ -82,7 +82,7 @@ function LayoutPrincipal(props) {
     );
     logoutApi();
     setRefreshCheckLogin(true);
-    toast.success("Sesión cerrada");
+    Swal.fire({ icon: 'success', title: "Sesión cerrada", timer: 1600, showConfirmButton: false });
   };
 
   // Cerrado de sesión automatico
@@ -230,3 +230,4 @@ function LayoutPrincipal(props) {
 }
 
 export default LayoutPrincipal;
+

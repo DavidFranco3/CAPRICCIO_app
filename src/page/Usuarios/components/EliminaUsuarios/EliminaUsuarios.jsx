@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button, Col, Form, Row, Spinner, Image, Alert } from "react-bootstrap";
 import { eliminaUsuario } from "../../../../api/usuarios";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import queryString from "query-string";
 import "../../../../scss/styles.scss";
 import { faX, faSave } from "@fortawesome/free-solid-svg-icons";
@@ -37,7 +37,7 @@ function EliminaUsuarios(props) {
                     search: queryString.stringify(""),
                 });
                 LogsInformativos("El usuario " + usuario + " fue eliminado", datosUsuario);
-                toast.success(data.mensaje);
+                Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
                 cancelarRegistro();
             })
         } catch (e) {
@@ -140,3 +140,4 @@ function EliminaUsuarios(props) {
 }
 
 export default EliminaUsuarios;
+

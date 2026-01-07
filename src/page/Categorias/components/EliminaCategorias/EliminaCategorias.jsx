@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button, Col, Form, Row, Spinner, Image, Alert } from "react-bootstrap";
 import { eliminaCategoria } from "../../../../api/categorias";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import queryString from "query-string";
 import "../../../../scss/styles.scss";
 import { faX, faSave } from "@fortawesome/free-solid-svg-icons";
@@ -37,7 +37,7 @@ function EliminaCategorias(props) {
                     search: queryString.stringify(""),
                 });
                 LogsInformativos("La categoría " + nombre  + " fue eliminada", datosCategoria);
-                toast.success(data.mensaje)
+                Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false })
                 cancelarRegistro();
             })
         } catch (e) {
@@ -125,3 +125,4 @@ function EliminaCategorias(props) {
 }
 
 export default EliminaCategorias;
+

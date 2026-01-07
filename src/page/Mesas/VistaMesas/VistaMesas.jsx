@@ -3,7 +3,7 @@ import "../style.css";
 import BasicModal from "../../../components/Modal/BasicModal";
 
 import { obtenerMesas } from "../../../api/mesas";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import TerminalPVprev from "../../TerminalPV/TerminalPVprev";
 import { Badge, Col } from "react-bootstrap";
 import EditarMesa from "../EditarMesas/EditarMesa";
@@ -156,3 +156,4 @@ function formatModelMesas(mesas) {
   });
   return tempmesas;
 }
+

@@ -13,7 +13,7 @@ import {
 import { actualizaProductos } from "../../../../api/productos";
 import { subeArchivosCloudinary } from "../../../../api/cloudinary";
 import { LogsInformativos } from "../../../Logs/components/LogsSistema/LogsSistema";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 
 function ModificarProductos(props) {
   const { datosProd, setShow } = props;
@@ -177,11 +177,11 @@ function ModificarProductos(props) {
         "Se ha actualizado el producto " + formData.nombre,
         productoData.datos
       );
-      toast.success(productoData.mensaje);
+      Swal.fire({ icon: 'success', title: productoData.mensaje, timer: 1600, showConfirmButton: false });
       cancelarRegistro();
     } catch (error) {
       console.log(error);
-      toast.error("Error al actualizar el producto");
+      Swal.fire({ icon: 'error', title: "Error al actualizar el producto", timer: 1600, showConfirmButton: false });
     }
   };
 
@@ -387,3 +387,4 @@ function ModificarProductos(props) {
 }
 
 export default ModificarProductos;
+

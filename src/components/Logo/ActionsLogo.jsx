@@ -5,7 +5,7 @@ import { Col, Container, Form, Row } from "react-bootstrap";
 import { subeArchivosCloudinary } from "../../api/cloudinary";
 import { actualizaLogo, listarLogo, registraLogo } from "../../api/logo";
 import { LogsInformativos } from "../../page/Logs/components/LogsSistema/LogsSistema";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import Logo from "./Logo";
 
 function ActionsLogo(props) {
@@ -66,13 +66,13 @@ function ActionsLogo(props) {
           const logoResponse = await actualizaLogo(listLogo[0]._id, dataTemp);
           const { data: logoData } = logoResponse;
           LogsInformativos("Se ha cambiado el logo por " + logoData.datos);
-          toast.success(logoData.mensaje + " actualizados");
+          Swal.fire({ icon: 'success', title: logoData.mensaje + " actualizados", timer: 1600, showConfirmButton: false });
           cancelarRegistro();
         } else {
           const logoResponse = await registraLogo(dataTemp);
           const { data: logoData } = logoResponse;
           LogsInformativos("Se ha cambiado el logo por " + logoData.datos);
-          toast.success(logoData.mensaje);
+          Swal.fire({ icon: 'success', title: logoData.mensaje, timer: 1600, showConfirmButton: false });
           cancelarRegistro();
         }
       } catch (error) {
@@ -88,18 +88,18 @@ function ActionsLogo(props) {
           const response = await registraLogo(dataTemp);
           const { data } = response;
           LogsInformativos("Se ha registrado el logo " + logoURL);
-          toast.success(data.mensaje);
+          Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
           cancelarRegistro();
         } else {
           const response = await actualizaLogo(listLogo[0]._id, dataTemp);
           const { data } = response;
           LogsInformativos("Se ha actualizado el logo " + logoURL);
-          toast.success(data.mensaje);
+          Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
           cancelarRegistro();
         }
       } catch (error) {
         console.log(error);
-        toast.error("Error al registrar el logo");
+        Swal.fire({ icon: 'error', title: "Error al registrar el logo", timer: 1600, showConfirmButton: false });
       }
     }
   };
@@ -167,3 +167,4 @@ function ActionsLogo(props) {
 }
 
 export default ActionsLogo;
+

@@ -19,7 +19,7 @@ import localizedFormat from 'dayjs/plugin/localizedFormat';
 import RegistroMovimientosCajasVentas from '../../../Cajas/components/MovimientosCajas/RegistroMovimientosCajasVentas';
 import { useNavigate } from "react-router-dom";
 import { LogsInformativos } from '../../../Logs/components/LogsSistema/LogsSistema';
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import queryString from "query-string";
 
 function ListVentas(props) {
@@ -289,7 +289,7 @@ function ListVentas(props) {
                                 try {
                                     atenderVenta(row.id, dataTemp).then(response => {
                                         const { data } = response;
-                                        toast.success(data.mensaje);
+                                        Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
                                         LogsInformativos("La venta " + row.numeroTiquet + " fue atendida", dataTemp);
                                         navigate({ search: queryString.stringify("") });
                                     })
@@ -409,3 +409,4 @@ function ListVentas(props) {
 }
 
 export default ListVentas;
+

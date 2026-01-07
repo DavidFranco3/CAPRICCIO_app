@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { registraCliente } from "../../../../api/usuarios";
 import "../../../../scss/styles.scss";
 import { Button, Col, Form, Row, Spinner } from "react-bootstrap";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import queryString from "query-string";
 import { faX, faSave } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -22,7 +22,7 @@ function RegistroClientes(props) {
         e.preventDefault();
 
         if (!formData.nombre || !formData.usuario || !formData.password) {
-            toast.warning("Completa el formulario");
+            Swal.fire({ icon: 'warning', title: "Completa el formulario", timer: 1600, showConfirmButton: false });
         } else {
             try {
                 setLoading(true);
@@ -43,18 +43,18 @@ function RegistroClientes(props) {
                         search: queryString.stringify(""),
                     });*/
                     LogsInformativos("Se ha registrado el usuario " + formData.usuario, data.datos);
-                    toast.success(data.mensaje);
+                    Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
                     cancelarRegistro();
                 }).catch(e => {
                     console.log(e)
                     if (e.message === 'Network Error') {
                         //console.log("No hay internet")
-                        toast.error("Conexión al servidor no disponible");
+                        Swal.fire({ icon: 'error', title: "Conexión al servidor no disponible", timer: 1600, showConfirmButton: false });
                         setLoading(false);
                     } else {
                         if (e.response && e.response.status === 401) {
                             const { mensaje } = e.response.data;
-                            toast.error(mensaje);
+                            Swal.fire({ icon: 'error', title: mensaje, timer: 1600, showConfirmButton: false });
                             setLoading(false);
                         }
                     }
@@ -146,3 +146,4 @@ function initialFormValue() {
 }
 
 export default RegistroClientes;
+

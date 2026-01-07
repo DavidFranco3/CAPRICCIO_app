@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { Navigate } from "react-router-dom";
 import { withRouter } from "../../utils/withRouter";
 import { getTokenApi, isExpiredToken, logoutApi } from "../../api/auth";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import "../../scss/styles.scss";
 
 function Error404(props) {
@@ -11,8 +11,8 @@ function Error404(props) {
     const cierreSesion = () => {
         if (getTokenApi()) {
             if (isExpiredToken(getTokenApi())) {
-                toast.warning("Sesión expirada");
-                toast.success("Sesión cerrada por seguridad");
+                Swal.fire({ icon: 'warning', title: "Sesión expirada", timer: 1600, showConfirmButton: false });
+                Swal.fire({ icon: 'success', title: "Sesión cerrada por seguridad", timer: 1600, showConfirmButton: false });
                 logoutApi();
                 setRefreshCheckLogin(true);
             }
@@ -33,3 +33,4 @@ function Error404(props) {
 }
 
 export default withRouter(Error404);
+

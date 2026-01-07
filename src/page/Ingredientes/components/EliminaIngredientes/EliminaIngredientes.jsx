@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button, Col, Form, Row, Spinner, Image, Alert } from "react-bootstrap";
 import { eliminaIngrediente } from "../../../../api/ingredientes";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import queryString from "query-string";
 import "../../../../scss/styles.scss";
 import { faX, faSave } from "@fortawesome/free-solid-svg-icons";
@@ -37,7 +37,7 @@ function EliminaIngredientes(props) {
                     search: queryString.stringify(""),
                 });
                 LogsInformativos("El ingrediente " + nombre  + " fue eliminado", datosIngrediente);
-                toast.success(data.mensaje)
+                Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false })
                 cancelarRegistro();
             })
         } catch (e) {
@@ -137,3 +137,4 @@ function EliminaIngredientes(props) {
 }
 
 export default EliminaIngredientes;
+

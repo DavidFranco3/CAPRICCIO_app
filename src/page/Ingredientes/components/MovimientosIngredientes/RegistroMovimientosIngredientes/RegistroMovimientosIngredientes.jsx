@@ -5,7 +5,7 @@ import {
 } from "../../../../../api/ingredientes";
 import "../../../../../scss/styles.scss";
 import { Button, Col, Form, Row, Spinner } from "react-bootstrap";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import queryString from "query-string";
 import { faX, faSave } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -50,7 +50,7 @@ function RegistroMovimientosIngredientes(props) {
 
         if (!formData.tipo || !formData.cantidad) {
             // console.log("Valores "+ validCount + " del form " + size(formData))
-            toast.warning("Completa el formulario")
+            Swal.fire({ icon: 'warning', title: "Completa el formulario", timer: 1600, showConfirmButton: false })
         } else {
             setLoading(true)
 
@@ -85,7 +85,7 @@ function RegistroMovimientosIngredientes(props) {
                             const { data } = response;
                             //console.log(response)
                             const { mensaje, datos } = data;
-                            toast.success(mensaje)
+                            Swal.fire({ icon: 'success', title: mensaje, timer: 1600, showConfirmButton: false })
                             setLoading(false);
                             LogsInformativos(`Se han actualizado las existencias del ingrediente ${nombreIngrediente}`, datos)
                             navigate({
@@ -97,7 +97,7 @@ function RegistroMovimientosIngredientes(props) {
                     if (formData.tipo === "Salida") {
                         // console.log("Afecta existencias stock")
                         if (parseFloat(cantidadAcumulada) === 0 || parseFloat(formData.cantidad) > parseFloat(cantidadAcumulada)) {
-                            toast.error("Las existencias no pueden satisfacer la solicitud")
+                            Swal.fire({ icon: 'error', title: "Las existencias no pueden satisfacer la solicitud", timer: 1600, showConfirmButton: false })
                             setLoading(false)
                         } else {
                             const nuevaCantidad = parseFloat(cantidadAcumulada) - parseFloat(formData.cantidad);
@@ -119,7 +119,7 @@ function RegistroMovimientosIngredientes(props) {
                             registraMovimientosIngrediente(id, dataTempFinal).then(response => {
                                 const { data } = response;
                                 const { mensaje, datos } = data;
-                                toast.success(mensaje)
+                                Swal.fire({ icon: 'success', title: mensaje, timer: 1600, showConfirmButton: false })
                                 setLoading(false);
                                 LogsInformativos(`Se han actualizado las existencias del ingrediente ${nombreIngrediente}`, datos)
                                 navigate({
@@ -223,3 +223,4 @@ function initialFormValue() {
 }
 
 export default RegistroMovimientosIngredientes;
+

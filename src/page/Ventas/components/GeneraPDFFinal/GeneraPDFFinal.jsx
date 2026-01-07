@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import { Col, Row, Image, Button, Table } from "react-bootstrap";
 import "../../../../scss/styles.scss";
 import { logoTiquetGris } from "../../../../assets/base64/logo-tiquet";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import 'dayjs/locale/es';
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
@@ -94,7 +94,7 @@ function GeneraPdfFinal(props) {
     dayjs.extend(localizedFormat);
 
     const handlePrint = () => {
-        toast.info("Generando... espere por favor")
+        Swal.fire({ icon: 'info', title: "Generando... espere por favor", timer: 1600, showConfirmButton: false })
 
         const timer = setTimeout(() => {
             const tiquetGenerado = window.open('Tiquet', 'PRINT', 'height=400,width=600');
@@ -312,3 +312,4 @@ function GeneraPdfFinal(props) {
 }
 
 export default GeneraPdfFinal;
+

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button, Col, Form, Row, Spinner, Image, Alert } from "react-bootstrap";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import queryString from "query-string";
 import "../../../scss/styles.scss";
 import { faX, faSave } from "@fortawesome/free-solid-svg-icons";
@@ -35,7 +35,7 @@ function EliminarInsumos(props) {
           "El insumo " + datosInsumo.nombre + " fue eliminado",
           datosInsumo
         );
-        toast.success(data.mensaje);
+        Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
         cancelarRegistro();
       });
     } catch (e) {
@@ -136,3 +136,4 @@ function EliminarInsumos(props) {
 }
 
 export default EliminarInsumos;
+

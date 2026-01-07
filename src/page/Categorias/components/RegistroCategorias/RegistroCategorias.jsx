@@ -4,7 +4,7 @@ import Dropzone from "../../../../components/Dropzone";
 import "../../../../scss/styles.scss";
 import { Button, Col, Form, Row, Spinner } from "react-bootstrap";
 import { subeArchivosCloudinary } from "../../../../api/cloudinary";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import queryString from "query-string";
 import { faX, faSave } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -27,7 +27,7 @@ function RegistroCategorias(props) {
         e.preventDefault();
 
         if (!imagenProducto || !formData.nombre) {
-            toast.warning("Completa el formulario");
+            Swal.fire({ icon: 'warning', title: "Completa el formulario", timer: 1600, showConfirmButton: false });
         } else {
             try {
                 setLoading(true);
@@ -47,7 +47,7 @@ function RegistroCategorias(props) {
                             search: queryString.stringify(""),
                         });
                         LogsInformativos("Se ha registrado la categoría " + formData.nombre, data.datos);
-                        toast.success(data.mensaje);
+                        Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
                         cancelarRegistro();
                     })
                 }).then(e => {
@@ -127,3 +127,4 @@ function initialFormValue() {
 }
 
 export default RegistroCategorias;
+

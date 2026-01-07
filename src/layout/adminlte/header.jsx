@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 //import { LogsInformativosLogout } from "../../components/Logs/LogsSistema/LogsSistema";
 import { getTokenApi, isExpiredToken, logoutApi } from "../../api/auth";
 import BasicModal from "../../components/Modal/BasicModal";
@@ -44,8 +44,8 @@ const Header = (props) => {
         );*/
         logoutApi();
         //setRefreshCheckLogin(true);
-        toast.warning("Sesión expirada");
-        toast.success("Sesión cerrada por seguridad");
+        Swal.fire({ icon: 'warning', title: "Sesión expirada", timer: 1600, showConfirmButton: false });
+        Swal.fire({ icon: 'success', title: "Sesión cerrada por seguridad", timer: 1600, showConfirmButton: false });
       }
     }
   };
@@ -59,7 +59,7 @@ const Header = (props) => {
     );*/
     logoutApi();
     //setRefreshCheckLogin(true);
-    toast.success("Sesión cerrada");
+    Swal.fire({ icon: 'success', title: "Sesión cerrada", timer: 1600, showConfirmButton: false });
     window.location.reload();
   };
 
@@ -248,3 +248,4 @@ const Header = (props) => {
 };
 
 export default Header;
+

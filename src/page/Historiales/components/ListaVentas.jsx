@@ -17,7 +17,7 @@ import {
   obtenidusuarioLogueado,
 } from "../../../api/auth";
 import { obtenerUsuario } from "../../../api/usuarios";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import { withRouter } from "../../../utils/withRouter";
 import {
   Chart as ChartJS,
@@ -55,7 +55,7 @@ function ListVentas(props) {
         .catch((e) => {
           if (e.message === "Network Error") {
             //console.log("No hay internet")
-            toast.error("Conexión al servidor no disponible");
+            Swal.fire({ icon: 'error', title: "Conexión al servidor no disponible", timer: 1600, showConfirmButton: false });
           }
         });
     } catch (e) {
@@ -404,3 +404,4 @@ function ListVentas(props) {
 }
 
 export default withRouter(ListVentas);
+

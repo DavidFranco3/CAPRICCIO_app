@@ -9,7 +9,7 @@ import {
   Alert,
   Badge,
 } from "react-bootstrap";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import { map } from "lodash";
 import { registraProductos } from "../../../../api/productos";
 import { listarCategorias } from "../../../../api/categorias";
@@ -109,7 +109,7 @@ function RegistraProductos(props) {
       !formData.categoria ||
       !formData.precioVenta
     ) {
-      toast.warning("Completa el formulario");
+      Swal.fire({ icon: 'warning', title: "Completa el formulario", timer: 1600, showConfirmButton: false });
     } else {
       try {
         setLoading(true);
@@ -133,7 +133,7 @@ function RegistraProductos(props) {
                 "Se ha registrado el producto " + formData.nombreProducto,
                 data.datos
               );
-              toast.success(data.mensaje);
+              Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
               cancelarRegistro();
             });
           })
@@ -178,7 +178,7 @@ function RegistraProductos(props) {
       !cargaProductos.precio ||
       !cargaProductos.cantidad
     ) {
-      toast.warning("Completa la información del insumo");
+      Swal.fire({ icon: 'warning', title: "Completa la información del insumo", timer: 1600, showConfirmButton: false });
     } else {
       const temp = nombre.split("/");
       const dataTemp = {
@@ -641,3 +641,4 @@ function formatModelInsumos(insumos) {
 }
 
 export default RegistraProductos;
+

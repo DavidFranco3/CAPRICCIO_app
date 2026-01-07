@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { login, setTokenApi } from "../../api/auth";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import { jwtDecode } from "jwt-decode";
 import { Spinner, Button, Form, Image, Row, Col } from "react-bootstrap";
 import { obtenerUsuario } from "../../api/usuarios";
@@ -40,7 +40,7 @@ function Login({ setRefreshCheckLogin }) {
     e.preventDefault();
 
     if (!formData.usuario || !formData.password) {
-      toast.warning("Completa todos los campos del formulario.");
+      Swal.fire({ icon: 'warning', title: "Completa todos los campos del formulario.", timer: 1600, showConfirmButton: false });
     } else {
       setSignInLoading(true);
       try {
@@ -60,26 +60,26 @@ function Login({ setRefreshCheckLogin }) {
                   data
                 );
                 setRefreshCheckLogin(true);
-                toast.success("Bienvenido " + data.nombre);
+                Swal.fire({ icon: 'success', title: "Bienvenido " + data.nombre, timer: 1600, showConfirmButton: false });
               });
             } catch (ex) {
-              toast.error("Error al obtener el usuario");
+              Swal.fire({ icon: 'error', title: "Error al obtener el usuario", timer: 1600, showConfirmButton: false });
             }
           })
           .catch((ex) => {
             if (ex.message === "Network Error") {
-              toast.error("Conexión al servidor no disponible");
+              Swal.fire({ icon: 'error', title: "Conexión al servidor no disponible", timer: 1600, showConfirmButton: false });
               setSignInLoading(false);
             } else {
               if (ex.response && ex.response.status === 401) {
                 const { mensaje } = ex.response.data;
-                toast.error(mensaje);
+                Swal.fire({ icon: 'error', title: mensaje, timer: 1600, showConfirmButton: false });
                 setSignInLoading(false);
               }
             }
           });
       } catch (ex) {
-        toast.error("Error al iniciar sesión");
+        Swal.fire({ icon: 'error', title: "Error al iniciar sesión", timer: 1600, showConfirmButton: false });
         setSignInLoading(false);
       }
     }
@@ -171,3 +171,4 @@ function initialFormValue() {
 }
 
 export default Login;
+

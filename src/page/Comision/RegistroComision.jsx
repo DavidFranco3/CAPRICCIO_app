@@ -1,7 +1,7 @@
 import { Col, Form, Button } from "react-bootstrap";
 import { actualizarComision, obtenerComisiones, registrarComision } from "../../api/comision"
 import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 
 function Comision(props) {
     const [comision, setComision] = useState([]);
@@ -44,7 +44,7 @@ function Comision(props) {
         try {
             const response = await actualizarComision(comision[0]._id, dataTemp);
             console.log(response);
-            toast.success("Comisión actualizada correctamente");
+            Swal.fire({ icon: 'success', title: "Comisión actualizada correctamente", timer: 1600, showConfirmButton: false });
             props.setShowModal(false);
         } catch (e) {
             console.log(e);
@@ -99,3 +99,4 @@ function Comision(props) {
 }
 
 export default Comision;
+

@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import { Col, Container, Form, Row, Button } from "react-bootstrap";
 import { actualizaProductos, listarProductos } from "../../../api/productos";
 import { actualizaInsumo, registrarMovInsumo } from "../../../api/insumos";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
@@ -137,16 +137,14 @@ function ModificarInsumos(props) {
       try {
         const response = await registrarMovInsumo(movimiento);
         if (response.status === 200) {
-          toast.success("Movimiento registrado con éxito");
+          Swal.fire({ icon: 'success', title: "Movimiento registrado con éxito", timer: 1600, showConfirmButton: false });
         } else {
-          toast.error("Error al registrar el movimiento");
+          Swal.fire({ icon: 'error', title: "Error al registrar el movimiento", timer: 1600, showConfirmButton: false });
         }
         setShow(false);
       } catch (error) {
         console.error("Error registrando el movimiento:", error);
-        toast.error(
-          "Error registrando el movimiento. Por favor intenta de nuevo."
-        );
+        Swal.fire({ icon: 'error', title: "Error registrando el movimiento. Por favor intenta de nuevo.", timer: 1600, showConfirmButton: false });
       }
     }
   };
@@ -172,13 +170,13 @@ function ModificarInsumos(props) {
       }
 
       const { data } = response;
-      toast.success(data.mensaje);
+      Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
 
       await actualizarProdsConInsumo(dataTemp);
       setShow(false);
     } catch (error) {
       console.error("Error actualizando el insumo:", error);
-      toast.error("Error actualizando el insumo. Por favor intenta de nuevo.");
+      Swal.fire({ icon: 'error', title: "Error actualizando el insumo. Por favor intenta de nuevo.", timer: 1600, showConfirmButton: false });
     }
   };
 
@@ -288,3 +286,4 @@ function ModificarInsumos(props) {
 }
 
 export default ModificarInsumos;
+

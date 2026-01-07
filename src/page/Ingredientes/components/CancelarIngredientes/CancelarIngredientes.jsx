@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import "../../../../scss/styles.scss";
 import { cancelarIngrediente } from "../../../../api/ingredientes";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import { Button, Col, Row, Form, Spinner, Image, Alert } from "react-bootstrap";
 import queryString from "query-string";
 import { faX, faSave } from "@fortawesome/free-solid-svg-icons";
@@ -39,7 +39,7 @@ function CancelarIngredientes(props) {
                     search: queryString.stringify(""),
                 });
                 LogsInformativos("Estado del ingrediente " + nombre + " actualizado", datosIngrediente);
-                toast.success(data.mensaje)
+                Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false })
                 cancelarRegistro();
             }).catch(e => {
                 console.log(e)
@@ -156,3 +156,4 @@ function CancelarIngredientes(props) {
 }
 
 export default CancelarIngredientes;
+

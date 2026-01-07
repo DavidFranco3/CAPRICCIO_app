@@ -5,7 +5,7 @@ import { faHouse } from '@fortawesome/free-solid-svg-icons';
 import Producto from "../Producto";
 import Categoria from "../Categoria";
 import { getTokenApi, isExpiredToken, logoutApi } from "../../../api/auth";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import { Button } from "react-bootstrap";
 
 function Menu(props) {
@@ -15,8 +15,8 @@ function Menu(props) {
     useEffect(() => {
         if (getTokenApi()) {
             if (isExpiredToken(getTokenApi())) {
-                toast.warning("Sesión expirada");
-                toast.success("Sesión cerrada por seguridad");
+                Swal.fire({ icon: 'warning', title: "Sesión expirada", timer: 1600, showConfirmButton: false });
+                Swal.fire({ icon: 'success', title: "Sesión cerrada por seguridad", timer: 1600, showConfirmButton: false });
                 logoutApi();
                 setRefreshCheckLogin(true);
             }
@@ -131,3 +131,4 @@ function Menu(props) {
 }
 
 export default Menu;
+

@@ -3,7 +3,7 @@ import { Button, Col, Form, Row, Spinner, Table } from "react-bootstrap";
 import "../../../scss/styles.scss";
 import { faX, faSave } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import Descuento from "../Descuento";
 
 function DatosExtraVenta(props) {
@@ -542,3 +542,4 @@ function initialFormValue(data) {
 }
 
 export default DatosExtraVenta;
+

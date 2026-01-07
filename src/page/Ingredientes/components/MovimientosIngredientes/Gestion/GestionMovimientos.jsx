@@ -3,7 +3,7 @@ import {
     obtenerIngredientes, registraMovimientosIngrediente
 } from "../../../api/ingredientes";
 import { LogsInformativos } from "../../Logs/LogsSistema/LogsSistema";
-import {toast} from "react-toastify";
+import Swal from 'sweetalert2';
 
 // Para definir el registro de la información inicial de la planeación -- Metodo desarrollado para funcionalidad interno en registro de ventas
 export function LogRegistroSalida(id, cantidadSalida, um) {
@@ -41,7 +41,7 @@ export function LogRegistroSalida(id, cantidadSalida, um) {
                         const { data } = response;
                         //console.log(response)
                         const { datos, mensaje } = data;
-                        toast.success(mensaje);
+                        Swal.fire({ icon: 'success', title: mensaje, timer: 1600, showConfirmButton: false });
                         LogsInformativos(`Se han actualizado las existencias del ingrediente ${nombre}`, datos)
                     });
             })

@@ -6,7 +6,7 @@ import localizedFormat from 'dayjs/plugin/localizedFormat';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import "../../../scss/styles.scss";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import { ocuparDesocuparMesas } from "../../../api/mesas";
 import {
   cobrarTicket,
@@ -434,7 +434,7 @@ function DatosExtraVenta(props) {
       };
       await ocuparDesocuparMesas(props.mesaId, dataTemp).then((response) => {
         const { data } = response;
-        toast.success(data.mensaje);
+        Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
       });
     } catch (e) {
       console.log(e);
@@ -531,7 +531,7 @@ function DatosExtraVenta(props) {
     console.log(formData.infoVenta);
 
     if (totalPagado - cambio < total) {
-      toast.warning("Por favor ingresa la cantidad mínima del total");
+      Swal.fire({ icon: 'warning', title: "Por favor ingresa la cantidad mínima del total", timer: 1600, showConfirmButton: false });
     } else {
       try {
         const dataTemp = {
@@ -591,7 +591,7 @@ function DatosExtraVenta(props) {
             await actualizarStockInsumos(dataTemp.productos);
             await agregarDineroCaja(dataTemp.total, dataTemp.tipoPago);
             await desocuparMesa();
-            toast.success("Se ha creado y cobrado la orden en mesa con éxito");
+            Swal.fire({ icon: 'success', title: "Se ha creado y cobrado la orden en mesa con éxito", timer: 1600, showConfirmButton: false });
           });
         } else {
           await imprimirTicketFinal(
@@ -615,9 +615,7 @@ function DatosExtraVenta(props) {
               await actualizarStockInsumos(dataTemp.productos);
               await agregarDineroCaja(dataTemp.total, dataTemp.tipoPago);
               await desocuparMesa();
-              toast.success(
-                `Se ha cobrado la orden de la mesa ${dataTemp.mesa} con éxito`
-              );
+              Swal.fire({ icon: 'success', title: `Se ha cobrado la orden de la mesa ${dataTemp.mesa} con éxito`, timer: 1600, showConfirmButton: false });
             }
           );
         }
@@ -712,7 +710,7 @@ function DatosExtraVenta(props) {
               alert("Error al cerrar los modales");
             }
           }
-          toast.success("orden creada para pagar después");
+          Swal.fire({ icon: 'success', title: "orden creada para pagar después", timer: 1600, showConfirmButton: false });
         });
       } else {
         await cobrarTicket(formData.infoVenta.numeroTiquet, dataTemp).then(
@@ -735,7 +733,7 @@ function DatosExtraVenta(props) {
                 alert("Error al cerrar los modales");
               }
             }
-            toast.success("Lista la orden para pagar después");
+            Swal.fire({ icon: 'success', title: "Lista la orden para pagar después", timer: 1600, showConfirmButton: false });
           }
         );
       }
@@ -929,105 +927,105 @@ function DatosExtraVenta(props) {
 
 
           {!tpv && (
-              <Row className="mx-1 p-1 border rounded">
-                <Col className="">
-                  <h3>Métodos de pago y pago</h3>
-                  <table className="table table-stripped table-bordered table-hover">
-                    <thead>
-                      <tr>
-                        <th>Método de pago</th>
-                        <th colSpan={3}>Cantidad pagada</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td className="d-flex align-items-center">
-                          <Form.Check
-                            type="checkbox"
-                            label="Efectivo"
-                            name="estadoPagoEfectivo"
-                            checked={formData.infoMetodosPago.efectivo.estado}
-                            onChange={handleCheckboxChange}
-                          />
-                        </td>
-                        <td colSpan={3}>
-                          <Form.Control
-                            type="text"
-                            name="cantidadPagoEfectivo"
-                            value={inputValues.cantidadPagoEfectivo}
-                            onChange={handleInfoMetodosPagoChange}
-                            disabled={!formData.infoMetodosPago.efectivo.estado}
-                            min="0"
-                          />
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="d-flex align-items-center">
-                          <Form.Check
-                            type="checkbox"
-                            label="Tarjeta"
-                            name="estadoPagoTdc"
-                            checked={formData.infoMetodosPago.tdc.estado}
-                            onChange={handleCheckboxChange}
-                          />
-                        </td>
-                        <td>
-                          <Form.Control
-                            type="text"
-                            name="cantidadPagoTdc"
-                            value={inputValues.cantidadPagoTdc}
-                            onChange={handleInfoMetodosPagoChange}
-                            disabled={!formData.infoMetodosPago.tdc.estado}
-                            min="0"
-                          />
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="d-flex align-items-center">
-                          <Form.Check
-                            type="checkbox"
-                            label="Transferencia"
-                            name="estadoPagoTransfer"
-                            checked={formData.infoMetodosPago.transfer.estado}
-                            onChange={handleCheckboxChange}
-                          />
-                        </td>
-                        <td colSpan={3}>
-                          <Form.Control
-                            type="text"
-                            name="cantidadPagoTransfer"
-                            value={inputValues.cantidadPagoTransfer}
-                            onChange={handleInfoMetodosPagoChange}
-                            disabled={!formData.infoMetodosPago.transfer.estado}
-                            min="0"
-                          />
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Total pagado:</td>
-                        <td colSpan={3}>
-                          {new Intl.NumberFormat("es-MX", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          }).format(totalPagado)}{" "}
-                          MXN
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Cambio:</td>
-                        <td colSpan={3}>
-                          {new Intl.NumberFormat("es-MX", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          }).format(cambio)}{" "}
-                          MXN
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </Col>
-              </Row>
-            )}
+            <Row className="mx-1 p-1 border rounded">
+              <Col className="">
+                <h3>Métodos de pago y pago</h3>
+                <table className="table table-stripped table-bordered table-hover">
+                  <thead>
+                    <tr>
+                      <th>Método de pago</th>
+                      <th colSpan={3}>Cantidad pagada</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="d-flex align-items-center">
+                        <Form.Check
+                          type="checkbox"
+                          label="Efectivo"
+                          name="estadoPagoEfectivo"
+                          checked={formData.infoMetodosPago.efectivo.estado}
+                          onChange={handleCheckboxChange}
+                        />
+                      </td>
+                      <td colSpan={3}>
+                        <Form.Control
+                          type="text"
+                          name="cantidadPagoEfectivo"
+                          value={inputValues.cantidadPagoEfectivo}
+                          onChange={handleInfoMetodosPagoChange}
+                          disabled={!formData.infoMetodosPago.efectivo.estado}
+                          min="0"
+                        />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="d-flex align-items-center">
+                        <Form.Check
+                          type="checkbox"
+                          label="Tarjeta"
+                          name="estadoPagoTdc"
+                          checked={formData.infoMetodosPago.tdc.estado}
+                          onChange={handleCheckboxChange}
+                        />
+                      </td>
+                      <td>
+                        <Form.Control
+                          type="text"
+                          name="cantidadPagoTdc"
+                          value={inputValues.cantidadPagoTdc}
+                          onChange={handleInfoMetodosPagoChange}
+                          disabled={!formData.infoMetodosPago.tdc.estado}
+                          min="0"
+                        />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="d-flex align-items-center">
+                        <Form.Check
+                          type="checkbox"
+                          label="Transferencia"
+                          name="estadoPagoTransfer"
+                          checked={formData.infoMetodosPago.transfer.estado}
+                          onChange={handleCheckboxChange}
+                        />
+                      </td>
+                      <td colSpan={3}>
+                        <Form.Control
+                          type="text"
+                          name="cantidadPagoTransfer"
+                          value={inputValues.cantidadPagoTransfer}
+                          onChange={handleInfoMetodosPagoChange}
+                          disabled={!formData.infoMetodosPago.transfer.estado}
+                          min="0"
+                        />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Total pagado:</td>
+                      <td colSpan={3}>
+                        {new Intl.NumberFormat("es-MX", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        }).format(totalPagado)}{" "}
+                        MXN
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Cambio:</td>
+                      <td colSpan={3}>
+                        {new Intl.NumberFormat("es-MX", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        }).format(cambio)}{" "}
+                        MXN
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </Col>
+            </Row>
+          )}
 
           {formData.infoVenta.hacerPedido !== "Presencial" && (
             <Row className="mt-2 mx-1 p-1 border rounded">
@@ -1099,3 +1097,4 @@ function DatosExtraVenta(props) {
 }
 
 export default DatosExtraVenta;
+

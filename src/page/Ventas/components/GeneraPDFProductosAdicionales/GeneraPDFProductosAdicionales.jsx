@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import { Col, Row, Image, Button, Table } from "react-bootstrap";
 import "../../../../scss/styles.scss";
 import { logoTiquetGris } from "../../../../assets/base64/logo-tiquet";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import 'dayjs/locale/es';
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
@@ -65,7 +65,7 @@ function GeneraPdfProductosAdicionales(props) {
     const logo = "https://res.cloudinary.com/omarlestrella/image/upload/v1730506157/TPV_LA_NENA/msdxqnu7gehwjru0jhvs.jpg";
 
     const handlePrint = () => {
-        toast.info("Generando... espere por favor");
+        Swal.fire({ icon: 'info', title: "Generando... espere por favor", timer: 1600, showConfirmButton: false });
     
         const content = document.getElementById('tiquetAutogenerado').innerHTML;  // Obtén el contenido del ticket
     
@@ -300,3 +300,4 @@ function GeneraPdfProductosAdicionales(props) {
 }
 
 export default GeneraPdfProductosAdicionales;
+

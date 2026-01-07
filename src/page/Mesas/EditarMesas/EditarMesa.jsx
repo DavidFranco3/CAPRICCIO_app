@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { editarMesa, obtenerMesa, registraMesas } from "../../../api/mesas";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faX } from "@fortawesome/free-solid-svg-icons";
 
@@ -31,7 +31,7 @@ const EditarMesa = (props) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!numeroMesa || !numeroPersonas || !descripcion) {
-      toast.warning("Todos los campos son obligatorios");
+      Swal.fire({ icon: 'warning', title: "Todos los campos son obligatorios", timer: 1600, showConfirmButton: false });
       return;
     }
     try {
@@ -43,7 +43,7 @@ const EditarMesa = (props) => {
 
       if (response.status === 200) {
         console.log("Actualización exitosa");
-        toast.success("Actualización exitosa");
+        Swal.fire({ icon: 'success', title: "Actualización exitosa", timer: 1600, showConfirmButton: false });
         setNumeroMesa("");
         setNumeroPersonas("");
         setDescripcion("");
@@ -110,3 +110,4 @@ const EditarMesa = (props) => {
 };
 
 export default EditarMesa;
+

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import "../../../scss/styles.scss";
 import { cancelarVenta } from "../../../api/ventas";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import { Button, Col, Row, Form, Spinner, Alert } from "react-bootstrap";
 import queryString from "query-string";
 import { faX, faSave } from "@fortawesome/free-solid-svg-icons";
@@ -40,7 +40,7 @@ console.log(datosVentas)
             cancelarVenta(_id, dataTemp).then(response => {
                 const { data } = response;
                 LogsInformativos("Estado de la venta " + numeroTiquet + " actualizado", datosVentas);
-                toast.success(data.mensaje);
+                Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
                 cancelarRegistro();
             }).catch(e => {
                 console.log(e)

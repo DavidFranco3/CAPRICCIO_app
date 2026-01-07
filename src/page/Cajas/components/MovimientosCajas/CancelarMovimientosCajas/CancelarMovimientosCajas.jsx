@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import "../../../../../scss/styles.scss";
 import { cancelarMovimientos } from "../../../../../api/movimientosCajas";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import { Button, Col, Row, Form, Spinner, Image, Alert } from "react-bootstrap";
 import queryString from "query-string";
 import { faX, faSave } from "@fortawesome/free-solid-svg-icons";
@@ -41,7 +41,7 @@ function CancelarMovimientosCajas(props) {
                 });
                 LogsInformativos("Estado del movimiento actualizado", datosMovimiento);
                 LogCajaActualizacion(idCaja, movimiento == "Fondo de caja" ? parseFloat(monto) * -1 : movimiento == "Venta" && pago == "Transferencia" ? 0 : movimiento == "Venta" && pago == "Tarjeta" ? 0 : movimiento == "Venta" && pago == "Efectivo" ? parseFloat(monto) * -1 : movimiento == "Retiro" ? monto : movimiento == "Aumento" ? monto : 0);
-                toast.success(data.mensaje);
+                Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
                 cancelarRegistro();
             }).catch(e => {
                 console.log(e)
@@ -236,3 +236,4 @@ function CancelarMovimientosCajas(props) {
 }
 
 export default CancelarMovimientosCajas;
+

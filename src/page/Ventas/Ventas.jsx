@@ -7,7 +7,7 @@ import ListVentas from "./components/ListVentas";
 import { getTokenApi, isExpiredToken, logoutApi, obtenidusuarioLogueado } from "../../api/auth";
 import { obtenerUsuario } from "../../api/usuarios";
 import { LogsInformativosLogout } from '../Logs/components/LogsSistema/LogsSistema';
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import Lottie from "react-lottie-player";
 import AnimacionLoading from "../../assets/json/loading.json";
 import { Switch } from '@headlessui/react';
@@ -30,7 +30,7 @@ function Ventas(props) {
                 setEstadoUsuario(data.admin);
             }).catch((e) => {
                 if (e.message === 'Network Error') {
-                    toast.error("Conexión al servidor no disponible");
+                    Swal.fire({ icon: 'error', title: "Conexión al servidor no disponible", timer: 1600, showConfirmButton: false });
                 }
             });
         } catch (e) {
@@ -48,8 +48,8 @@ function Ventas(props) {
                 LogsInformativosLogout("Sesión finalizada", datosUsuario, setRefreshCheckLogin);
                 logoutApi();
                 setRefreshCheckLogin(true);
-                toast.warning('Sesión expirada');
-                toast.success('Sesión cerrada por seguridad');
+                Swal.fire({ icon: 'warning', title: 'Sesión expirada', timer: 1600, showConfirmButton: false });
+                Swal.fire({ icon: 'success', title: 'Sesión cerrada por seguridad', timer: 1600, showConfirmButton: false });
             }
         }
     }
@@ -324,3 +324,4 @@ function formatModelVentas(ventas) {
 }
 
 export default withRouter(Ventas);
+

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useDropzone } from "react-dropzone";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 import { Image, Form } from "react-bootstrap";
 import "../../scss/styles.scss";
 
@@ -36,7 +36,7 @@ function Dropzone(props) {
             if (type !== "image") {
                 //const tempP = file.preview;
                 //slider1(tempP);
-                toast.error("Archivo no permitido");
+                Swal.fire({ icon: 'error', title: "Archivo no permitido", timer: 1600, showConfirmButton: false });
             }
             return "";
         });
@@ -88,3 +88,4 @@ function Dropzone(props) {
 }
 
 export default Dropzone;
+
