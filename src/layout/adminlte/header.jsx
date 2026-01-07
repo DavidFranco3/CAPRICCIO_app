@@ -91,18 +91,21 @@ const Header = (props) => {
               role="button"
               onClick={(e) => {
                 e.preventDefault();
+                e.stopPropagation(); // Stop event from bubbling to document listener which closes sidebar
                 const body = document.querySelector('body');
+                // AdminLTE 3 mobile toggle logic
                 if (window.innerWidth <= 991) {
                   if (body.classList.contains('sidebar-open')) {
                     body.classList.remove('sidebar-open');
-                    body.classList.add('sidebar-closed');
                     body.classList.add('sidebar-collapse');
+                    body.classList.add('sidebar-closed');
                   } else {
                     body.classList.add('sidebar-open');
-                    body.classList.remove('sidebar-closed');
                     body.classList.remove('sidebar-collapse');
+                    body.classList.remove('sidebar-closed');
                   }
                 } else {
+                  // Desktop toggle
                   if (body.classList.contains('sidebar-collapse')) {
                     body.classList.remove('sidebar-collapse');
                   } else {
@@ -114,6 +117,7 @@ const Header = (props) => {
               <i className="fas fa-bars" />
             </span>
           </li>
+          {/* Ensure Dashboard link is visible on mobile too */}
           <li className="nav-item d-none d-sm-inline-block">
             <a href="/" className="nav-link">
               Home
