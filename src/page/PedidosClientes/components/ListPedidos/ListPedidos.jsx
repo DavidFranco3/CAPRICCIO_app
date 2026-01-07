@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Badge, Container } from "react-bootstrap";
+import { Badge, Container, Dropdown } from "react-bootstrap";
 import "../../../../scss/styles.scss";
 import BasicModal from "../../../../components/Modal/BasicModal";
 import DetallesPedido from "../DetallesPedido";
 import CancelarPedido from "../CancelarPedido";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faX, faRotateLeft, faArrowDownLong, faMessage, faCheck } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faX, faRotateLeft, faArrowDownLong, faMessage, faCheck, faBars } from "@fortawesome/free-solid-svg-icons";
 import DataTablecustom from "../../../../components/Generales/DataTable";
 import { formatMoneda } from "../../../../components/Generales/FormatMoneda";
 import { estilos } from "../../../../utils/tableStyled";
@@ -180,80 +180,65 @@ function ListPedidos(props) {
         },
         {
             name: "Acciones",
-            selector: row => (
-                <>
-                    <div className="flex justify-end items-center space-x-4">
-                        {
-                            row.estado === "Pendiente" && tipoUsuario === "interno" &&
-                            (
-                                <>
-                                    <Badge
-                                        bg="success"
-                                        title="Confirmar pedido"
-                                        className="indicadorCancelarVenta"
-                                        onClick={() => {
-                                            confirmarPedido(
-                                                <CancelarPedido
-                                                    datosPedidos={row}
-                                                    location={location}
-                                                    navigate={navigate}
-                                                    setShowModal={setShowModal}
-                                                />
-                                            )
-                                        }}
-                                    >
-                                        <FontAwesomeIcon icon={faCheck} className="text-lg" />
-                                    </Badge>
-                                </>
-                            )
-                        }
-
-                        {
-                            row.estado === "Confirmado" && tipoUsuario === "interno" &&
-                            (
-                                <>
-                                    <Badge
-                                        bg="danger"
-                                        title="Cancelar pedido"
-                                        className="indicadorCancelarVenta"
-                                        onClick={() => {
-                                            cancelarPedido(
-                                                <CancelarPedido
-                                                    datosPedidos={row}
-                                                    location={location}
-                                                    navigate={navigate}
-                                                    setShowModal={setShowModal}
-                                                />
-                                            )
-                                        }}
-                                    >
-                                        <FontAwesomeIcon icon={faX} className="text-lg" />
-                                    </Badge>
-                                </>
-                            )
-                        }
-                        <Badge
-                            title="Ver productos vendidos"
-                            bg="primary"
-                            className="indicadorDetallesVenta"
-                            onClick={() => {
-                                detallesPedido(
-                                    <DetallesPedido
-                                        datos={row}
+            cell: (row) => (
+                <Dropdown className="dropdown-js">
+                    <Dropdown.Toggle className="botonDropdown" id={`dropdown-basic-${row.id}`} variant="link">
+                        <FontAwesomeIcon icon={faBars} />
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                        {row.estado === "Pendiente" && tipoUsuario === "interno" && (
+                            <Dropdown.Item onClick={() => {
+                                confirmarPedido(
+                                    <CancelarPedido
+                                        datosPedidos={row}
                                         location={location}
                                         navigate={navigate}
+                                        setShowModal={setShowModal}
                                     />
                                 )
-                            }}
+                            }}>
+                                <FontAwesomeIcon icon={faCheck} style={{ color: "#28a745" }} />
+                                &nbsp; Confirmar
+                            </Dropdown.Item>
+                        )}
+
+                        {row.estado === "Confirmado" && tipoUsuario === "interno" && (
+                            <Dropdown.Item onClick={() => {
+                                cancelarPedido(
+                                    <CancelarPedido
+                                        datosPedidos={row}
+                                        location={location}
+                                        navigate={navigate}
+                                        setShowModal={setShowModal}
+                                    />
+                                )
+                            }}>
+                                <FontAwesomeIcon icon={faX} style={{ color: "#dc3545" }} />
+                                &nbsp; Cancelar
+                            </Dropdown.Item>
+                        )}
+
+                        <Dropdown.Item onClick={() => {
+                            detallesPedido(
+                                <DetallesPedido
+                                    datos={row}
+                                    location={location}
+                                    navigate={navigate}
+                                />
+                            )
+                        }}
                         >
-                            <FontAwesomeIcon icon={faEye} className="text-lg" />
-                        </Badge>
-                    </div>
-                </>
+                            <FontAwesomeIcon icon={faEye} style={{ color: "#17a2b8" }} />
+                            &nbsp; Detalles
+                        </Dropdown.Item>
+                    </Dropdown.Menu>
+                </Dropdown>
             ),
             sortable: false,
             center: true,
-            reorder: false
+            reorder: false,
+            ignoreRowClick: true,
+            width: "120px",
         },
     ];
 

@@ -1,13 +1,14 @@
+@use "./theme" as *;
+
 .imagenPrincipal {
-    text-align: center;
-  
-    .textoImagenPrincipal {
-  
-    }
-    .imagenProducto {
-      margin-top: 45px;
-    }
-    input{
-        display: block !important;
-    }
+  text-align: center;
+
+
+  .imagenProducto {
+    margin-top: 45px;
   }
+
+  input {
+    display: block !important;
+  }
+}

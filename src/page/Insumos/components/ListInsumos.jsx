@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { listarInsumos } from "../../../api/insumos";
-import { Badge, Col, FormControl } from "react-bootstrap";
+import { Badge, Col, FormControl, Dropdown } from "react-bootstrap";
 import DataTablecustom from "../../../components/Generales/DataTable";
 import { formatMoneda } from "../../../components/Generales/FormatMoneda";
 import { estilos } from "../../../utils/tableStyled";
@@ -10,6 +10,7 @@ import {
   faPen,
   faTrashCan,
   faX,
+  faBars,
 } from "@fortawesome/free-solid-svg-icons";
 import BasicModal from "../../../components/Modal/BasicModal";
 import ModificarInsumos from "./Modificar";
@@ -75,48 +76,48 @@ function ListInsumos(props) {
     },
     {
       name: "Acciones",
-      selector: (row) => (
-        <>
-          <div className="flex justify-end items-center space-x-4">
-            <Badge
-              className="cursor-pointer"
-              bg="success"
-              onClick={() =>
-                modificarInsumos(
-                  <ModificarInsumos
-                    datosInsumos={row}
+      cell: (row) => (
+        <Dropdown className="dropdown-js">
+          <Dropdown.Toggle className="botonDropdown" id={`dropdown-basic-${row._id}`} variant="link">
+            <FontAwesomeIcon icon={faBars} />
+          </Dropdown.Toggle>
+          <Dropdown.Menu>
+            <Dropdown.Item onClick={() =>
+              modificarInsumos(
+                <ModificarInsumos
+                  datosInsumos={row}
+                  setShow={setShowModal}
+                  datosUsuario={datosUsuario}
+                />
+              )
+            }
+            >
+              <FontAwesomeIcon icon={faPen} style={{ color: "#ffc107" }} />
+              &nbsp; Editar
+            </Dropdown.Item>
+
+            {datosUsuario.rol === "administrador" && (
+              <Dropdown.Item onClick={() =>
+                eliminarInsumo(
+                  <EliminarInsumos
+                    datosInsumo={row}
                     setShow={setShowModal}
-                    datosUsuario={datosUsuario}
                   />
                 )
               }
-            >
-              <FontAwesomeIcon icon={faPen} className="text-lg" />
-            </Badge>
-            {datosUsuario.rol === "administrador" && (
-              <>
-                <Badge
-                  className="cursor-pointer"
-                  bg="danger"
-                  onClick={() =>
-                    eliminarInsumo(
-                      <EliminarInsumos
-                        datosInsumo={row}
-                        setShow={setShowModal}
-                      />
-                    )
-                  }
-                >
-                  <FontAwesomeIcon icon={faTrashCan} className="text-lg" />
-                </Badge>
-              </>
+              >
+                <FontAwesomeIcon icon={faTrashCan} style={{ color: "#dc3545" }} />
+                &nbsp; Eliminar
+              </Dropdown.Item>
             )}
-          </div>
-        </>
+          </Dropdown.Menu>
+        </Dropdown>
       ),
       sortable: false,
       center: true,
       reorder: false,
+      ignoreRowClick: true,
+      width: "120px",
     },
   ];
 

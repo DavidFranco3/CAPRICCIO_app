@@ -3,9 +3,9 @@ import { listarVentasRangoFechas } from "../../../api/ventas";
 import CancelarVenta from "../../Ventas/components/CancelarVenta/CancelarVenta";
 import dayjs from "dayjs";
 import DataTablecustom from "../../../components/Generales/DataTable";
-import { Badge, Button, Card, Col, Container, Row } from "react-bootstrap";
+import { Badge, Button, Card, Col, Container, Row, Dropdown } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleInfo, faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import { faCircleInfo, faTrashCan, faBars } from "@fortawesome/free-solid-svg-icons";
 import BasicModal from "../../../components/Modal/BasicModal";
 import DetallesListaVentas from "./DetallesListaVentas";
 import { listarCategorias } from "../../../api/categorias";
@@ -226,37 +226,38 @@ function ListVentas(props) {
     },
     {
       name: "Acciones",
-      selector: (row) => (
-        <>
-          {tipoUsuario == "true" ? (<>
-            <div className="flex justify-end items-center space-x-4">
-              <Badge
-                className="cursor-pointer"
-                bg="danger"
-                onClick={() =>
-                  cancelarVenta(
-                    <CancelarVenta
-                      datosInsumos={row}
-                      setShowModal={setShowModal}
-                      datosVentas={row}
-                      navigate={navigate}
-                    />
-                  )
-                }
+      cell: (row) => (
+        <Dropdown className="dropdown-js">
+          <Dropdown.Toggle className="botonDropdown" id={`dropdown-basic-${row._id}`} variant="link">
+            <FontAwesomeIcon icon={faBars} />
+          </Dropdown.Toggle>
+          <Dropdown.Menu>
+            {tipoUsuario === "true" ? (
+              <Dropdown.Item onClick={() =>
+                cancelarVenta(
+                  <CancelarVenta
+                    datosInsumos={row}
+                    setShowModal={setShowModal}
+                    datosVentas={row}
+                    navigate={navigate}
+                  />
+                )
+              }
               >
-                <FontAwesomeIcon icon={faTrashCan} className="text-lg" />
-              </Badge>
-            </div>
-          </>) : (
-            <>
-              No disponibles
-            </>
-          )}
-        </>
+                <FontAwesomeIcon icon={faTrashCan} style={{ color: "#dc3545" }} />
+                &nbsp; Cancelar
+              </Dropdown.Item>
+            ) : (
+              <Dropdown.Item disabled>No disponibles</Dropdown.Item>
+            )}
+          </Dropdown.Menu>
+        </Dropdown>
       ),
       sortable: false,
       center: true,
       reorder: false,
+      ignoreRowClick: true,
+      width: "120px",
     },
   ];
 

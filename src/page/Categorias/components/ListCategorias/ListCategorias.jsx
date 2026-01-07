@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import "../../../../scss/styles.scss";
-import { Badge } from "react-bootstrap";
+import { Badge, Dropdown } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPenToSquare, faTrashCan, faArrowDownLong } from "@fortawesome/free-solid-svg-icons";
+import { faPenToSquare, faTrashCan, faArrowDownLong, faBars } from "@fortawesome/free-solid-svg-icons";
 import BasicModal from "../../../../components/Modal/BasicModal";
 import EliminaCategorias from "../EliminaCategorias";
 import ModificaCategorias from "../ModificaCategorias";
@@ -121,49 +121,47 @@ function ListCategorias(props) {
         },
         {
             name: "Acciones",
-            selector: row => (
-                <>
-                    <div className="flex justify-end items-center space-x-4">
-                        <Badge
-                            title="Modificar Categoría"
-                            bg="success"
-                            className="editar"
-                            onClick={() => {
-                                modificaCategorias(
-                                    <ModificaCategorias
-                                        datosCategorias={row}
-                                        location={location}
-                                        navigate={navigate}
-                                        setShowModal={setShowModal}
-                                    />
-                                )
-                            }}>
-                            <FontAwesomeIcon icon={faPenToSquare} className="text-lg" />
-                        </Badge>
+            cell: (row) => (
+                <Dropdown className="dropdown-js">
+                    <Dropdown.Toggle className="botonDropdown" id={`dropdown-basic-${row._id}`} variant="link">
+                        <FontAwesomeIcon icon={faBars} />
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                        <Dropdown.Item onClick={() => {
+                            modificaCategorias(
+                                <ModificaCategorias
+                                    datosCategorias={row}
+                                    location={location}
+                                    navigate={navigate}
+                                    setShowModal={setShowModal}
+                                />
+                            )
+                        }}>
+                            <FontAwesomeIcon icon={faPenToSquare} style={{ color: "#ffc107" }} />
+                            &nbsp; Editar
+                        </Dropdown.Item>
 
-                        <Badge
-                            title="Eliminar categoría"
-                            bg="danger"
-                            className="eliminar"
-                            onClick={() => {
-                                eliminaCategorias(
-                                    <EliminaCategorias
-                                        datosCategoria={row}
-                                        location={location}
-                                        navigate={navigate}
-                                        setShowModal={setShowModal}
-                                    />
-                                )
-                            }}>
-                            <FontAwesomeIcon icon={faTrashCan} className="text-lg" />
-                        </Badge>
-
-                    </div>
-                </>
+                        <Dropdown.Item onClick={() => {
+                            eliminaCategorias(
+                                <EliminaCategorias
+                                    datosCategoria={row}
+                                    location={location}
+                                    navigate={navigate}
+                                    setShowModal={setShowModal}
+                                />
+                            )
+                        }}>
+                            <FontAwesomeIcon icon={faTrashCan} style={{ color: "#dc3545" }} />
+                            &nbsp; Eliminar
+                        </Dropdown.Item>
+                    </Dropdown.Menu>
+                </Dropdown>
             ),
             sortable: false,
             center: true,
-            reorder: false
+            reorder: false,
+            ignoreRowClick: true,
+            width: "120px",
         },
     ];
 

@@ -127,7 +127,7 @@ function Dashboard(props) {
 
     if (!isTurnoActivo && path === "/TerminalPV") {
       return (
-        <Card className="contenidoCentrado h-100 shadow-sm border-0 hover-lift cursor-pointer">
+        <Card className="glass-card contenidoCentrado h-100 shadow-sm border-0 hover-lift cursor-pointer">
           <Card.Body>
             <div className="flex flex-col items-center justify-center">
               <div className="d-flex flex-col items-center justify-center">
@@ -153,7 +153,7 @@ function Dashboard(props) {
       );
     } else {
       return (
-        <Card className="contenidoCentrado h-100 shadow-sm border-0 hover-lift cursor-pointer" onClick={() => goTo(path)} style={{ cursor: 'pointer' }}>
+        <Card className="glass-card contenidoCentrado h-100 shadow-sm border-0 hover-lift cursor-pointer" onClick={() => goTo(path)} style={{ cursor: 'pointer' }}>
           <Card.Body className="p-3">
             <div className="flex flex-col items-center justify-center">
               <Image
@@ -162,7 +162,7 @@ function Dashboard(props) {
                 src={logo}
                 style={{ width: "64px", marginBottom: '10px' }} // Reduced size slightly for cleaner look
               />
-              <span className="inline-block text-md font-semibold text-center">{title}</span>
+              <span className="inline-block text-md font-semibold text-center text-white">{title}</span>
             </div>
           </Card.Body>
         </Card>
@@ -177,8 +177,8 @@ function Dashboard(props) {
         <Container fluid className="p-4">
 
           <div className="mb-4">
-            <h2 className="fw-bold text-gray-800">Panel de Control</h2>
-            <p className="text-muted">Resumen de actividad del día {dayjs().format('DD/MM/YYYY')}</p>
+            <h2 className="fw-bold text-white">Panel de Control</h2>
+            <p className="text-white-50">Resumen de actividad del día {dayjs().format('DD/MM/YYYY')}</p>
           </div>
 
           <KPICards ventas={ventasDia} />

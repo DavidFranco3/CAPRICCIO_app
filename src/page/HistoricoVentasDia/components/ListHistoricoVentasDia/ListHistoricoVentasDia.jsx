@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { map } from "lodash";
-import { Badge, Image, Container } from "react-bootstrap";
+import { Badge, Image, Container, Dropdown } from "react-bootstrap";
 import "../../../../scss/styles.scss";
 import Total from "../../Total";
 import BasicModal from "../../../../components/Modal/BasicModal";
@@ -13,7 +13,7 @@ import { estilos } from "../../../../utils/tableStyled";
 import DataTablecustom from "../../../../components/Generales/DataTable";
 import { formatFecha } from "../../../../components/Generales/FormatFecha";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowDownLong } from "@fortawesome/free-solid-svg-icons";
+import { faArrowDownLong, faBars, faEye, faChartBar } from "@fortawesome/free-solid-svg-icons";
 import 'dayjs/locale/es';
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
@@ -96,58 +96,51 @@ function ListHistoricoVentasDia(props) {
         },
         {
             name: "Acciones",
-            selector: row => (
-                <>
-                    <div className="flex justify-end items-center space-x-4">
-                        <Badge
-                            bg="light"
-                            className="vistaDetalles"
-                            onClick={() => {
-                                grafica(
-                                    <GraficaDiaria
-                                        setRefreshCheckLogin={setRefreshCheckLogin}
-                                        dia={row}
-                                        setShowModal={setShowModal}
-                                    />
-                                )
-                            }}
-                        >
-                            <Image
-                                title="Ver la grafica del dia"
-                                alt="Ver la grafica del dia"
-                                src={LogoGrafica}
-                                className="logoHistorial"
-                            />
-                        </Badge>
-                        <Badge
-                            bg="light"
-                            className="vistaDetalles"
-                            onClick={() => {
-                                detallesHistorial(
-                                    <HistorialVentasDia
-                                        setRefreshCheckLogin={setRefreshCheckLogin}
-                                        dia={row}
-                                        setShowModal={setShowModal}
-                                    />
-                                )
-                            }}
-                        >
-                            <Image
-                                title="Ver las ventas del dia"
-                                alt="Ver ventas del dia"
-                                src={LogoHistorial}
-                                className="logoHistorial"
-                            />
-                        </Badge>
+            cell: row => (
+                <Dropdown className="dropdown-js">
+                    <Dropdown.Toggle className="botonDropdown" id={`dropdown-basic-${row}`} variant="link">
+                        <FontAwesomeIcon icon={faBars} />
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                        <Dropdown.Item onClick={() => {
+                            grafica(
+                                <GraficaDiaria
+                                    setRefreshCheckLogin={setRefreshCheckLogin}
+                                    dia={row}
+                                    setShowModal={setShowModal}
+                                />
+                            )
+                        }}>
+                            <FontAwesomeIcon icon={faChartBar} style={{ color: "#17a2b8" }} />
+                            &nbsp; Ver gráfica
+                        </Dropdown.Item>
 
-                        <ProcesamientoCSV dia={row} />
+                        <Dropdown.Item onClick={() => {
+                            detallesHistorial(
+                                <HistorialVentasDia
+                                    setRefreshCheckLogin={setRefreshCheckLogin}
+                                    dia={row}
+                                    setShowModal={setShowModal}
+                                />
+                            )
+                        }}
+                        >
+                            <FontAwesomeIcon icon={faEye} style={{ color: "#ffc107" }} />
+                            &nbsp; Ver ventas
+                        </Dropdown.Item>
 
-                    </div>
-                </>
+                        <div className="dropdown-divider"></div>
+                        <div className="px-3 py-2">
+                            <ProcesamientoCSV dia={row} />
+                        </div>
+                    </Dropdown.Menu>
+                </Dropdown>
             ),
             sortable: false,
             center: true,
-            reorder: false
+            reorder: false,
+            ignoreRowClick: true,
+            width: "120px",
         },
     ];
 

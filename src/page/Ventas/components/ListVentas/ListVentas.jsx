@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Badge, Container } from "react-bootstrap";
+import { Badge, Container, Dropdown } from "react-bootstrap";
 import "../../../../scss/styles.scss";
 import BasicModal from "../../../../components/Modal/BasicModal";
 import DetallesVenta from "../DetallesVenta";
 import CancelarVenta from "../CancelarVenta";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faX, faRotateLeft, faArrowDownLong, faPenToSquare, faCheck } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faX, faRotateLeft, faArrowDownLong, faPenToSquare, faCheck, faBars } from "@fortawesome/free-solid-svg-icons";
 import DataTablecustom from "../../../../components/Generales/DataTable";
 import { formatMoneda } from "../../../../components/Generales/FormatMoneda";
 import { estilos } from "../../../../utils/tableStyled";
@@ -275,138 +275,95 @@ function ListVentas(props) {
         },
         {
             name: "Acciones",
-            selector: row => (
-                <>
-                    <div className="flex justify-end items-center space-x-4">
-                        {
-                            row.atendido === "false" && row.estado === "true" &&
-                            (
-                                <>
-                                    <Badge
-                                        bg="warning"
-                                        title="Cambiar status"
-                                        className="editar"
-                                        onClick={() => {
-                                            const dataTemp = {
-                                                atendido: row.atendido === "false" ? "true" : "false",
-                                            }
-                                            //console.log(dataTemp)
+            cell: (row) => (
+                <Dropdown className="dropdown-js">
+                    <Dropdown.Toggle className="botonDropdown" id={`dropdown-basic-${row.id}`} variant="link">
+                        <FontAwesomeIcon icon={faBars} />
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                        {row.atendido === "false" && row.estado === "true" && (
+                            <Dropdown.Item onClick={() => {
+                                const dataTemp = {
+                                    atendido: row.atendido === "false" ? "true" : "false",
+                                }
+                                try {
+                                    atenderVenta(row.id, dataTemp).then(response => {
+                                        const { data } = response;
+                                        toast.success(data.mensaje);
+                                        LogsInformativos("La venta " + row.numeroTiquet + " fue atendida", dataTemp);
+                                        navigate({ search: queryString.stringify("") });
+                                    })
+                                } catch (e) {
+                                    console.log(e)
+                                }
+                            }}>
+                                <FontAwesomeIcon icon={faCheck} style={{ color: "#28a745" }} />
+                                &nbsp; Atender
+                            </Dropdown.Item>
+                        )}
 
-                                            try {
-                                                atenderVenta(row.id, dataTemp).then(response => {
-                                                    const { data } = response;
-                                                    // console.log(data)
-                                                    toast.success(data.mensaje);
-                                                    LogsInformativos("La venta " + row.numeroTiquet + "fue atendida", dataTemp);
-                                                    navigate({
-                                                        search: queryString.stringify(""),
-                                                    });
-                                                })
-                                            } catch (e) {
-                                                console.log(e)
-                                            }
-                                        }}
-                                    >
-                                        <FontAwesomeIcon icon={faCheck} className="text-lg" />
-                                    </Badge>
-                                </>
+                        <Dropdown.Item onClick={() => {
+                            detallesVenta(
+                                <DetallesVenta
+                                    datos={row}
+                                    location={location}
+                                    navigate={navigate}
+                                />
                             )
-                        }
+                        }}>
+                            <FontAwesomeIcon icon={faEye} style={{ color: "#17a2b8" }} />
+                            &nbsp; Detalles
+                        </Dropdown.Item>
 
-                        <Badge
-                            title="Ver productos vendidos"
-                            bg="primary"
-                            className="indicadorDetallesVenta"
-                            onClick={() => {
-                                detallesVenta(
-                                    <DetallesVenta
-                                        datos={row}
-                                        location={location}
-                                        navigate={navigate}
-                                    />
-                                )
-                            }}
-                        >
-                            <FontAwesomeIcon icon={faEye} className="text-lg" />
-                        </Badge>
+                        {row.tipo === "Pedido inicial" && (
+                            <Dropdown.Item onClick={() => modificaVenta(row.id)}>
+                                <FontAwesomeIcon icon={faPenToSquare} style={{ color: "#ffc107" }} />
+                                &nbsp; Editar
+                            </Dropdown.Item>
+                        )}
 
-                        {
-                            row.tipo === "Pedido inicial" &&
-                            (
-                                <>
-                                    <Badge
-                                        bg="success"
-                                        title="Modificar venta"
-                                        className="editar"
-                                        onClick={() => {
-                                            modificaVenta(row.id);
-                                        }}
-                                    >
-                                        <FontAwesomeIcon icon={faPenToSquare} className="text-lg" />
-                                    </Badge>
-                                </>
-                            )
-                        }
-
-                        {
-                            estadoUsuario === "true" &&
-                            (
-                                <>
-                                    {
-                                        row.estado === "true" ?
-                                            (
-                                                <>
-                                                    <Badge
-                                                        bg="danger"
-                                                        title="Cancelar venta"
-                                                        className="indicadorCancelarVenta"
-                                                        onClick={() => {
-                                                            cancelarVenta(
-                                                                <CancelarVenta
-                                                                    datosVentas={row}
-                                                                    location={location}
-                                                                    navigate={navigate}
-                                                                    setShowModal={setShowModal}
-                                                                />
-                                                            )
-                                                        }}
-                                                    >
-                                                        <FontAwesomeIcon icon={faX} className="text-lg" />
-                                                    </Badge>
-                                                </>
-                                            )
-                                            :
-                                            (
-                                                <>
-                                                    <Badge
-                                                        bg="success"
-                                                        title="Recuperar venta"
-                                                        className="indicadorCancelarVenta"
-                                                        onClick={() => {
-                                                            recuperarVenta(
-                                                                <CancelarVenta
-                                                                    datosVentas={row}
-                                                                    location={location}
-                                                                    navigate={navigate}
-                                                                    setShowModal={setShowModal}
-                                                                />
-                                                            )
-                                                        }}
-                                                    >
-                                                        <FontAwesomeIcon icon={faRotateLeft} className="text-lg" />
-                                                    </Badge>
-                                                </>
-                                            )
-                                    }
-                                </>
-                            )
-                        }
-                    </div>
-                </>
+                        {estadoUsuario === "true" && (
+                            <>
+                                <div className="dropdown-divider"></div>
+                                {row.estado === "true" ? (
+                                    <Dropdown.Item onClick={() => {
+                                        cancelarVenta(
+                                            <CancelarVenta
+                                                datosVentas={row}
+                                                location={location}
+                                                navigate={navigate}
+                                                setShowModal={setShowModal}
+                                            />
+                                        )
+                                    }}>
+                                        <FontAwesomeIcon icon={faX} style={{ color: "#dc3545" }} />
+                                        &nbsp; Cancelar
+                                    </Dropdown.Item>
+                                ) : (
+                                    <Dropdown.Item onClick={() => {
+                                        recuperarVenta(
+                                            <CancelarVenta
+                                                datosVentas={row}
+                                                location={location}
+                                                navigate={navigate}
+                                                setShowModal={setShowModal}
+                                            />
+                                        )
+                                    }}>
+                                        <FontAwesomeIcon icon={faRotateLeft} style={{ color: "#28a745" }} />
+                                        &nbsp; Recuperar
+                                    </Dropdown.Item>
+                                )}
+                            </>
+                        )}
+                    </Dropdown.Menu>
+                </Dropdown>
             ),
             sortable: false,
             center: true,
-            reorder: false
+            reorder: false,
+            ignoreRowClick: true,
+            width: "120px",
         },
     ];
 

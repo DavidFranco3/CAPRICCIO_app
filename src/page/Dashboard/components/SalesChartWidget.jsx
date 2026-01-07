@@ -74,12 +74,18 @@ const SalesChartWidget = ({ ventas }) => {
             y: {
                 beginAtZero: true,
                 grid: {
-                    color: "rgba(0, 0, 0, 0.05)",
+                    color: "rgba(255, 255, 255, 0.1)",
+                },
+                ticks: {
+                    color: "rgba(255, 255, 255, 0.8)",
                 }
             },
             x: {
                 grid: {
                     display: false
+                },
+                ticks: {
+                    color: "rgba(255, 255, 255, 0.8)",
                 }
             }
         },
@@ -95,23 +101,23 @@ const SalesChartWidget = ({ ventas }) => {
         new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(value);
 
     return (
-        <Card className="shadow-sm border-0 h-100">
-            <Card.Header className="bg-white border-0 pt-4 pb-0">
+        <Card className="glass-card shadow-sm border-0 h-100">
+            <Card.Header className="border-0 pt-4 pb-0">
                 <div className="d-flex justify-content-between align-items-center mb-2">
-                    <h5 className="mb-0 fw-bold text-gray-800">Desglose de Ingresos</h5>
+                    <h5 className="mb-0 fw-bold text-white">Desglose de Ingresos</h5>
                 </div>
-                <div className="d-flex gap-4 text-sm text-muted">
+                <div className="d-flex gap-4 text-sm text-white-50">
                     <div className='d-flex align-items-center gap-1'>
                         <span className='w-3 h-3 rounded-circle' style={{ backgroundColor: 'rgba(75, 192, 192, 1)' }}></span>
-                        Efectivo: <strong>{formatCurrency(totalEfectivo)}</strong>
+                        Efectivo: <strong className="text-white">{formatCurrency(totalEfectivo)}</strong>
                     </div>
                     <div className='d-flex align-items-center gap-1'>
                         <span className='w-3 h-3 rounded-circle' style={{ backgroundColor: 'rgba(54, 162, 235, 1)' }}></span>
-                        Tarjeta: <strong>{formatCurrency(totalTarjeta)}</strong>
+                        Tarjeta: <strong className="text-white">{formatCurrency(totalTarjeta)}</strong>
                     </div>
                     <div className='d-flex align-items-center gap-1'>
                         <span className='w-3 h-3 rounded-circle' style={{ backgroundColor: 'rgba(255, 206, 86, 1)' }}></span>
-                        Transf: <strong>{formatCurrency(totalTransferencia)}</strong>
+                        Transf: <strong className="text-white">{formatCurrency(totalTransferencia)}</strong>
                     </div>
                 </div>
             </Card.Header>

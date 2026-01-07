@@ -5,10 +5,11 @@ import {
   faTrashCan,
   faArrowDownLong,
   faEye,
+  faBars,
 } from "@fortawesome/free-solid-svg-icons";
 import BasicModal from "../../../../components/Modal/BasicModal";
 import EliminaProductos from "../EliminaProductos";
-import { Badge, Container } from "react-bootstrap";
+import { Badge, Container, Dropdown } from "react-bootstrap";
 import CancelarProductos from "../CancelarProductos";
 import ListIngredientesProductos from "../ListIngredientesProductos";
 import "../../../../scss/styles.scss";
@@ -205,60 +206,53 @@ function ListProductos(props) {
     },
     {
       name: "Acciones",
-      selector: (row) => (
-        <>
-          <div className="flex justify-end items-center space-x-4">
-            <Badge
-              bg="primary"
-              title="Ver ingredientes del producto"
-              className="eliminar cursor-pointer"
-              onClick={() => {
-                ingredientes(
-                  <ListIngredientesProductos listInsumos={row.insumos} />
-                );
-              }}
-            >
-              <FontAwesomeIcon icon={faEye} className="text-lg" />
-            </Badge>
+      cell: (row) => {
+        return (
+          <>
+            <Dropdown className="dropdown-js">
+              <Dropdown.Toggle className="botonDropdown" id={`dropdown-basic-${row.id}`} variant="link">
+                <FontAwesomeIcon icon={faBars} />
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                <Dropdown.Item
+                  onClick={() => ingredientes(<ListIngredientesProductos listInsumos={row.insumos} />)}
+                >
+                  <FontAwesomeIcon icon={faEye} style={{ color: "#17a2b8" }} />
+                  &nbsp; Ver ingredientes
+                </Dropdown.Item>
 
-            <Badge
-              bg="success"
-              title="Modificar producto"
-              className="editar cursor-pointer"
-              onClick={() =>
-                modificarProds(
-                  <ModificarProductos datosProd={row} setShow={setShowModal} />
-                )
-              }
-            >
-              <FontAwesomeIcon icon={faPenToSquare} className="text-lg" />
-            </Badge>
+                <Dropdown.Item
+                  onClick={() => modificarProds(<ModificarProductos datosProd={row} setShow={setShowModal} />)}
+                >
+                  <FontAwesomeIcon icon={faPenToSquare} style={{ color: "#ffc107" }} />
+                  &nbsp; Editar
+                </Dropdown.Item>
 
-            <Badge
-              title="Eliminar producto"
-              bg="danger"
-              className="eliminar cursor-pointer"
-              onClick={() => {
-                eliminaProductos(
-                  <EliminaProductos
-                    datosProducto={row}
-                    listCategorias={listCategorias}
-                    location={location}
-                    navigate={navigate}
-                    setShowModal={setShowModal}
-                    setRefreshCheckLogin={setRefreshCheckLogin}
-                  />
-                );
-              }}
-            >
-              <FontAwesomeIcon icon={faTrashCan} className="text-lg" />
-            </Badge>
-          </div>
-        </>
-      ),
-      sortable: false,
+                <Dropdown.Item
+                  onClick={() => {
+                    eliminaProductos(
+                      <EliminaProductos
+                        datosProducto={row}
+                        listCategorias={listCategorias}
+                        location={location}
+                        navigate={navigate}
+                        setShowModal={setShowModal}
+                        setRefreshCheckLogin={setRefreshCheckLogin}
+                      />
+                    );
+                  }}
+                >
+                  <FontAwesomeIcon icon={faTrashCan} style={{ color: "#dc3545" }} />
+                  &nbsp; Eliminar
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+          </>
+        );
+      },
+      ignoreRowClick: true,
+      width: "120px",
       center: true,
-      reorder: false,
     },
   ];
 

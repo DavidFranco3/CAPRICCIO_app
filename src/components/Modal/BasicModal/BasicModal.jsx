@@ -5,7 +5,7 @@ import "../../../scss/styles.scss";
 import ModalHeader from "react-bootstrap/ModalHeader";
 
 function BasicModal(props) {
-    const { show, setShow, title, children, size } = props;
+    const { show, setShow, title, children, footer, size, scrollable } = props;
 
     return (
         <Modal
@@ -14,20 +14,28 @@ function BasicModal(props) {
             centered
             backdrop="static"
             keyboard={false}
-            size={size || "lg"} // Si size no se pasa, por defecto es "lg"
-            
+            size={size || "lg"}
+            scrollable={scrollable}
+            className="premium-modal"
         >
-            <ModalHeader className="bg-dark">
+            <Modal.Header>
                 <Modal.Title>{title}</Modal.Title>
-                <FontAwesomeIcon
-                    title="Cerrar ventana"
-                    icon={faTimesCircle}
+                <button
+                    className="modal-close-custom"
                     onClick={() => setShow(false)}
-                />
-            </ModalHeader>
+                    title="Cerrar ventana"
+                >
+                    <FontAwesomeIcon icon={faTimesCircle} />
+                </button>
+            </Modal.Header>
             <Modal.Body>
                 {children}
             </Modal.Body>
+            {footer && (
+                <Modal.Footer>
+                    {footer}
+                </Modal.Footer>
+            )}
         </Modal>
     );
 }

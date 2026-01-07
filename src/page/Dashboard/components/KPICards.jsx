@@ -37,14 +37,14 @@ const KPICards = ({ ventas }) => {
     return (
         <Row className="mb-4 g-3">
             <Col xl={3} md={6}>
-                <Card className={`${cardStyles} bg-primary text-white`}>
+                <Card className={`${cardStyles} glass-kpi-card kpi-blue`}>
                     <Card.Body>
                         <div className="d-flex justify-content-between align-items-start">
                             <div>
                                 <p className="mb-0 opacity-75 fw-bold text-uppercase" style={{ fontSize: '0.8rem' }}>Ventas Hoy</p>
                                 <h3 className="fw-bold mb-0">{formatCurrency(metrics.totalVentas)}</h3>
                             </div>
-                            <div className="p-2 bg-white bg-opacity-25 rounded">
+                            <div className="icon-bubble">
                                 <CurrencyDollarIcon className={iconStyles} />
                             </div>
                         </div>
@@ -53,14 +53,14 @@ const KPICards = ({ ventas }) => {
             </Col>
 
             <Col xl={3} md={6}>
-                <Card className={`${cardStyles} bg-success text-white`}>
+                <Card className={`${cardStyles} glass-kpi-card kpi-green`}>
                     <Card.Body>
                         <div className="d-flex justify-content-between align-items-start">
                             <div>
                                 <p className="mb-0 opacity-75 fw-bold text-uppercase" style={{ fontSize: '0.8rem' }}>Pedidos</p>
                                 <h3 className="fw-bold mb-0">{metrics.totalPedidos}</h3>
                             </div>
-                            <div className="p-2 bg-white bg-opacity-25 rounded">
+                            <div className="icon-bubble">
                                 <TicketIcon className={iconStyles} />
                             </div>
                         </div>
@@ -68,15 +68,15 @@ const KPICards = ({ ventas }) => {
                 </Card>
             </Col>
 
-             <Col xl={3} md={6}>
-                <Card className={`${cardStyles} bg-info text-white`}>
+            <Col xl={3} md={6}>
+                <Card className={`${cardStyles} glass-kpi-card kpi-purple`}>
                     <Card.Body>
                         <div className="d-flex justify-content-between align-items-start">
-                             <div>
+                            <div>
                                 <p className="mb-0 opacity-75 fw-bold text-uppercase" style={{ fontSize: '0.8rem' }}>Ticket Promedio</p>
                                 <h3 className="fw-bold mb-0">{formatCurrency(metrics.ticketPromedio)}</h3>
                             </div>
-                            <div className="p-2 bg-white bg-opacity-25 rounded">
+                            <div className="icon-bubble">
                                 <ChartBarIcon className={iconStyles} />
                             </div>
                         </div>
@@ -85,14 +85,14 @@ const KPICards = ({ ventas }) => {
             </Col>
 
             <Col xl={3} md={6}>
-                <Card className={`${cardStyles} bg-warning text-white`}>
+                <Card className={`${cardStyles} glass-kpi-card kpi-orange`}>
                     <Card.Body>
                         <div className="d-flex justify-content-between align-items-start">
-                             <div>
+                            <div>
                                 <p className="mb-0 opacity-75 fw-bold text-uppercase" style={{ fontSize: '0.8rem' }}>Productos</p>
                                 <h3 className="fw-bold mb-0">{metrics.productosVendidos}</h3>
                             </div>
-                            <div className="p-2 bg-white bg-opacity-25 rounded">
+                            <div className="icon-bubble">
                                 <ShoppingBagIcon className={iconStyles} />
                             </div>
                         </div>

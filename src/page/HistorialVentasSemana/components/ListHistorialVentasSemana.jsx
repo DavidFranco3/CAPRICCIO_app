@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Badge, Container } from "react-bootstrap";
+import { Badge, Container, Dropdown } from "react-bootstrap";
 import "../../../scss/styles.scss";
 import BasicModal from "../../../components/Modal/BasicModal";
 import ListProductoTiquet from "../../Ventas/components/DetallesVenta";
 import DataTablecustom from '../../../components/Generales/DataTable';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faBars } from "@fortawesome/free-solid-svg-icons";
 
 function ListHistorialVentasSemana(props) {
     const { listDetallesSemana } = props;
@@ -57,31 +57,31 @@ function ListHistorialVentasSemana(props) {
         },
         {
             name: "Acciones",
-            selector: row => (
-                <>
-                    <div className="flex justify-end items-center space-x-4">
-                        <>
-                            <Badge
-                                title="Ver productos vendidos"
-                                bg="primary"
-                                className="vistaDetalle"
-                                onClick={() => {
-                                    detallesTiquet(
-                                        <ListProductoTiquet
-                                            datos={row}
-                                        />
-                                    )
-                                }}
-                            >
-                                <FontAwesomeIcon icon={faEye} className="text-lg" />
-                            </Badge>
-                        </>
-                    </div>
-                </>
+            cell: (row) => (
+                <Dropdown className="dropdown-js">
+                    <Dropdown.Toggle className="botonDropdown" id={`dropdown-basic-${row.id}`} variant="link">
+                        <FontAwesomeIcon icon={faBars} />
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                        <Dropdown.Item onClick={() => {
+                            detallesTiquet(
+                                <ListProductoTiquet
+                                    datos={row}
+                                />
+                            )
+                        }}
+                        >
+                            <FontAwesomeIcon icon={faEye} style={{ color: "#17a2b8" }} />
+                            &nbsp; Detalles
+                        </Dropdown.Item>
+                    </Dropdown.Menu>
+                </Dropdown>
             ),
             sortable: false,
             center: true,
-            reorder: false
+            reorder: false,
+            ignoreRowClick: true,
+            width: "120px",
         },
     ];
 

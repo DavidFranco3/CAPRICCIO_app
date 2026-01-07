@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import "../../../../scss/styles.scss";
-import { Badge, Container } from "react-bootstrap";
+import { Badge, Container, Dropdown } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPenToSquare, faTrashCan, faArrowDownLong } from "@fortawesome/free-solid-svg-icons";
+import { faPenToSquare, faTrashCan, faArrowDownLong, faBars } from "@fortawesome/free-solid-svg-icons";
 import BasicModal from "../../../../components/Modal/BasicModal";
 import CancelarUsuarios from '../CancelarUsuarios';
 import EliminaUsuarios from '../EliminaUsuarios';
@@ -161,48 +161,47 @@ function ListUsuarios(props) {
         },
         {
             name: "Acciones",
-            selector: row => (
-                <>
-                    <div className="flex justify-end items-center space-x-4">
-                        <Badge
-                            title="Modificar usuario"
-                            bg="success"
-                            className="editar cursor-pointer"
-                            onClick={() => {
-                                modificaUsuarios(
-                                    <ModificaUsuarios
-                                        datosUsuario={row}
-                                        location={location}
-                                        navigate={navigate}
-                                        setShowModal={setShowModal}
-                                    />
-                                )
-                            }}>
-                            <FontAwesomeIcon icon={faPenToSquare} className="text-lg" />
-                        </Badge>
-                        <Badge
-                            title="Eliminar usuario"
-                            bg="danger"
-                            className="eliminar cursor-pointer"
-                            onClick={() => {
-                                eliminaUsuario(
-                                    <EliminaUsuarios
-                                        datosUsuario={row}
-                                        location={location}
-                                        navigate={navigate}
-                                        setShowModal={setShowModal}
-                                    />
-                                )
-                            }}>
-                            <FontAwesomeIcon icon={faTrashCan} className="text-lg" />
-                        </Badge>
+            cell: (row) => (
+                <Dropdown className="dropdown-js">
+                    <Dropdown.Toggle className="botonDropdown" id={`dropdown-basic-${row.id}`} variant="link">
+                        <FontAwesomeIcon icon={faBars} />
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                        <Dropdown.Item onClick={() => {
+                            modificaUsuarios(
+                                <ModificaUsuarios
+                                    datosUsuario={row}
+                                    location={location}
+                                    navigate={navigate}
+                                    setShowModal={setShowModal}
+                                />
+                            )
+                        }}>
+                            <FontAwesomeIcon icon={faPenToSquare} style={{ color: "#ffc107" }} />
+                            &nbsp; Editar
+                        </Dropdown.Item>
 
-                    </div>
-                </>
+                        <Dropdown.Item onClick={() => {
+                            eliminaUsuario(
+                                <EliminaUsuarios
+                                    datosUsuario={row}
+                                    location={location}
+                                    navigate={navigate}
+                                    setShowModal={setShowModal}
+                                />
+                            )
+                        }}>
+                            <FontAwesomeIcon icon={faTrashCan} style={{ color: "#dc3545" }} />
+                            &nbsp; Eliminar
+                        </Dropdown.Item>
+                    </Dropdown.Menu>
+                </Dropdown>
             ),
             sortable: false,
             center: true,
-            reorder: false
+            reorder: false,
+            ignoreRowClick: true,
+            width: "120px",
         },
     ];
 

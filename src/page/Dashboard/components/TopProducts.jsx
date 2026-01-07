@@ -30,16 +30,16 @@ const TopProducts = ({ ventas }) => {
     }, [ventas]);
 
     return (
-        <Card className="shadow-sm border-0 h-100">
-            <Card.Header className="bg-white border-0 pt-4 pb-2">
+        <Card className="glass-card shadow-sm border-0 h-100">
+            <Card.Header className="border-0 pt-4 pb-2">
                 <div className="d-flex align-items-center mb-0">
                     <TrophyIcon className="h-5 w-5 text-warning me-2" />
-                    <h5 className="mb-0 fw-bold text-gray-800">Top 5 Productos</h5>
+                    <h5 className="mb-0 fw-bold text-white">Top 5 Productos</h5>
                 </div>
             </Card.Header>
             <Card.Body className="p-0">
-                <Table responsive hover className="mb-0 align-middle">
-                    <thead className="bg-light text-secondary text-uppercase text-xs">
+                <Table responsive hover className="glass-table mb-0 align-middle">
+                    <thead className="text-secondary text-uppercase text-xs">
                         <tr>
                             <th className="ps-4 border-0 font-weight-bolder opacity-7">Producto</th>
                             <th className="text-center border-0 font-weight-bolder opacity-7">Vendidos</th>
@@ -51,7 +51,7 @@ const TopProducts = ({ ventas }) => {
                                 <tr key={index}>
                                     <td className="ps-4 border-0">
                                         <div className="d-flex flex-column justify-content-center">
-                                            <h6 className="mb-0 text-sm">{product.nombre}</h6>
+                                            <h6 className="mb-0 text-sm text-white">{product.nombre}</h6>
                                         </div>
                                     </td>
                                     <td className="align-middle text-center border-0">

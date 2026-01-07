@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import "../../../../../scss/styles.scss";
-import { Badge, Container } from "react-bootstrap";
+import { Badge, Container, Dropdown } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faArrowDownLong } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faArrowDownLong, faBars } from "@fortawesome/free-solid-svg-icons";
 import BasicModal from "../../../../../components/Modal/BasicModal";
 import DataTablecustom from '../../../../../components/Generales/DataTable';
 import { estilos } from "../../../../../utils/tableStyled";
@@ -122,32 +122,34 @@ function ListMovimientosCajas(props) {
         },
         {
             name: "Acciones",
-            selector: row => (
-                <>
-                    <div className="flex justify-end items-center space-x-4">
-                        <Badge
-                            title="Movimientos"
-                            bg="primary"
-                            className="editar"
-                            onClick={() => {
-                                movimientos(
-                                    <GeneraPDF
-                                        datos={row}
-                                        location={location}
-                                        navigate={navigate}
-                                        setShowModal={setShowModal}
-                                    />
-                                )
-                            }}
+            cell: (row) => (
+                <Dropdown className="dropdown-js">
+                    <Dropdown.Toggle className="botonDropdown" id={`dropdown-basic-${row.id}`} variant="link">
+                        <FontAwesomeIcon icon={faBars} />
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                        <Dropdown.Item onClick={() => {
+                            movimientos(
+                                <GeneraPDF
+                                    datos={row}
+                                    location={location}
+                                    navigate={navigate}
+                                    setShowModal={setShowModal}
+                                />
+                            )
+                        }}
                         >
-                            <FontAwesomeIcon icon={faEye} className="text-lg" />
-                        </Badge>
-                    </div>
-                </>
+                            <FontAwesomeIcon icon={faEye} style={{ color: "#17a2b8" }} />
+                            &nbsp; Detalles
+                        </Dropdown.Item>
+                    </Dropdown.Menu>
+                </Dropdown>
             ),
             sortable: false,
             center: true,
-            reorder: false
+            reorder: false,
+            ignoreRowClick: true,
+            width: "120px",
         },
     ];
 
