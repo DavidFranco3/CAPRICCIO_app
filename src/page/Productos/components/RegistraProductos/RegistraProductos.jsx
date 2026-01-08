@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useActionState } from "react";
 import {
   Button,
   Col,
@@ -30,8 +30,6 @@ import { useNavigate } from "react-router-dom";
 
 function RegistraProductos(props) {
   const { setRefreshCheckLogin } = props;
-  const [formData, setFormData] = useState(initialFormValue());
-  const [loading, setLoading] = useState(false);
 
   const [listProductosCargados, setListProductosCargados] = useState([]);
 
@@ -100,51 +98,45 @@ function RegistraProductos(props) {
     enrutamiento("/Productos");
   };
 
-  const onSubmit = (e) => {
-    e.preventDefault();
+  const [errorState, action, isPending] = useActionState(async (prevState, fd) => {
+    const nombreProducto = fd.get("nombreProducto");
+    const categoria = fd.get("categoria");
+    const precioVenta = fd.get("precioVenta");
 
-    if (
-      !imagenProducto ||
-      !formData.nombreProducto ||
-      !formData.categoria ||
-      !formData.precioVenta
-    ) {
+    if (!imagenProducto || !nombreProducto || !categoria || !precioVenta || categoria === "Elige una opción") {
       Swal.fire({ icon: 'warning', title: "Completa el formulario", timer: 1600, showConfirmButton: false });
-    } else {
-      try {
-        setLoading(true);
-        // Sube a cloudinary la imagen principal del producto
-        subeArchivosCloudinary(imagenProducto, "productos")
-          .then((response) => {
-            const { data } = response;
-            const dataTemp = {
-              nombre: formData.nombreProducto,
-              categoria: formData.categoria,
-              precio: formData.precioVenta,
-              imagen: data.secure_url,
-              negocio: "LA NENA",
-              costoProduccion: totalSinIVA,
-              insumos: listProductosCargados,
-              estado: "true",
-            };
-            registraProductos(dataTemp).then((response) => {
-              const { data } = response;
-              LogsInformativos(
-                "Se ha registrado el producto " + formData.nombreProducto,
-                data.datos
-              );
-              Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
-              cancelarRegistro();
-            });
-          })
-          .then((e) => {
-            console.log(e);
-          });
-      } catch (e) {
-        console.log(e);
-      }
+      return { error: "Incompleto" };
     }
-  };
+
+    try {
+      // Sube a cloudinary la imagen principal del producto
+      const responseCloudy = await subeArchivosCloudinary(imagenProducto, "productos");
+      const { data: dataCloudy } = responseCloudy;
+
+      const dataTemp = {
+        nombre: nombreProducto,
+        categoria: categoria,
+        precio: precioVenta,
+        imagen: dataCloudy.secure_url,
+        negocio: "LA NENA",
+        costoProduccion: totalSinIVA,
+        insumos: listProductosCargados,
+        estado: "true",
+      };
+
+      const responseReg = await registraProductos(dataTemp);
+      const { data: dataReg } = responseReg;
+
+      LogsInformativos("Se ha registrado el producto " + nombreProducto, dataReg.datos);
+      Swal.fire({ icon: 'success', title: dataReg.mensaje, timer: 1600, showConfirmButton: false });
+      cancelarRegistro();
+      return null;
+    } catch (e) {
+      console.log(e);
+      Swal.fire({ icon: 'error', title: "Error al registrar producto", timer: 1600, showConfirmButton: false });
+      return { error: e.message };
+    }
+  }, null);
 
   // Para la carga y el listado de productos
   const [cargaProductos, setCargaProductos] = useState(
@@ -154,7 +146,8 @@ function RegistraProductos(props) {
 
   const cargarDatosProducto = () => {
     setProductoCargado(cargaProductos.nombre);
-    const dataTempProductos = productoCargado.split("/");
+    if (!cargaProductos.nombre || cargaProductos.nombre === "Elige una opción") return;
+    const dataTempProductos = cargaProductos.nombre.split("/");
     const dataTemp = {
       id: dataTempProductos[4],
       um: dataTempProductos[1],
@@ -192,7 +185,7 @@ function RegistraProductos(props) {
           parseFloat(cargaProductos.cantidad),
       };
       setListProductosCargados([...listProductosCargados, dataTemp]);
-      setCargaProductos(initialFormDataProductos);
+      setCargaProductos(initialFormDataProductos());
       document.getElementById("nombre").value = "Elige una opción";
       document.getElementById("cantidad").value = "";
     }
@@ -200,30 +193,25 @@ function RegistraProductos(props) {
 
   // Para limpiar el formulario de detalles de producto
   const cancelarCargaProducto = () => {
-    setCargaProductos(initialFormDataProductos);
+    setCargaProductos(initialFormDataProductos());
     document.getElementById("nombre").value = "Elige una opción";
     document.getElementById("cantidad").value = "";
   };
 
   // Para eliminar productos del listado
   const removeItem = (producto) => {
-    let newArray = listProductosCargados;
+    let newArray = [...listProductosCargados];
     newArray.splice(
       newArray.findIndex((a) => a.nombre === producto.nombre),
       1
     );
-    setListProductosCargados([...newArray]);
+    setListProductosCargados(newArray);
   };
 
   const totalSinIVA = listProductosCargados.reduce(
     (amount, item) => amount + parseFloat(item.total),
     0
   );
-
-  const onChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-    setCargaProductos({ ...cargaProductos, [e.target.name]: e.target.value });
-  };
 
   return (
     <>
@@ -249,7 +237,7 @@ function RegistraProductos(props) {
         </Row>
       </Alert>
 
-      <Form onSubmit={onSubmit} onChange={onChange}>
+      <Form action={action}>
         <Container fluid>
           <div className="imagenPrincipal">
             <h4 className="textoImagenPrincipal">Sube tu imagen</h4>
@@ -269,7 +257,6 @@ function RegistraProductos(props) {
                   type="text"
                   name="nombreProducto"
                   placeholder="Escribe el nombre"
-                  defaultValue={formData.nombreProducto}
                 />
               </Form.Group>
 
@@ -277,7 +264,6 @@ function RegistraProductos(props) {
                 <Form.Label>Categoría</Form.Label>
                 <Form.Control
                   as="select"
-                  defaultValue={formData.categoria}
                   name="categoria"
                 >
                   <option>Elige una opción</option>
@@ -295,7 +281,7 @@ function RegistraProductos(props) {
                   type="number"
                   name="precioVenta"
                   placeholder="Precio"
-                  defaultValue={formData.precioVenta}
+                  step="0.01"
                 />
               </Form.Group>
             </Row>
@@ -311,7 +297,7 @@ function RegistraProductos(props) {
             <hr />
 
             <Row>
-              <Form.Group as={Col} controlId="formGridPorcentaje scrap">
+              <Form.Group as={Col} controlId="formGridIndex">
                 <Form.Label>ITEM</Form.Label>
                 <Form.Control
                   type="number"
@@ -322,14 +308,14 @@ function RegistraProductos(props) {
                 />
               </Form.Group>
 
-              <Form.Group as={Col} controlId="formGridPorcentaje scrap">
+              <Form.Group as={Col} controlId="formGridInsumoNombre">
                 <Form.Label>Nombre</Form.Label>
                 <Form.Control
                   as="select"
                   id="nombre"
                   name="nombre"
                   placeholder="Nombre"
-                  defaultValue={cargaProductos.nombre}
+                  onChange={(e) => setCargaProductos({ ...cargaProductos, nombre: e.target.value })}
                 >
                   <option>Elige una opción</option>
                   {map(listInsumos, (insumo, index) => (
@@ -353,38 +339,39 @@ function RegistraProductos(props) {
                 </Form.Control>
               </Form.Group>
 
-              <Form.Group as={Col} controlId="formGridCliente">
+              <Form.Group as={Col} controlId="formGridUM">
                 <Form.Label>UM</Form.Label>
                 <Form.Control
                   id="um"
                   type="text"
                   placeholder="UM"
                   name="um"
-                  defaultValue={cargaProductos.um}
+                  value={cargaProductos.um}
                   disabled
                 />
               </Form.Group>
 
-              <Form.Group as={Col} controlId="formGridCliente">
+              <Form.Group as={Col} controlId="formGridPrecioUnitario">
                 <Form.Label>Precio</Form.Label>
                 <Form.Control
                   id="precio"
                   type="number"
                   placeholder="Precio"
                   name="precio"
-                  defaultValue={cargaProductos.precio}
+                  value={cargaProductos.precio}
                   disabled
                 />
               </Form.Group>
 
-              <Form.Group as={Col}>
+              <Form.Group as={Col} controlId="formGridCantidad">
                 <Form.Label>Cantidad</Form.Label>
                 <Form.Control
                   id="cantidad"
                   type="number"
                   name="cantidad"
-                  defaultValue={cargaProductos.cantidad}
+                  value={cargaProductos.cantidad}
                   placeholder="Cantidad"
+                  step="0.001"
                   onChange={(e) =>
                     setCargaProductos({
                       ...cargaProductos,
@@ -394,7 +381,7 @@ function RegistraProductos(props) {
                 />
               </Form.Group>
 
-              <Form.Group as={Col} controlId="formGridCliente">
+              <Form.Group as={Col} controlId="formGridTotal">
                 <Form.Label>Total</Form.Label>
                 <Form.Control
                   id="total"
@@ -404,7 +391,7 @@ function RegistraProductos(props) {
                   value={
                     cargaProductos.cantidad && cargaProductos.precio
                       ? parseFloat(cargaProductos.precio) *
-                        parseFloat(cargaProductos.cantidad)
+                      parseFloat(cargaProductos.cantidad)
                       : 0
                   }
                   disabled
@@ -412,37 +399,30 @@ function RegistraProductos(props) {
               </Form.Group>
 
               <Col sm="1">
-                <Form.Group as={Row} className="formGridCliente">
-                  <Form.Label>&nbsp;</Form.Label>
-
-                  <Col>
-                    <Button
-                      variant="success"
-                      title="Agregar el producto"
-                      className="editar"
-                      onClick={() => {
-                        addItems();
-                      }}
-                    >
-                      <FontAwesomeIcon
-                        icon={faCirclePlus}
-                        className="text-lg"
-                      />
-                    </Button>
-                  </Col>
-                  <Col>
-                    <Button
-                      variant="danger"
-                      title="Cancelar el producto"
-                      className="editar"
-                      onClick={() => {
-                        cancelarCargaProducto();
-                      }}
-                    >
-                      <FontAwesomeIcon icon={faX} className="text-lg" />
-                    </Button>
-                  </Col>
-                </Form.Group>
+                <div role="group" className="d-flex h-100 align-items-end pb-3">
+                  <Button
+                    variant="success"
+                    title="Agregar el producto"
+                    className="me-2"
+                    onClick={() => {
+                      addItems();
+                    }}
+                  >
+                    <FontAwesomeIcon
+                      icon={faCirclePlus}
+                      className="text-lg"
+                    />
+                  </Button>
+                  <Button
+                    variant="danger"
+                    title="Cancelar el producto"
+                    onClick={() => {
+                      cancelarCargaProducto();
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faX} className="text-lg" />
+                  </Button>
+                </div>
               </Col>
             </Row>
             <hr />
@@ -546,10 +526,10 @@ function RegistraProductos(props) {
                 type="submit"
                 variant="success"
                 className="registrar"
-                disabled={loading}
+                disabled={isPending}
               >
                 <FontAwesomeIcon icon={faSave} />{" "}
-                {!loading ? "Registrar" : <Spinner animation="border" />}
+                {!isPending ? "Registrar" : <Spinner animation="border" />}
               </Button>
             </Col>
             <Col>
@@ -557,7 +537,7 @@ function RegistraProductos(props) {
                 title="Cerrar ventana"
                 variant="danger"
                 className="cancelar"
-                disabled={loading}
+                disabled={isPending}
                 onClick={() => {
                   cancelarRegistro();
                 }}
@@ -572,14 +552,6 @@ function RegistraProductos(props) {
       </Form>
     </>
   );
-}
-
-function initialFormValue() {
-  return {
-    nombreProducto: "",
-    categoria: "",
-    precioVenta: "",
-  };
 }
 
 function initialFormDataProductos() {

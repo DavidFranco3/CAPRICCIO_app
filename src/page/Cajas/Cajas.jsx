@@ -173,57 +173,57 @@ function Cajas(props) {
 
   return (
     <>
-      <div className="card card-outline m-3">
-        <div className="card-header bg-gray">
-          <div className="d-flex justify-content-between align-items-center">
-            <h4 className="mb-0 font-bold">Cajas</h4>
-            <div className="d-flex align-items-center">
-              <button
-                title="Registrar una nueva cajaa"
-                className="btn btn-outline-light"
-                style={{ marginRight: "10px" }}
-                onClick={() => {
-                  registroCajas(
-                    <RegistroCajas
-                      setShowModal={setShowModal}
-                      listUsuarios={listUsuarios}
-                      location={location}
-                      navigate={navigate}
-                    />
-                  );
-                }}
-              >
-                <FontAwesomeIcon icon={faCirclePlus} /> Registrar
-              </button>
-            </div>
+      <div className="m-3">
+        <div className="dashboard-header-glass">
+          <h4 className="font-bold text-white mb-0">Cajas</h4>
+          <div className="d-flex align-items-center">
+            <button
+              title="Registrar una nueva cajaa"
+              className="btn btn-outline-light"
+              style={{ marginRight: "10px" }}
+              onClick={() => {
+                registroCajas(
+                  <RegistroCajas
+                    setShowModal={setShowModal}
+                    listUsuarios={listUsuarios}
+                    location={location}
+                    navigate={navigate}
+                  />
+                );
+              }}
+            >
+              <FontAwesomeIcon icon={faCirclePlus} /> Registrar
+            </button>
           </div>
         </div>
-        <div className="card-body">
-          {listCajas ? (
-            <>
-              <Suspense fallback={<Spinner />}>
-                <ListCajas
-                  setRefreshCheckLogin={setRefreshCheckLogin}
-                  listCajas={listCajas}
-                  location={location}
-                  navigate={navigate}
-                  setRowsPerPage={setRowsPerPage}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                  setPage={setPage}
-                  noTotalCajas={noTotalCajas}
+        <div className="card card-outline glass-card">
+          <div className="card-body">
+            {listCajas ? (
+              <>
+                <Suspense fallback={<Spinner />}>
+                  <ListCajas
+                    setRefreshCheckLogin={setRefreshCheckLogin}
+                    listCajas={listCajas}
+                    location={location}
+                    navigate={navigate}
+                    setRowsPerPage={setRowsPerPage}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    setPage={setPage}
+                    noTotalCajas={noTotalCajas}
+                  />
+                </Suspense>
+              </>
+            ) : (
+              <>
+                <Lottie
+                  loop={true}
+                  play={true}
+                  animationData={AnimacionLoading}
                 />
-              </Suspense>
-            </>
-          ) : (
-            <>
-              <Lottie
-                loop={true}
-                play={true}
-                animationData={AnimacionLoading}
-              />
-            </>
-          )}
+              </>
+            )}
+          </div>
         </div>
       </div>
 

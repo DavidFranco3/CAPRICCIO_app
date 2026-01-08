@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useActionState } from 'react';
 import { registraCategorias } from "../../../../api/categorias";
 import Dropzone from "../../../../components/Dropzone";
 import "../../../../scss/styles.scss";
@@ -12,8 +12,6 @@ import { LogsInformativos } from '../../../Logs/components/LogsSistema/LogsSiste
 
 function RegistroCategorias(props) {
     const { setShowModal, navigate } = props;
-    const [formData, setFormData] = useState(initialFormValue());
-    const [loading, setLoading] = useState(false);
 
     //Para almacenar la imagen del producto que se guardara a la bd
     const [imagenProducto, setImagenProducto] = useState(null);
@@ -23,49 +21,45 @@ function RegistroCategorias(props) {
         setShowModal(false)
     }
 
-    const onSubmit = e => {
-        e.preventDefault();
+    const [errorState, action, isPending] = useActionState(async (prevState, fd) => {
+        const nombre = fd.get("nombre");
 
-        if (!imagenProducto || !formData.nombre) {
+        if (!imagenProducto || !nombre) {
             Swal.fire({ icon: 'warning', title: "Completa el formulario", timer: 1600, showConfirmButton: false });
-        } else {
-            try {
-                setLoading(true);
-                // Sube a cloudinary la imagen principal del producto
-                subeArchivosCloudinary(imagenProducto, "categoria").then(response => {
-                    const { data } = response;
-
-                    const dataTemp = {
-                        nombre: formData.nombre,
-                        imagen: data.secure_url,
-                        negocio: "LA NENA",
-                        estado: "true"
-                    }
-                    registraCategorias(dataTemp).then(response => {
-                        const { data } = response;
-                        navigate({
-                            search: queryString.stringify(""),
-                        });
-                        LogsInformativos("Se ha registrado la categoría " + formData.nombre, data.datos);
-                        Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
-                        cancelarRegistro();
-                    })
-                }).then(e => {
-                    console.log(e)
-                })
-            } catch (e) {
-                console.log(e)
-            }
+            return { error: "Incompleto" };
         }
-    }
 
-    const onChange = e => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
+        try {
+            // Sube a cloudinary la imagen principal del producto
+            const responseCloudy = await subeArchivosCloudinary(imagenProducto, "categoria");
+            const { data: dataCloudy } = responseCloudy;
+
+            const dataTemp = {
+                nombre: nombre,
+                imagen: dataCloudy.secure_url,
+                negocio: "LA NENA",
+                estado: "true"
+            }
+            const responseReg = await registraCategorias(dataTemp);
+            const { data: dataReg } = responseReg;
+
+            navigate({
+                search: queryString.stringify(""),
+            });
+            LogsInformativos("Se ha registrado la categoría " + nombre, dataReg.datos);
+            Swal.fire({ icon: 'success', title: dataReg.mensaje, timer: 1600, showConfirmButton: false });
+            cancelarRegistro();
+            return null;
+        } catch (e) {
+            console.log(e);
+            Swal.fire({ icon: 'error', title: "Error al registrar categoría", timer: 1600, showConfirmButton: false });
+            return { error: e.message };
+        }
+    }, null);
 
     return (
         <>
-            <Form onSubmit={onSubmit} onChange={onChange}>
+            <Form action={action}>
                 <div className="imagenPrincipal">
                     <h4 className="textoImagenPrincipal">Sube tu imagen</h4>
                     <div title="Seleccionar imagen de la categoría" className="imagenProducto">
@@ -83,7 +77,7 @@ function RegistroCategorias(props) {
                                 type="text"
                                 name="nombre"
                                 placeholder="Escribe el nombre"
-                                defaultValue={formData.nombre}
+                                required
                             />
                         </Form.Group>
                     </Row>
@@ -96,9 +90,9 @@ function RegistroCategorias(props) {
                             type="submit"
                             variant="success"
                             className="registrar"
-                            disabled={loading}
+                            disabled={isPending}
                         >
-                            <FontAwesomeIcon icon={faSave} /> {!loading ? "Registrar" : <Spinner animation="border" />}
+                            <FontAwesomeIcon icon={faSave} /> {!isPending ? "Registrar" : <Spinner animation="border" />}
                         </Button>
                     </Col>
                     <Col>
@@ -106,7 +100,7 @@ function RegistroCategorias(props) {
                             title="Cerrar ventana"
                             variant="danger"
                             className="cancelar"
-                            disabled={loading}
+                            disabled={isPending}
                             onClick={() => {
                                 cancelarRegistro()
                             }}
@@ -118,12 +112,6 @@ function RegistroCategorias(props) {
             </Form>
         </>
     );
-}
-
-function initialFormValue() {
-    return {
-        nombre: ""
-    }
 }
 
 export default RegistroCategorias;

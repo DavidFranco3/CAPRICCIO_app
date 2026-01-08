@@ -1,26 +1,31 @@
-import { useState } from "react";
-import { Container, Form } from "react-bootstrap";
+import { useState, useActionState } from "react";
+import { Container, Form, Spinner } from "react-bootstrap";
 import obtenerFechaHoraMexico from "../../../components/Fecha/FechaHoraMexico";
 import { registrarMovimientoTurnoCaja } from "../../../api/movimientosTurnoCajas";
 import Swal from 'sweetalert2';
 
 function EntradaSalidaEfec(params) {
   const { entrada, caja, turno, añadirDineroACaja, listCajas } = params;
-  console.log(params);
 
-  const [cantidad, setCantidad] = useState(null);
-  const [razon, setRazon] = useState("");
+  const [errorState, action, isPending] = useActionState(async (previousState, formData) => {
+    const cantidad = parseFloat(formData.get("cantidad"));
+    const razon = formData.get("razon");
 
-  const handleCantidadChange = (e) => {
-    setCantidad(parseFloat(e.target.value) || null);
-  };
+    if (!cantidad) return { error: "Cantidad requerida" };
 
-  const handleRazonChange = (e) => {
-    setRazon(e.target.value);
-  };
-
-  const registrarMovimiento = async () => {
     try {
+      // Logica de saldo
+      let saldo = caja.saldo;
+      if (entrada) {
+        saldo += cantidad;
+      } else {
+        saldo -= cantidad;
+      }
+
+      // Actualizar caja (Funcion prop)
+      await añadirDineroACaja(caja.nombreCaja, saldo, listCajas);
+
+      // Registrar movimiento
       const dataTemp = {
         idTurno: turno.idTurno,
         nombreCaja: caja.nombreCaja,
@@ -33,44 +38,36 @@ function EntradaSalidaEfec(params) {
       const response = await registrarMovimientoTurnoCaja(dataTemp);
       const { data } = response;
       Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
-    } catch (error) {}
-  };
-
-  const ingresarRetirar = () => {
-    let saldo = caja.saldo;
-    if (entrada) {
-      saldo += cantidad;
-    } else {
-      saldo -= cantidad;
+      return null;
+    } catch (error) {
+      console.error(error);
+      return { error: "Error" };
     }
-
-    // Llamar a la función para añadir dinero a la caja con el nuevo saldo
-    añadirDineroACaja(caja.nombreCaja, saldo, listCajas);
-    registrarMovimiento();
-  };
+  }, null);
 
   return (
     <>
       <Container>
-        <Form.Label>Cantidad a {entrada ? "ingresar" : "retirar"}</Form.Label>
-        <Form.Control
-          type="number"
-          placeholder="Ingrese la cantidad"
-          value={cantidad}
-          onChange={handleCantidadChange}
-        />
-        <Form.Label>Razón:</Form.Label>
-        <Form.Control
-          type="text"
-          placeholder="Razón del movimiento"
-          value={razon}
-          onChange={handleRazonChange}
-        />
-        <div className="mt-2 d-flex justify-content-center">
-          <button className="btn btn-success" onClick={ingresarRetirar}>
-            Confirmar
-          </button>
-        </div>
+        <Form action={action}>
+          <Form.Label>Cantidad a {entrada ? "ingresar" : "retirar"}</Form.Label>
+          <Form.Control
+            type="number"
+            name="cantidad"
+            placeholder="Ingrese la cantidad"
+            step="0.01"
+          />
+          <Form.Label>Razón:</Form.Label>
+          <Form.Control
+            type="text"
+            name="razon"
+            placeholder="Razón del movimiento"
+          />
+          <div className="mt-2 d-flex justify-content-center">
+            <button className="btn btn-success" type="submit" disabled={isPending}>
+              {isPending ? <Spinner animation="border" size="sm" /> : "Confirmar"}
+            </button>
+          </div>
+        </Form>
       </Container>
     </>
   );

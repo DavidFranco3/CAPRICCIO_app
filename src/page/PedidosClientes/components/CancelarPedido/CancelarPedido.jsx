@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useActionState } from 'react';
 import "../../../../scss/styles.scss";
 import { cancelarPedidos } from "../../../../api/pedidosClientes";
 import Swal from 'sweetalert2';
@@ -24,30 +24,26 @@ function CancelarPedido(props) {
         setShowModal(false)
     }
 
-    const [loading, setLoading] = useState(false);
-
-    const onSubmit = e => {
-        e.preventDefault()
-        setLoading(true);
+    const [errorState, action, isPending] = useActionState(async () => {
         try {
             const dataTemp = {
                 estado: estado === "Pendiente" ? "Confirmado" : "Cancelado"
             }
-            cancelarPedidos(id, dataTemp).then(response => {
-                const { data } = response;
-                navigate({
-                    search: queryString.stringify(""),
-                });
-                LogsInformativos("Estado del pedido " + numeroTiquet + " actualizado", datosPedidos);
-                Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
-                cancelarRegistro();
-            }).catch(e => {
-                console.log(e)
-            })
+            const response = await cancelarPedidos(id, dataTemp);
+            const { data } = response;
+            navigate({
+                search: queryString.stringify(""),
+            });
+            LogsInformativos("Estado del pedido " + numeroTiquet + " actualizado", datosPedidos);
+            Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
+            cancelarRegistro();
+            return null;
         } catch (e) {
-            console.log(e)
+            console.log(e);
+            Swal.fire({ icon: 'error', title: "Error al actualizar", timer: 1600, showConfirmButton: false });
+            return { error: "Error" };
         }
-    }
+    }, null);
 
     return (
         <>
@@ -76,7 +72,7 @@ function CancelarPedido(props) {
                         </>
                     )
                 }
-                <Form onSubmit={onSubmit}>
+                <Form action={action}>
 
                     <Row className="mb-3">
                         <Form.Group as={Col} controlId="formGridNoTiquet">
@@ -125,8 +121,9 @@ function CancelarPedido(props) {
                                 type="submit"
                                 variant="success"
                                 className="registrar"
+                                disabled={isPending}
                             >
-                                <FontAwesomeIcon icon={faSave} /> {!loading ? (estado === "Pendiente" ? "Confirmar" : "Cancelar") : <Spinner animation="border" />}
+                                <FontAwesomeIcon icon={faSave} /> {!isPending ? (estado === "Pendiente" ? "Confirmar" : "Cancelar") : <Spinner animation="border" size="sm" />}
                             </Button>
                         </Col>
                         <Col>
@@ -134,6 +131,7 @@ function CancelarPedido(props) {
                                 title="Cerrar ventana"
                                 variant="danger"
                                 className="cancelar"
+                                disabled={isPending}
                                 onClick={() => {
                                     cancelarRegistro()
                                 }}
@@ -150,4 +148,3 @@ function CancelarPedido(props) {
 }
 
 export default CancelarPedido;
-

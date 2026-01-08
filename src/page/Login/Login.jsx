@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useActionState } from "react";
 import { login, setTokenApi } from "../../api/auth";
 import Swal from 'sweetalert2';
 import { jwtDecode } from "jwt-decode";
@@ -14,8 +14,6 @@ import { LogsInformativos } from "../Logs/components/LogsSistema/LogsSistema";
 import "./Login.scss";
 
 function Login({ setRefreshCheckLogin }) {
-  const [formData, setFormData] = useState(initialFormValue);
-  const [signInLoading, setSignInLoading] = useState(false);
 
   const logo = "https://res.cloudinary.com/omarlestrella/image/upload/v1730506157/TPV_LA_NENA/msdxqnu7gehwjru0jhvs.jpg";
 
@@ -36,58 +34,50 @@ function Login({ setRefreshCheckLogin }) {
     setShowModal(true);
   };
 
-  const onSubmit = async (e) => {
-    e.preventDefault();
+  const [errorState, loginAction, isPending] = useActionState(async (prevState, fd) => {
+    const usuario = fd.get("usuario");
+    const password = fd.get("password");
 
-    if (!formData.usuario || !formData.password) {
+    if (!usuario || !password) {
       Swal.fire({ icon: 'warning', title: "Completa todos los campos del formulario.", timer: 1600, showConfirmButton: false });
-    } else {
-      setSignInLoading(true);
-      try {
-        login(formData)
-          .then((response) => {
-            const {
-              data: { token },
-            } = response;
-            setTokenApi(token);
-            const { _ } = jwtDecode(token);
-            const idUdsuario = _;
-            try {
-              obtenerUsuario(idUdsuario).then((response) => {
-                const { data } = response;
-                LogsInformativos(
-                  "Inicio de sesión, para su seguridad la sesión finaliza automaticamente en 1 día",
-                  data
-                );
-                setRefreshCheckLogin(true);
-                Swal.fire({ icon: 'success', title: "Bienvenido " + data.nombre, timer: 1600, showConfirmButton: false });
-              });
-            } catch (ex) {
-              Swal.fire({ icon: 'error', title: "Error al obtener el usuario", timer: 1600, showConfirmButton: false });
-            }
-          })
-          .catch((ex) => {
-            if (ex.message === "Network Error") {
-              Swal.fire({ icon: 'error', title: "Conexión al servidor no disponible", timer: 1600, showConfirmButton: false });
-              setSignInLoading(false);
-            } else {
-              if (ex.response && ex.response.status === 401) {
-                const { mensaje } = ex.response.data;
-                Swal.fire({ icon: 'error', title: mensaje, timer: 1600, showConfirmButton: false });
-                setSignInLoading(false);
-              }
-            }
-          });
-      } catch (ex) {
-        Swal.fire({ icon: 'error', title: "Error al iniciar sesión", timer: 1600, showConfirmButton: false });
-        setSignInLoading(false);
-      }
+      return { error: "Incompleto" };
     }
-  };
 
-  const onChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+    try {
+      const response = await login({ usuario, password });
+      const {
+        data: { token },
+      } = response;
+      setTokenApi(token);
+      const { _ } = jwtDecode(token);
+      const idUdsuario = _;
+
+      try {
+        const userResponse = await obtenerUsuario(idUdsuario);
+        const { data } = userResponse;
+        LogsInformativos(
+          "Inicio de sesión, para su seguridad la sesión finaliza automaticamente en 1 día",
+          data
+        );
+        setRefreshCheckLogin(true);
+        Swal.fire({ icon: 'success', title: "Bienvenido " + data.nombre, timer: 1600, showConfirmButton: false });
+      } catch (ex) {
+        Swal.fire({ icon: 'error', title: "Error al obtener el usuario", timer: 1600, showConfirmButton: false });
+      }
+      return null;
+    } catch (ex) {
+      if (ex.message === "Network Error") {
+        Swal.fire({ icon: 'error', title: "Conexión al servidor no disponible", timer: 1600, showConfirmButton: false });
+      } else if (ex.response && ex.response.status === 401) {
+        const { mensaje } = ex.response.data;
+        Swal.fire({ icon: 'error', title: mensaje, timer: 1600, showConfirmButton: false });
+      } else {
+        Swal.fire({ icon: 'error', title: "Error al iniciar sesión", timer: 1600, showConfirmButton: false });
+      }
+      return { error: ex.message };
+    }
+  }, null);
+
 
   return (
     <section className="login-container">
@@ -97,12 +87,11 @@ function Login({ setRefreshCheckLogin }) {
         </div>
         <h2>Bienvenido</h2>
 
-        <Form onSubmit={onSubmit} onChange={onChange}>
+        <Form action={loginAction}>
           <div className="form-group">
             <Form.Control
               type="text"
               name="usuario"
-              defaultValue={formData.usuario}
               className="form-control"
               placeholder="Usuario"
             />
@@ -112,7 +101,6 @@ function Login({ setRefreshCheckLogin }) {
             <Form.Control
               type={mostrarPassword ? "text" : "password"}
               name="password"
-              defaultValue={formData.password}
               className="form-control"
               placeholder="Contraseña"
             />
@@ -128,9 +116,9 @@ function Login({ setRefreshCheckLogin }) {
             title="Iniciar sesión"
             type="submit"
             className="btn-login"
-            disabled={signInLoading}
+            disabled={isPending}
           >
-            {!signInLoading ? (
+            {!isPending ? (
               "INICIAR SESIÓN"
             ) : (
               <Spinner animation="border" size="sm" />
@@ -161,13 +149,6 @@ function Login({ setRefreshCheckLogin }) {
       </div>
     </section>
   );
-}
-
-function initialFormValue() {
-  return {
-    usuario: "",
-    password: "",
-  };
 }
 
 export default Login;

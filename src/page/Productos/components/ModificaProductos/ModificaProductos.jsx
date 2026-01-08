@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useActionState } from "react";
 import Dropzone from "../../../../components/Dropzone";
 import {
   Button,
@@ -67,7 +67,7 @@ function ModificaProductos(props) {
     cargarListaCategorias();
   }, []);
 
-  // Para guardar el listado de categorias
+  // Para guardar el listado de ingredientes
   const [listIngredientes, setListIngredientes] = useState([]);
 
   const cargarListaIngredientes = () => {
@@ -94,8 +94,7 @@ function ModificaProductos(props) {
     cargarListaIngredientes();
   }, []);
 
-  const [formData, setFormData] = useState(initialFormValueInitial());
-  const [loading, setLoading] = useState(false);
+  const [productData, setProductData] = useState(null);
 
   //Para almacenar la imagen del producto que se guardara a la bd
   const [imagenProducto, setImagenProducto] = useState(null);
@@ -105,8 +104,7 @@ function ModificaProductos(props) {
       obtenerProductos(id)
         .then((response) => {
           const { data } = response;
-          // console.log(data)
-          setFormData(initialFormValue(data));
+          setProductData(data);
           setImagenProducto(data.imagen);
           setListProductosCargados(data.ingredientes);
         })
@@ -130,50 +128,48 @@ function ModificaProductos(props) {
     enrutamiento("/Productos");
   };
 
-  const onSubmit = (e) => {
-    e.preventDefault();
+  const [errorState, action, isPending] = useActionState(async (prevState, fd) => {
+    const nombreProducto = fd.get("nombreProducto");
+    const categoria = fd.get("categoria");
+    const precioVenta = fd.get("precioVenta");
 
-    if (
-      !imagenProducto ||
-      !formData.nombreProducto ||
-      !formData.categoria ||
-      !formData.precioVenta
-    ) {
+    if (!imagenProducto || !nombreProducto || !categoria || !precioVenta || categoria === "Elige una opción") {
       Swal.fire({ icon: 'warning', title: "Completa el formulario", timer: 1600, showConfirmButton: false });
-    } else {
-      try {
-        setLoading(true);
-        // Sube a cloudinary la imagen principal del producto
-        subeArchivosCloudinary(imagenProducto, "productos")
-          .then((response) => {
-            const { data } = response;
-            const dataTemp = {
-              nombre: formData.nombreProducto,
-              categoria: formData.categoria,
-              precio: formData.precioVenta,
-              imagen: data.secure_url,
-              negocio: "LA NENA",
-              costoProduccion: totalSinIVA,
-              ingredientes: listProductosCargados,
-            };
-            actualizaProductos(id, dataTemp).then((response) => {
-              const { data } = response;
-              LogsInformativos(
-                "Se ha modificado el producto " + formData.nombreProducto,
-                formData
-              );
-              Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
-              cancelarRegistro();
-            });
-          })
-          .then((e) => {
-            console.log(e);
-          });
-      } catch (e) {
-        console.log(e);
-      }
+      return { error: "Incompleto" };
     }
-  };
+
+    try {
+      let finalImageUrl = imagenProducto;
+      if (typeof imagenProducto !== 'string') {
+        // Sube a cloudinary la imagen principal del producto si no es una URL string
+        const responseCloudy = await subeArchivosCloudinary(imagenProducto, "productos");
+        const { data: dataCloudy } = responseCloudy;
+        finalImageUrl = dataCloudy.secure_url;
+      }
+
+      const dataTemp = {
+        nombre: nombreProducto,
+        categoria: categoria,
+        precio: precioVenta,
+        imagen: finalImageUrl,
+        negocio: "LA NENA",
+        costoProduccion: totalSinIVA,
+        ingredientes: listProductosCargados,
+      };
+
+      const responseAct = await actualizaProductos(id, dataTemp);
+      const { data: dataAct } = responseAct;
+
+      LogsInformativos("Se ha modificado el producto " + nombreProducto, dataTemp);
+      Swal.fire({ icon: 'success', title: dataAct.mensaje, timer: 1600, showConfirmButton: false });
+      cancelarRegistro();
+      return null;
+    } catch (e) {
+      console.log(e);
+      Swal.fire({ icon: 'error', title: "Error al modificar producto", timer: 1600, showConfirmButton: false });
+      return { error: e.message };
+    }
+  }, null);
 
   // Para la carga y el listado de productos
   const [cargaProductos, setCargaProductos] = useState(
@@ -183,14 +179,14 @@ function ModificaProductos(props) {
 
   const cargarDatosProducto = () => {
     setProductoCargado(cargaProductos.nombre);
-    const dataTempProductos = productoCargado.split("/");
+    if (!cargaProductos.nombre || cargaProductos.nombre === "Elige una opción") return;
+    const dataTempProductos = cargaProductos.nombre.split("/");
     const dataTemp = {
       id: dataTempProductos[4],
       um: dataTempProductos[1],
       tipoUM: dataTempProductos[2],
       precio: dataTempProductos[3],
     };
-    console.log(dataTemp);
     setCargaProductos(cargaFormDataProductos(dataTemp));
   };
 
@@ -223,33 +219,29 @@ function ModificaProductos(props) {
           parseFloat(cargaProductos.cantidad),
       };
 
-      //LogRegistroProductosOV(folioActual, cargaProductos.ID, cargaProductos.item, cantidad, um, precioUnitario, total, setListProductosCargados);
-      // console.log(dataTemp)
-
       setListProductosCargados([...listProductosCargados, dataTemp]);
 
-      setCargaProductos(initialFormDataProductos);
+      setCargaProductos(initialFormDataProductos());
       document.getElementById("nombre").value = "Elige una opción";
       document.getElementById("cantidad").value = "";
-      //setTotalUnitario(0)
     }
   };
 
   // Para limpiar el formulario de detalles de producto
   const cancelarCargaProducto = () => {
-    setCargaProductos(initialFormDataProductos);
+    setCargaProductos(initialFormDataProductos());
     document.getElementById("nombre").value = "Elige una opción";
     document.getElementById("cantidad").value = "";
   };
 
   // Para eliminar productos del listado
   const removeItem = (producto) => {
-    let newArray = listProductosCargados;
+    let newArray = [...listProductosCargados];
     newArray.splice(
       newArray.findIndex((a) => a.nombre === producto.nombre),
       1
     );
-    setListProductosCargados([...newArray]);
+    setListProductosCargados(newArray);
   };
 
   const totalSinIVA = listProductosCargados.reduce(
@@ -257,10 +249,9 @@ function ModificaProductos(props) {
     0
   );
 
-  const onChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-    setCargaProductos({ ...cargaProductos, [e.target.name]: e.target.value });
-  };
+  if (!productData) {
+    return <div className="p-5 text-center"><Spinner animation="border" /> Cargando datos...</div>
+  }
 
   return (
     <>
@@ -286,7 +277,7 @@ function ModificaProductos(props) {
         </Row>
       </Alert>
 
-      <Form onSubmit={onSubmit} onChange={onChange}>
+      <Form action={action}>
         <Container fluid>
           <div className="imagenPrincipal">
             <h4 className="textoImagenPrincipal">Sube tu imagen</h4>
@@ -296,7 +287,7 @@ function ModificaProductos(props) {
             >
               <Dropzone
                 setImagenFile={setImagenProducto}
-                imagenProductoBD={formData.imagen}
+                imagenProductoBD={productData.imagen}
               />
             </div>
           </div>
@@ -309,7 +300,7 @@ function ModificaProductos(props) {
                   type="text"
                   name="nombreProducto"
                   placeholder="Escribe el nombre"
-                  defaultValue={formData.nombreProducto}
+                  defaultValue={productData.nombre}
                 />
               </Form.Group>
 
@@ -317,7 +308,7 @@ function ModificaProductos(props) {
                 <Form.Label>Categoría</Form.Label>
                 <Form.Control
                   as="select"
-                  defaultValue={formData.categoria}
+                  defaultValue={productData.categoria}
                   name="categoria"
                 >
                   <option>Elige una opción</option>
@@ -325,7 +316,6 @@ function ModificaProductos(props) {
                     <option
                       key={index}
                       value={cat?.id}
-                      selected={cat?.id == formData.categoria}
                     >
                       {cat?.nombre}
                     </option>
@@ -339,7 +329,8 @@ function ModificaProductos(props) {
                   type="number"
                   name="precioVenta"
                   placeholder="Precio"
-                  defaultValue={formData.precioVenta}
+                  defaultValue={productData.precio}
+                  step="0.01"
                 />
               </Form.Group>
             </Row>
@@ -355,7 +346,7 @@ function ModificaProductos(props) {
             <hr />
 
             <Row>
-              <Form.Group as={Col} controlId="formGridPorcentaje scrap">
+              <Form.Group as={Col} controlId="formGridIndex">
                 <Form.Label>ITEM</Form.Label>
                 <Form.Control
                   type="number"
@@ -366,14 +357,14 @@ function ModificaProductos(props) {
                 />
               </Form.Group>
 
-              <Form.Group as={Col} controlId="formGridPorcentaje scrap">
+              <Form.Group as={Col} controlId="formGridIngredienteNombre">
                 <Form.Label>Nombre</Form.Label>
                 <Form.Control
                   as="select"
                   id="nombre"
                   name="nombre"
                   placeholder="Nombre"
-                  defaultValue={cargaProductos.nombre}
+                  onChange={(e) => setCargaProductos({ ...cargaProductos, nombre: e.target.value })}
                 >
                   <option>Elige una opción</option>
                   {map(listIngredientes, (ingrediente, index) => (
@@ -397,42 +388,44 @@ function ModificaProductos(props) {
                 </Form.Control>
               </Form.Group>
 
-              <Form.Group as={Col} controlId="formGridCliente">
+              <Form.Group as={Col} controlId="formGridUM">
                 <Form.Label>UM</Form.Label>
                 <Form.Control
                   id="um"
                   type="text"
                   placeholder="UM"
                   name="um"
-                  defaultValue={cargaProductos.um}
+                  value={cargaProductos.um}
                   disabled
                 />
               </Form.Group>
 
-              <Form.Group as={Col} controlId="formGridCliente">
+              <Form.Group as={Col} controlId="formGridPrecioUnitario">
                 <Form.Label>Precio</Form.Label>
                 <Form.Control
                   id="precio"
                   type="number"
                   placeholder="Precio"
                   name="precio"
-                  defaultValue={cargaProductos.precio}
+                  value={cargaProductos.precio}
                   disabled
                 />
               </Form.Group>
 
-              <Form.Group as={Col}>
+              <Form.Group as={Col} controlId="formGridCantidad">
                 <Form.Label>Cantidad</Form.Label>
                 <Form.Control
                   id="cantidad"
                   type="number"
                   name="cantidad"
-                  defaultValue={cargaProductos.cantidad}
+                  value={cargaProductos.cantidad}
                   placeholder="Cantidad"
+                  step="0.001"
+                  onChange={(e) => setCargaProductos({ ...cargaProductos, cantidad: e.target.value })}
                 />
               </Form.Group>
 
-              <Form.Group as={Col} controlId="formGridCliente">
+              <Form.Group as={Col} controlId="formGridTotal">
                 <Form.Label>Total</Form.Label>
                 <Form.Control
                   id="total"
@@ -440,45 +433,39 @@ function ModificaProductos(props) {
                   placeholder="Total"
                   name="total"
                   value={
-                    parseFloat(cargaProductos.precio) *
-                    parseFloat(cargaProductos.cantidad)
+                    cargaProductos.precio && cargaProductos.cantidad ?
+                      parseFloat(cargaProductos.precio) *
+                      parseFloat(cargaProductos.cantidad) : 0
                   }
                   disabled
                 />
               </Form.Group>
 
               <Col sm="1">
-                <Form.Group as={Row} className="formGridCliente">
-                  <Form.Label>&nbsp;</Form.Label>
-
-                  <Col>
-                    <Button
-                      variant="success"
-                      title="Agregar el producto"
-                      className="registrar"
-                      onClick={() => {
-                        addItems();
-                      }}
-                    >
-                      <FontAwesomeIcon
-                        icon={faCirclePlus}
-                        className="text-lg"
-                      />
-                    </Button>
-                  </Col>
-                  <Col>
-                    <Button
-                      variant="danger"
-                      title="Cancelar el producto"
-                      className="cancelar"
-                      onClick={() => {
-                        cancelarCargaProducto();
-                      }}
-                    >
-                      <FontAwesomeIcon icon={faX} className="text-lg" />
-                    </Button>
-                  </Col>
-                </Form.Group>
+                <div role="group" className="d-flex h-100 align-items-end pb-3">
+                  <Button
+                    variant="success"
+                    title="Agregar el producto"
+                    className="me-2"
+                    onClick={() => {
+                      addItems();
+                    }}
+                  >
+                    <FontAwesomeIcon
+                      icon={faCirclePlus}
+                      className="text-lg"
+                    />
+                  </Button>
+                  <Button
+                    variant="danger"
+                    title="Cancelar el producto"
+                    onClick={() => {
+                      cancelarCargaProducto();
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faX} className="text-lg" />
+                  </Button>
+                </div>
               </Col>
             </Row>
 
@@ -583,10 +570,10 @@ function ModificaProductos(props) {
                 type="submit"
                 variant="success"
                 className="registrar"
-                disabled={loading}
+                disabled={isPending}
               >
                 <FontAwesomeIcon icon={faSave} />{" "}
-                {!loading ? "Modificar" : <Spinner animation="border" />}
+                {!isPending ? "Modificar" : <Spinner animation="border" />}
               </Button>
             </Col>
             <Col>
@@ -594,7 +581,7 @@ function ModificaProductos(props) {
                 title="Cerrar ventana"
                 variant="danger"
                 className="cancelar"
-                disabled={loading}
+                disabled={isPending}
                 onClick={() => {
                   cancelarRegistro();
                 }}
@@ -608,23 +595,6 @@ function ModificaProductos(props) {
       </Form>
     </>
   );
-}
-function initialFormValueInitial() {
-  return {
-    nombreProducto: "",
-    categoria: "",
-    precioVenta: "",
-    imagen: "",
-  };
-}
-
-function initialFormValue(data) {
-  return {
-    nombreProducto: data.nombre,
-    categoria: data.categoria,
-    precioVenta: data.precio,
-    imagen: data.imagen,
-  };
 }
 
 function initialFormDataProductos() {
@@ -665,28 +635,6 @@ function formatModelCategorias(categorias) {
     });
   });
   return tempCategorias;
-}
-
-function formatModelIngredientes(ingredientes) {
-  const tempIngredientes = [];
-  ingredientes.forEach((ingrediente) => {
-    tempIngredientes.push({
-      id: ingrediente._id,
-      nombre: ingrediente.nombre,
-      umPrimaria: ingrediente.umPrimaria,
-      costoAdquisicion: parseFloat(ingrediente.costoAdquisicion),
-      umAdquisicion: ingrediente.umAdquisicion,
-      umProduccion: ingrediente.umProduccion,
-      costoProduccion: parseFloat(ingrediente.costoProduccion),
-      cantidadPiezas: ingrediente.cantidadPiezas,
-      negocio: ingrediente.negocio,
-      imagen: ingrediente.imagen,
-      estado: ingrediente.estado,
-      fechaCreacion: ingrediente.createdAt,
-      fechaActualizacion: ingrediente.updatedAt,
-    });
-  });
-  return tempIngredientes;
 }
 
 export default ModificaProductos;

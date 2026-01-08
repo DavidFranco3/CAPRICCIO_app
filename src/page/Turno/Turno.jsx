@@ -13,7 +13,7 @@ import MovimientosTurnos from "../../components/Turno/MovimientosTurno/Movimient
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
- 
+
 function VistaTurnos(props) {
   console.log(props);
   const { turno, setTurno } = props;
@@ -68,8 +68,8 @@ function VistaTurnos(props) {
       .format("DD/MM/YYYY h:mm A");
     formattedFechaFinal = turno.fechaFinal
       ? dayjs(turno.fechaFinal)
-          .tz("America/Mexico_City")
-          .format("DD/MM/YYYY h:mm A")
+        .tz("America/Mexico_City")
+        .format("DD/MM/YYYY h:mm A")
       : "Turno activo";
   }
 
@@ -142,117 +142,117 @@ function VistaTurnos(props) {
 
   return (
     <>
-      <div className="card card-outline m-3">
-        <div className="card-header bg-gray">
-          <div className="d-flex justify-content-between align-items-center">
-            <h4 className="mb-0 d-flex align-items-center">Turnos</h4>
-          </div>
+      <div className="m-3">
+        <div className="dashboard-header-glass">
+          <h4 className="font-bold text-white mb-0">Turnos</h4>
         </div>
-        <ul className="list-group list-group-flush">
-          <li className="list-group-item">
-            <h5>Turno Activo</h5>
-            {turno ? (
-              <table className="table table-striped-columns">
-                <thead>
-                  <tr>
-                    <th>Id Turno</th>
-                    <th>Empleado</th>
-                    <th>Fecha Inicio</th>
-                    <th>Fecha Corte</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>{turno.idTurno}</td>
-                    <td>{turno.empleado}</td>
-                    <td>{formattedFechaInicio}</td>
-                    <td>{formattedFechaFinal}</td>
-                  </tr>
-                </tbody>
-              </table>
-            ) : (
-              <div>No hay turno activo</div>
-            )}
-          </li>
-          {caja && (
+        <div className="card card-outline glass-card">
+          <ul className="list-group list-group-flush">
             <li className="list-group-item">
-              <h5>Caja del turno</h5>
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>Caja</th>
-                    <th>Saldo</th>
-                    <th>Acciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>{caja.nombreCaja}</td>
-                    <td>{caja.saldo}</td>
-                    <td>
-                      <div className="d-flex justify-content-around">
-                        <button
-                          className="btn btn-secondary"
-                          onClick={() => {
-                            movimientosTurnoActual(
-                              <MovimientosTurnos caja={caja} turno={turno} />
-                            );
-                          }}
-                        >
-                          Corte caja
-                        </button>
-                        <button
-                          className="btn btn-danger"
-                          onClick={() =>
-                            entradaSalidaEfectivo(
-                              false,
-                              <EntradaSalidaEfec
-                                entrada={false}
-                                caja={caja}
-                                turno={turno}
-                                listCajas={listCajas}
-                                añadirDineroACaja={añadirDineroACaja}
-                              />
-                            )
-                          }
-                        >
-                          Salida Efectivo
-                        </button>
-                        <button
-                          className="btn btn-success"
-                          onClick={() =>
-                            entradaSalidaEfectivo(
-                              true,
-                              <EntradaSalidaEfec
-                                entrada={true}
-                                caja={caja}
-                                turno={turno}
-                                listCajas={listCajas}
-                                añadirDineroACaja={añadirDineroACaja}
-                              />
-                            )
-                          }
-                        >
-                          Entrada Efectivo
-                        </button>
-                        <button
-                          className="btn btn-primary"
-                          onClick={terminarTurno}
-                        >
-                          Corte final
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+              <h5>Turno Activo</h5>
+              {turno ? (
+                <table className="table table-striped-columns">
+                  <thead>
+                    <tr>
+                      <th>Id Turno</th>
+                      <th>Empleado</th>
+                      <th>Fecha Inicio</th>
+                      <th>Fecha Corte</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>{turno.idTurno}</td>
+                      <td>{turno.empleado}</td>
+                      <td>{formattedFechaInicio}</td>
+                      <td>{formattedFechaFinal}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              ) : (
+                <div>No hay turno activo</div>
+              )}
             </li>
-          )}
-          <li className="list-group-item">
-            <h5>Listado de turnos anteriores</h5>
-            <ListTurnos turno={turno} />
-          </li>
-        </ul>
+            {caja && (
+              <li className="list-group-item">
+                <h5>Caja del turno</h5>
+                <table className="table">
+                  <thead>
+                    <tr>
+                      <th>Caja</th>
+                      <th>Saldo</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>{caja.nombreCaja}</td>
+                      <td>{caja.saldo}</td>
+                      <td>
+                        <div className="d-flex justify-content-around">
+                          <button
+                            className="btn btn-secondary"
+                            onClick={() => {
+                              movimientosTurnoActual(
+                                <MovimientosTurnos caja={caja} turno={turno} />
+                              );
+                            }}
+                          >
+                            Corte caja
+                          </button>
+                          <button
+                            className="btn btn-danger"
+                            onClick={() =>
+                              entradaSalidaEfectivo(
+                                false,
+                                <EntradaSalidaEfec
+                                  entrada={false}
+                                  caja={caja}
+                                  turno={turno}
+                                  listCajas={listCajas}
+                                  añadirDineroACaja={añadirDineroACaja}
+                                />
+                              )
+                            }
+                          >
+                            Salida Efectivo
+                          </button>
+                          <button
+                            className="btn btn-success"
+                            onClick={() =>
+                              entradaSalidaEfectivo(
+                                true,
+                                <EntradaSalidaEfec
+                                  entrada={true}
+                                  caja={caja}
+                                  turno={turno}
+                                  listCajas={listCajas}
+                                  añadirDineroACaja={añadirDineroACaja}
+                                />
+                              )
+                            }
+                          >
+                            Entrada Efectivo
+                          </button>
+                          <button
+                            className="btn btn-primary"
+                            onClick={terminarTurno}
+                          >
+                            Corte final
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </li>
+            )}
+            <li className="list-group-item">
+              <h5>Listado de turnos anteriores</h5>
+              <ListTurnos turno={turno} />
+            </li>
+          </ul>
+        </div>
       </div>
       <BasicModal
         show={showModal}

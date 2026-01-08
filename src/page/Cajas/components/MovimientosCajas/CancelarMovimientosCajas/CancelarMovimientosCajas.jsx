@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useActionState } from 'react';
 import "../../../../../scss/styles.scss";
 import { cancelarMovimientos } from "../../../../../api/movimientosCajas";
 import Swal from 'sweetalert2';
@@ -25,31 +25,45 @@ function CancelarMovimientosCajas(props) {
         setShowModal(false)
     }
 
-    const [loading, setLoading] = useState(false);
-
-    const onSubmit = e => {
-        e.preventDefault()
-        setLoading(true);
+    const [errorState, action, isPending] = useActionState(async () => {
         try {
             const dataTemp = {
                 estado: estado === "true" ? "false" : "true"
             }
-            cancelarMovimientos(id, dataTemp).then(response => {
-                const { data } = response;
-                navigate({
-                    search: queryString.stringify(""),
-                });
-                LogsInformativos("Estado del movimiento actualizado", datosMovimiento);
-                LogCajaActualizacion(idCaja, movimiento == "Fondo de caja" ? parseFloat(monto) * -1 : movimiento == "Venta" && pago == "Transferencia" ? 0 : movimiento == "Venta" && pago == "Tarjeta" ? 0 : movimiento == "Venta" && pago == "Efectivo" ? parseFloat(monto) * -1 : movimiento == "Retiro" ? monto : movimiento == "Aumento" ? monto : 0);
-                Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
-                cancelarRegistro();
-            }).catch(e => {
-                console.log(e)
-            })
+            const response = await cancelarMovimientos(id, dataTemp);
+            const { data } = response;
+
+            navigate({
+                search: queryString.stringify(""),
+            });
+            LogsInformativos("Estado del movimiento actualizado", datosMovimiento);
+
+            // Logic from original code:
+            // movimiento == "Fondo de caja" ? parseFloat(monto) * -1 : 
+            // movimiento == "Venta" && pago == "Transferencia" ? 0 : 
+            // movimiento == "Venta" && pago == "Tarjeta" ? 0 : 
+            // movimiento == "Venta" && pago == "Efectivo" ? parseFloat(monto) * -1 : 
+            // movimiento == "Retiro" ? monto : 
+            // movimiento == "Aumento" ? monto : 0
+
+            const total = movimiento === "Fondo de caja" ? parseFloat(monto) * -1
+                : movimiento === "Venta" && pago === "Transferencia" ? 0
+                    : movimiento === "Venta" && pago === "Tarjeta" ? 0
+                        : movimiento === "Venta" && pago === "Efectivo" ? parseFloat(monto) * -1
+                            : movimiento === "Retiro" ? monto
+                                : movimiento === "Aumento" ? monto : 0;
+
+            LogCajaActualizacion(idCaja, total);
+
+            Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
+            cancelarRegistro();
+            return null;
         } catch (e) {
-            console.log(e)
+            console.log(e);
+            Swal.fire({ icon: 'error', title: "Error al cambiar estado", timer: 1600, showConfirmButton: false });
+            return { error: "Error" };
         }
-    }
+    }, null);
 
     return (
         <>
@@ -77,7 +91,7 @@ function CancelarMovimientosCajas(props) {
                         </>
                     )
                 }
-                <Form onSubmit={onSubmit}>
+                <Form action={action}>
                     <Row className="mb-3">
                         <Form.Group as={Col} controlId="formGridNombre">
                             <Form.Label>Cajero</Form.Label>
@@ -211,8 +225,9 @@ function CancelarMovimientosCajas(props) {
                                 type="submit"
                                 variant="success"
                                 className="registrar"
+                                disabled={isPending}
                             >
-                                <FontAwesomeIcon icon={faSave} /> {!loading ? (estado === "true" ? "Deshabilitar" : "Habilitar") : <Spinner animation="border" />}
+                                <FontAwesomeIcon icon={faSave} /> {!isPending ? (estado === "true" ? "Deshabilitar" : "Habilitar") : <Spinner animation="border" size="sm" />}
                             </Button>
                         </Col>
                         <Col>
@@ -220,6 +235,7 @@ function CancelarMovimientosCajas(props) {
                                 title="Cerrar ventana"
                                 variant="danger"
                                 className="cancelar"
+                                disabled={isPending}
                                 onClick={() => {
                                     cancelarRegistro()
                                 }}
@@ -236,4 +252,3 @@ function CancelarMovimientosCajas(props) {
 }
 
 export default CancelarMovimientosCajas;
-

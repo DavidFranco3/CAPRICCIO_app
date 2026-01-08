@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useActionState } from 'react';
 import "../../../../scss/styles.scss";
 import { Button, Col, Form, Row, Spinner } from "react-bootstrap";
 import Swal from 'sweetalert2';
@@ -10,115 +10,102 @@ import { LogsInformativos } from '../../../Logs/components/LogsSistema/LogsSiste
 
 function ModificaUsuarios(props) {
     const { datosUsuario, navigate, setShowModal } = props;
-
     const { id } = datosUsuario;
-
-    // Para almacenar el valor del formulario
-    const [formData, setFormData] = useState(initialFormData(datosUsuario));
 
     // Para cancelar el registro
     const cancelarRegistro = () => {
         setShowModal(false)
     }
 
-    // Para la animacion de carga
-    const [loading, setLoading] = useState(false);
+    const [errorState, action, isPending] = useActionState(async (prevState, fd) => {
+        const nombre = fd.get("nombre");
+        const usuario = fd.get("usuario");
+        const password = fd.get("password");
+        const admin = fd.get("admin");
 
-    const onSubmit = e => {
-        e.preventDefault();
-
-        if (!formData.nombre || !formData.usuario || !formData.password || !formData.admin) {
+        if (!nombre || !usuario || !password || !admin || admin === "Elige una opción") {
             Swal.fire({ icon: 'warning', title: "Completa el formulario", timer: 1600, showConfirmButton: false });
-        } else {
-            try {
-                setLoading(true);
-                // Sube a cloudinary la imagen principal del producto
-                const dataTemp = {
-                    nombre: formData.nombre,
-                    usuario: formData.usuario,
-                    admin: formData.admin == "administrador" ? "true" : "false",
-                    password: formData.password,
-                    rol: formData.admin,
-                }
-                actualizaUsuario(id, dataTemp).then(response => {
-                    const { data } = response;
-                    navigate({
-                        search: queryString.stringify(""),
-                    });
-                    LogsInformativos("Se ha modificado el usuario " + datosUsuario.usuario, datosUsuario);
-                    Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
-                    cancelarRegistro();
-                }).catch(e => {
-                    console.log(e)
-                    if (e.message === 'Network Error') {
-                        //console.log("No hay internet")
-                        Swal.fire({ icon: 'error', title: "Conexión al servidor no disponible", timer: 1600, showConfirmButton: false });
-                        setLoading(false);
-                    } else {
-                        if (e.response && e.response.status === 401) {
-                            const { mensaje } = e.response.data;
-                            Swal.fire({ icon: 'error', title: mensaje, timer: 1600, showConfirmButton: false });
-                            setLoading(false);
-                        }
-                    }
-                })
-            } catch (e) {
-                console.log(e)
-            }
+            return { error: "Incompleto" };
         }
-    }
 
-    const onChange = e => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
+        try {
+            const dataTemp = {
+                nombre,
+                usuario,
+                admin: admin === "administrador" ? "true" : "false",
+                password,
+                rol: admin,
+            }
+            const response = await actualizaUsuario(id, dataTemp);
+            const { data } = response;
+
+            navigate({
+                search: queryString.stringify(""),
+            });
+            LogsInformativos("Se ha modificado el usuario " + datosUsuario.usuario, datosUsuario);
+            Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
+            cancelarRegistro();
+            return null;
+        } catch (e) {
+            console.log(e)
+            if (e.message === 'Network Error') {
+                Swal.fire({ icon: 'error', title: "Conexión al servidor no disponible", timer: 1600, showConfirmButton: false });
+            } else if (e.response && e.response.status === 401) {
+                const { mensaje } = e.response.data;
+                Swal.fire({ icon: 'error', title: mensaje, timer: 1600, showConfirmButton: false });
+            } else {
+                Swal.fire({ icon: 'error', title: "Error al modificar usuario", timer: 1600, showConfirmButton: false });
+            }
+            return { error: e.message };
+        }
+    }, null);
 
     return (
         <>
-            <Form onSubmit={onSubmit} onChange={onChange}>
+            <Form action={action}>
                 <div className="datosDelProducto">
-                <Row className="mb-3">
+                    <Row className="mb-3">
                         <Form.Group as={Col} controlId="formGridNombre">
                             <Form.Label>Nombre</Form.Label>
                             <Form.Control
                                 type="text"
                                 name="nombre"
                                 placeholder="Escribe el nombre"
-                                defaultValue={formData.nombre}
+                                defaultValue={datosUsuario.nombre}
                             />
                         </Form.Group>
-                        <Form.Group as={Col} controlId="formGridNombre">
+                        <Form.Group as={Col} controlId="formGridUsuario">
                             <Form.Label>Usuario</Form.Label>
                             <Form.Control
                                 type="text"
                                 name="usuario"
                                 placeholder="Escribe el usuario"
-                                defaultValue={formData.usuario}
+                                defaultValue={datosUsuario.usuario}
                             />
                         </Form.Group>
                     </Row>
 
                     <Row className="mb-3">
-                        <Form.Group as={Col} controlId="formGridNombre">
+                        <Form.Group as={Col} controlId="formGridPassword">
                             <Form.Label>Password</Form.Label>
                             <Form.Control
                                 type="text"
                                 name="password"
                                 placeholder="Escribe el password"
-                                defaultValue={formData.password}
+                                defaultValue={datosUsuario.password}
                             />
                         </Form.Group>
-                        <Form.Group as={Col} controlId="formGridNombre">
+                        <Form.Group as={Col} controlId="formGridAdmin">
                             <Form.Label>Tipo</Form.Label>
                             <Form.Control
                                 as="select"
                                 name="admin"
-                                placeholder="Escribe el tipo de usuario"
-                                defaultValue={formData.admin}
+                                defaultValue={datosUsuario.admin}
                             >
                                 <option>Elige una opción</option>
-                                <option value="administrador" selected={formData.admin=="administrador"}>Administrador</option>
-                                <option value="vendedor" selected={formData.admin=="vendedor"}>Cajero</option>
-                                <option value="mesero" selected={formData.admin=="mesero"}>Mesero</option>
+                                <option value="administrador">Administrador</option>
+                                <option value="vendedor">Cajero</option>
+                                <option value="mesero">Mesero</option>
                             </Form.Control>
                         </Form.Group>
                     </Row>
@@ -131,9 +118,9 @@ function ModificaUsuarios(props) {
                             type="submit"
                             variant="success"
                             className="registrar"
-                            disabled={loading}
+                            disabled={isPending}
                         >
-                            <FontAwesomeIcon icon={faSave} /> {!loading ? "Modificar" : <Spinner animation="border" />}
+                            <FontAwesomeIcon icon={faSave} /> {!isPending ? "Modificar" : <Spinner animation="border" />}
                         </Button>
                     </Col>
                     <Col>
@@ -141,7 +128,7 @@ function ModificaUsuarios(props) {
                             title="Cerrar ventana"
                             variant="danger"
                             className="cancelar"
-                            disabled={loading}
+                            disabled={isPending}
                             onClick={() => {
                                 cancelarRegistro()
                             }}
@@ -153,15 +140,6 @@ function ModificaUsuarios(props) {
             </Form>
         </>
     );
-}
-
-function initialFormData(data) {
-    return {
-        nombre: data.nombre,
-        usuario: data.usuario,
-        password: data.password,
-        admin: data.admin,
-    }
 }
 
 export default ModificaUsuarios;

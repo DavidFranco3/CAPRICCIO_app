@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useActionState } from 'react';
 import "../../../../scss/styles.scss";
 import Dropzone from "../../../../components/Dropzone";
 import { Button, Col, Form, Row, Spinner } from "react-bootstrap";
@@ -12,64 +12,58 @@ import { LogsInformativos } from '../../../Logs/components/LogsSistema/LogsSiste
 
 function ModificaCategorias(props) {
     const { datosCategorias, navigate, setShowModal } = props;
-
     const { id, imagen } = datosCategorias;
 
     // Para almacenar la imagen
     const [imagenFile, setImagenFile] = useState(imagen);
-
-    // Para almacenar el valor del formulario
-    const [formData, setFormData] = useState(initialFormData(datosCategorias));
 
     // Para cancelar el registro
     const cancelarRegistro = () => {
         setShowModal(false)
     }
 
-    // Para la animacion de carga
-    const [loading, setLoading] = useState(false);
+    const [errorState, action, isPending] = useActionState(async (prevState, fd) => {
+        const nombre = fd.get("nombre");
 
-    const onSubmit = e => {
-        e.preventDefault();
-
-        if (!imagenFile || !formData.nombre) {
+        if (!imagenFile || !nombre) {
             Swal.fire({ icon: 'warning', title: "Completa el formulario", timer: 1600, showConfirmButton: false });
-        } else {
-            try {
-                setLoading(true);
-                // Sube a cloudinary la imagen principal del producto
-                subeArchivosCloudinary(imagenFile, "categoria").then(response => {
-                    const { data } = response;
-                    const dataTemp = {
-                        nombre: formData.nombre,
-                        imagen: data.secure_url,
-                        negocio: "LA NENA"
-                    }
-                    actualizaCategoria(id, dataTemp).then(response => {
-                        const { data } = response;
-                        navigate({
-                            search: queryString.stringify(""),
-                        });
-                        LogsInformativos("Se ha modificado la categoría " + datosCategorias.nombre, datosCategorias);
-                        Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
-                        cancelarRegistro();
-                    })
-                }).then(e => {
-                    console.log(e)
-                })
-            } catch (e) {
-                console.log(e)
-            }
+            return { error: "Incompleto" };
         }
-    }
 
-    const onChange = e => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
+        try {
+            let finalImageUrl = imagenFile;
+            if (typeof imagenFile !== 'string') {
+                // Sube a cloudinary la imagen si no es una URL string
+                const responseCloudy = await subeArchivosCloudinary(imagenFile, "categoria");
+                const { data: dataCloudy } = responseCloudy;
+                finalImageUrl = dataCloudy.secure_url;
+            }
+
+            const dataTemp = {
+                nombre: nombre,
+                imagen: finalImageUrl,
+                negocio: "LA NENA"
+            }
+            const responseAct = await actualizaCategoria(id, dataTemp);
+            const { data: dataAct } = responseAct;
+
+            navigate({
+                search: queryString.stringify(""),
+            });
+            LogsInformativos("Se ha modificado la categoría " + datosCategorias.nombre, datosCategorias);
+            Swal.fire({ icon: 'success', title: dataAct.mensaje, timer: 1600, showConfirmButton: false });
+            cancelarRegistro();
+            return null;
+        } catch (e) {
+            console.log(e);
+            Swal.fire({ icon: 'error', title: "Error al modificar categoría", timer: 1600, showConfirmButton: false });
+            return { error: e.message };
+        }
+    }, null);
 
     return (
         <>
-            <Form onSubmit={onSubmit} onChange={onChange}>
+            <Form action={action}>
                 <div className="imagenPrincipal">
                     <h4 className="textoImagenPrincipal">Sube tu imagen</h4>
                     <div title="Seleccionar imagen de la categoría" className="imagenProducto">
@@ -88,7 +82,8 @@ function ModificaCategorias(props) {
                                 type="text"
                                 name="nombre"
                                 placeholder="Escribe el nombre"
-                                defaultValue={formData.nombre}
+                                defaultValue={datosCategorias.nombre}
+                                required
                             />
                         </Form.Group>
                     </Row>
@@ -101,9 +96,9 @@ function ModificaCategorias(props) {
                             type="submit"
                             variant="success"
                             className="registrar"
-                            disabled={loading}
+                            disabled={isPending}
                         >
-                            <FontAwesomeIcon icon={faSave} /> {!loading ? "Modificar" : <Spinner animation="border" />}
+                            <FontAwesomeIcon icon={faSave} /> {!isPending ? "Modificar" : <Spinner animation="border" />}
                         </Button>
                     </Col>
                     <Col>
@@ -111,7 +106,7 @@ function ModificaCategorias(props) {
                             title="Cerrar ventana"
                             variant="danger"
                             className="cancelar"
-                            disabled={loading}
+                            disabled={isPending}
                             onClick={() => {
                                 cancelarRegistro()
                             }}
@@ -123,12 +118,6 @@ function ModificaCategorias(props) {
             </Form>
         </>
     );
-}
-
-function initialFormData(data) {
-    return {
-        nombre: data.nombre
-    }
 }
 
 export default ModificaCategorias;

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useActionState } from "react";
 import { registraUsuarios } from "../../../../api/usuarios";
 import "../../../../scss/styles.scss";
 import { Button, Col, Form, Row, Spinner } from "react-bootstrap";
@@ -10,78 +10,64 @@ import { LogsInformativos } from "../../../Logs/components/LogsSistema/LogsSiste
 
 function RegistroUsuarios(props) {
   const { setShowModal, navigate } = props;
-  const [formData, setFormData] = useState(initialFormValue());
-  const [loading, setLoading] = useState(false);
 
   // Para cancelar el registro
   const cancelarRegistro = () => {
     setShowModal(false);
   };
 
-  const onSubmit = (e) => {
-    e.preventDefault();
+  const [errorState, action, isPending] = useActionState(async (prevState, fd) => {
+    const nombre = fd.get("nombre");
+    const usuario = fd.get("usuario");
+    const password = fd.get("password");
+    const admin = fd.get("admin");
 
-    if (
-      !formData.nombre ||
-      !formData.usuario ||
-      !formData.password ||
-      !formData.admin
-    ) {
+    if (!nombre || !usuario || !password || !admin || admin === "Elige una opción") {
       Swal.fire({ icon: 'warning', title: "Completa el formulario", timer: 1600, showConfirmButton: false });
-    } else {
-      try {
-        setLoading(true);
-        // Sube a cloudinary la imagen principal del producto
-
-        const dataTemp = {
-          nombre: formData.nombre,
-          usuario: formData.usuario,
-          admin: formData.admin === "administrador" ? "true" : "false",
-          password: formData.password,
-          tipo: "interno",
-          rol: formData.admin,
-          estadoUsuario: "true",
-        };
-        registraUsuarios(dataTemp)
-          .then((response) => {
-            const { data } = response;
-            navigate({
-              search: queryString.stringify(""),
-            });
-            LogsInformativos(
-              "Se ha registrado el usuario " + formData.usuario,
-              data.datos
-            );
-            Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
-            cancelarRegistro();
-          })
-          .catch((e) => {
-            console.log(e);
-            if (e.message === "Network Error") {
-              //console.log("No hay internet")
-              Swal.fire({ icon: 'error', title: "Conexión al servidor no disponible", timer: 1600, showConfirmButton: false });
-              setLoading(false);
-            } else {
-              if (e.response && e.response.status === 401) {
-                const { mensaje } = e.response.data;
-                Swal.fire({ icon: 'error', title: mensaje, timer: 1600, showConfirmButton: false });
-                setLoading(false);
-              }
-            }
-          });
-      } catch (e) {
-        console.log(e);
-      }
+      return { error: "Incompleto" };
     }
-  };
 
-  const onChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+    try {
+      const dataTemp = {
+        nombre,
+        usuario,
+        admin: admin === "administrador" ? "true" : "false",
+        password,
+        tipo: "interno",
+        rol: admin,
+        estadoUsuario: "true",
+      };
+
+      const response = await registraUsuarios(dataTemp);
+      const { data } = response;
+
+      navigate({
+        search: queryString.stringify(""),
+      });
+      LogsInformativos(
+        "Se ha registrado el usuario " + usuario,
+        data.datos
+      );
+      Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
+      cancelarRegistro();
+      return null;
+    } catch (e) {
+      console.log(e);
+      if (e.message === "Network Error") {
+        Swal.fire({ icon: 'error', title: "Conexión al servidor no disponible", timer: 1600, showConfirmButton: false });
+      } else if (e.response && e.response.status === 401) {
+        const { mensaje } = e.response.data;
+        Swal.fire({ icon: 'error', title: mensaje, timer: 1600, showConfirmButton: false });
+      } else {
+        Swal.fire({ icon: 'error', title: "Error al registrar usuario", timer: 1600, showConfirmButton: false });
+      }
+      return { error: e.message };
+    }
+  }, null);
 
   return (
     <>
-      <Form onSubmit={onSubmit} onChange={onChange}>
+      <Form action={action}>
         <div className="datosDelProducto">
           <Row className="mb-3">
             <Form.Group as={Col} controlId="formGridNombre">
@@ -90,37 +76,32 @@ function RegistroUsuarios(props) {
                 type="text"
                 name="nombre"
                 placeholder="Escribe el nombre"
-                defaultValue={formData.nombre}
               />
             </Form.Group>
-            <Form.Group as={Col} controlId="formGridNombre">
+            <Form.Group as={Col} controlId="formGridUsuario">
               <Form.Label>Usuario</Form.Label>
               <Form.Control
                 type="text"
                 name="usuario"
                 placeholder="Escribe el usuario"
-                defaultValue={formData.usuario}
               />
             </Form.Group>
           </Row>
 
           <Row className="mb-3">
-            <Form.Group as={Col} controlId="formGridNombre">
+            <Form.Group as={Col} controlId="formGridPassword">
               <Form.Label>Password</Form.Label>
               <Form.Control
                 type="text"
                 name="password"
                 placeholder="Escribe el password"
-                defaultValue={formData.password}
               />
             </Form.Group>
-            <Form.Group as={Col} controlId="formGridNombre">
+            <Form.Group as={Col} controlId="formGridAdmin">
               <Form.Label>Tipo</Form.Label>
               <Form.Control
                 as="select"
                 name="admin"
-                placeholder="Escribe el tipo de usuario"
-                defaultValue={formData.admin}
               >
                 <option>Elige una opción</option>
                 <option value="administrador">Administrador</option>
@@ -137,10 +118,10 @@ function RegistroUsuarios(props) {
               type="submit"
               variant="success"
               className="registrar"
-              disabled={loading}
+              disabled={isPending}
             >
               <FontAwesomeIcon icon={faSave} />{" "}
-              {!loading ? "Registrar" : <Spinner animation="border" />}
+              {!isPending ? "Registrar" : <Spinner animation="border" />}
             </Button>
           </Col>
           <Col>
@@ -148,7 +129,7 @@ function RegistroUsuarios(props) {
               title="Cerrar ventana"
               variant="danger"
               className="cancelar"
-              disabled={loading}
+              disabled={isPending}
               onClick={() => {
                 cancelarRegistro();
               }}
@@ -160,15 +141,6 @@ function RegistroUsuarios(props) {
       </Form>
     </>
   );
-}
-
-function initialFormValue() {
-  return {
-    nombre: "",
-    usuario: "",
-    password: "",
-    admin: "",
-  };
 }
 
 export default RegistroUsuarios;

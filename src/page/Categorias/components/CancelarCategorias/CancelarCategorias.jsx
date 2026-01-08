@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useActionState } from 'react';
 import "../../../../scss/styles.scss";
 import { cancelarCategoria } from "../../../../api/categorias";
 import Swal from 'sweetalert2';
@@ -13,7 +13,6 @@ import { LogsInformativos } from '../../../Logs/components/LogsSistema/LogsSiste
 
 function CancelarCategorias(props) {
     const { datosCategoria, navigate, setShowModal } = props;
-
     const { id, nombre, imagen, estado, fechaActualizacion } = datosCategoria;
 
     dayjs.locale('es');
@@ -24,30 +23,26 @@ function CancelarCategorias(props) {
         setShowModal(false)
     }
 
-    const [loading, setLoading] = useState(false);
-
-    const onSubmit = e => {
-        e.preventDefault()
-        setLoading(true);
+    const [errorState, action, isPending] = useActionState(async (prevState, fd) => {
         try {
             const dataTemp = {
                 estado: estado === "true" ? "false" : "true"
             }
-            cancelarCategoria(id, dataTemp).then(response => {
-                const { data } = response;
-                navigate({
-                    search: queryString.stringify(""),
-                });
-                LogsInformativos("Estado de la categoría " + nombre  + " actualizado", datosCategoria);
-                Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false })
-                cancelarRegistro();
-            }).catch(e => {
-                console.log(e)
-            })
+            const response = await cancelarCategoria(id, dataTemp);
+            const { data } = response;
+            navigate({
+                search: queryString.stringify(""),
+            });
+            LogsInformativos("Estado de la categoría " + nombre + " actualizado", datosCategoria);
+            Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
+            cancelarRegistro();
+            return null;
         } catch (e) {
-            console.log(e)
+            console.log(e);
+            Swal.fire({ icon: 'error', title: "Error al actualizar estado de la categoría", timer: 1600, showConfirmButton: false });
+            return { error: e.message };
         }
-    }
+    }, null);
 
     return (
         <>
@@ -75,7 +70,7 @@ function CancelarCategorias(props) {
                         </>
                     )
                 }
-                <Form onSubmit={onSubmit}>
+                <Form action={action}>
                     <div className="imagenPrincipal">
                         <h4 className="textoImagenPrincipal">Imagen de la categoría</h4>
                         <div className="imagenProducto">
@@ -99,12 +94,12 @@ function CancelarCategorias(props) {
                             />
                         </Form.Group>
 
-                        <Form.Group as={Col} controlId="formGridNombre">
+                        <Form.Group as={Col} controlId="formGridFecha">
                             <Form.Label>Modificación</Form.Label>
                             <Form.Control
                                 type="text"
-                                name="nombre"
-                                placeholder="Escribe el nombre"
+                                name="fecha"
+                                placeholder="Escribe la fecha"
                                 value={dayjs(fechaActualizacion).format('L hh:mm A')}
                                 disabled
                             />
@@ -118,8 +113,9 @@ function CancelarCategorias(props) {
                                 type="submit"
                                 variant="success"
                                 className="registrar"
+                                disabled={isPending}
                             >
-                                <FontAwesomeIcon icon={faSave} /> {!loading ? (estado === "true" ? "Deshabilitar" : "Habilitar") : <Spinner animation="border" />}
+                                <FontAwesomeIcon icon={faSave} /> {!isPending ? (estado === "true" ? "Deshabilitar" : "Habilitar") : <Spinner animation="border" />}
                             </Button>
                         </Col>
                         <Col>
@@ -127,6 +123,7 @@ function CancelarCategorias(props) {
                                 title="Cerrar ventana"
                                 variant="danger"
                                 className="cancelar"
+                                disabled={isPending}
                                 onClick={() => {
                                     cancelarRegistro()
                                 }}

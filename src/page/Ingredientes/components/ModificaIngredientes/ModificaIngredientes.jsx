@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useActionState } from 'react';
 import "../../../../scss/styles.scss";
 import { Button, Col, Form, Row, Spinner } from "react-bootstrap";
 import { subeArchivosCloudinary } from '../../../../api/cloudinary';
@@ -25,82 +25,84 @@ function ModificaIngredientes(props) {
         setShowModal(false)
     }
 
-    // Para la animacion de carga
-    const [loading, setLoading] = useState(false);
-
-    const onSubmit = e => {
-        e.preventDefault();
-
-        if (!formData.nombre || !formData.umPrimaria || !formData.costoAdquisicion) {
-            Swal.fire({ icon: 'warning', title: "Completa el formulario", timer: 1600, showConfirmButton: false });
-        } else {
-            try {
-                setLoading(true);
-                // Sube a cloudinary la imagen principal del producto
-                if (imagenFile) {
-                    subeArchivosCloudinary(imagenFile, "ingrediente").then(response => {
-                        const { data } = response;
-
-                        const precio = formData.umPrimaria === "Paquete" ? parseFloat(formData.costoAdquisicion) / formData.cantidadPiezas : formData.umAdquisicion === "Decá" ? parseFloat(formData.costoAdquisicion) / 100 : formData.umAdquisicion === "Hectó" ? parseFloat(formData.costoAdquisicion) / 10 : formData.umAdquisicion === "Kiló" ? parseFloat(formData.costoAdquisicion) / 1000 : formData.umAdquisicion === "Decí" ? parseFloat(formData.costoAdquisicion) * 10 : formData.umAdquisicion === "Centí" ? parseFloat(formData.costoAdquisicion) * 100 : formData.umAdquisicion === "Milí" ? parseFloat(formData.costoAdquisicion) * 1000 : formData.umAdquisicion == formData.umPrimaria ? formData.costoAdquisicion : "";
-
-                        const dataTemp = {
-                            nombre: formData.nombre,
-                            umPrimaria: formData.umPrimaria,
-                            costoAdquisicion: formData.costoAdquisicion,
-                            umAdquisicion: formData.umPrimaria === "Paquete" ? "Paquete" : formData.umAdquisicion,
-                            umProduccion: formData.umPrimaria === "Paquete" ? "Piezas" : formData.umProduccion,
-                            cantidadPiezas: formData.cantidadPiezas,
-                            costoProduccion: formData.umPrimaria === "Paquete" ? parseFloat(formData.costoAdquisicion) / formData.cantidadPiezas : formData.umProduccion === "Decá" ? parseFloat(precio) * 100 : formData.umProduccion === "Hectó" ? parseFloat(formData.umAdquisicion) * 10 : formData.umProduccion === "Kiló" ? parseFloat(precio) * 1000 : formData.umProduccion === "Decí" ? parseFloat(precio) / 10 : formData.umProduccion === "Centí" ? parseFloat(precio) / 100 : formData.umProduccion === "Milí" ? parseFloat(precio) / 1000 : formData.umProduccion == formData.umPrimaria ? precio : "",
-                            imagen: data.secure_url,
-                        }
-                        actualizaIngrediente(id, dataTemp).then(response => {
-                            const { data } = response;
-                            navigate({
-                                search: queryString.stringify(""),
-                            });
-                            LogsInformativos("Se ha modificado el ingrediente " + datosIngredientes.nombre, datosIngredientes);
-                            Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
-                            cancelarRegistro();
-                        })
-                    }).then(e => {
-                        console.log(e)
-                    })
-                } else {
-                    const precio = formData.umPrimaria === "Paquete" ? parseFloat(formData.costoAdquisicion) / formData.cantidadPiezas : formData.umAdquisicion === "Decá" ? parseFloat(formData.costoAdquisicion) / 100 : formData.umAdquisicion === "Hectó" ? parseFloat(formData.costoAdquisicion) / 10 : formData.umAdquisicion === "Kiló" ? parseFloat(formData.costoAdquisicion) / 1000 : formData.umAdquisicion === "Decí" ? parseFloat(formData.costoAdquisicion) * 10 : formData.umAdquisicion === "Centí" ? parseFloat(formData.costoAdquisicion) * 100 : formData.umAdquisicion === "Milí" ? parseFloat(formData.costoAdquisicion) * 1000 : formData.umAdquisicion == formData.umPrimaria ? formData.costoAdquisicion : "";
-
-                    const dataTemp = {
-                        nombre: formData.nombre,
-                        umPrimaria: formData.umPrimaria,
-                        costoAdquisicion: formData.costoAdquisicion,
-                        umAdquisicion: formData.umPrimaria === "Paquete" ? "Paquete" : formData.umAdquisicion,
-                        umProduccion: formData.umPrimaria === "Paquete" ? "Piezas" : formData.umProduccion,
-                        cantidadPiezas: formData.cantidadPiezas,
-                        costoProduccion: formData.umPrimaria === "Paquete" ? parseFloat(formData.costoAdquisicion) / formData.cantidadPiezas : formData.umProduccion === "Decá" ? parseFloat(precio) * 100 : formData.umProduccion === "Hectó" ? parseFloat(formData.umAdquisicion) * 10 : formData.umProduccion === "Kiló" ? parseFloat(precio) * 1000 : formData.umProduccion === "Decí" ? parseFloat(precio) / 10 : formData.umProduccion === "Centí" ? parseFloat(precio) / 100 : formData.umProduccion === "Milí" ? parseFloat(precio) / 1000 : formData.umProduccion == formData.umPrimaria ? precio : "",
-                        imagen: "",
-                    }
-                    actualizaIngrediente(id, dataTemp).then(response => {
-                        const { data } = response;
-                        navigate({
-                            search: queryString.stringify(""),
-                        });
-                        LogsInformativos("Se ha modificado el ingrediente " + datosIngredientes.nombre, datosIngredientes);
-                        Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
-                        cancelarRegistro();
-                    })
-                }
-            } catch (e) {
-                console.log(e)
-            }
-        }
-    }
-
     const onChange = e => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
+    const [errorState, action, isPending] = useActionState(async (prevState, fd) => {
+        const nombre = fd.get("nombre");
+        const umPrimaria = fd.get("umPrimaria");
+        const costoAdquisicion = parseFloat(fd.get("costoAdquisicion"));
+        const cantidadPiezas = parseFloat(fd.get("cantidadPiezas") || 0);
+        const umAdquisicion = fd.get("umAdquisicion");
+        const umProduccion = fd.get("umProduccion");
+
+        if (!nombre || !umPrimaria || !costoAdquisicion) {
+            Swal.fire({ icon: 'warning', title: "Completa el formulario", timer: 1600, showConfirmButton: false });
+            return { error: "Incompleto" };
+        }
+
+        try {
+            let imagenUrl = "";
+            // Original logic checks if imagenFile exists
+            if (imagenFile && typeof imagenFile !== 'string') {
+                const response = await subeArchivosCloudinary(imagenFile, "ingrediente");
+                imagenUrl = response.data.secure_url;
+            } else if (typeof imagenFile === 'string') {
+                imagenUrl = imagenFile;
+            }
+
+            const umAdqToUse = umPrimaria === "Paquete" ? "Paquete" : umAdquisicion;
+            const umProdToUse = umPrimaria === "Paquete" ? "Piezas" : umProduccion;
+
+            const precio = umPrimaria === "Paquete" ? costoAdquisicion / cantidadPiezas
+                : umAdquisicion === "Decá" ? costoAdquisicion / 100
+                    : umAdquisicion === "Hectó" ? costoAdquisicion / 10
+                        : umAdquisicion === "Kiló" ? costoAdquisicion / 1000
+                            : umAdquisicion === "Decí" ? costoAdquisicion * 10
+                                : umAdquisicion === "Centí" ? costoAdquisicion * 100
+                                    : umAdquisicion === "Milí" ? costoAdquisicion * 1000
+                                        : umAdquisicion == umPrimaria ? costoAdquisicion : "";
+
+            const costoProduccion = umPrimaria === "Paquete" ? costoAdquisicion / cantidadPiezas
+                : umProduccion === "Decá" ? parseFloat(precio) * 100
+                    : umProduccion === "Hectó" ? parseFloat(umAdquisicion) * 10
+                        : umProduccion === "Kiló" ? parseFloat(precio) * 1000
+                            : umProduccion === "Decí" ? parseFloat(precio) / 10
+                                : umProduccion === "Centí" ? parseFloat(precio) / 100
+                                    : umProduccion === "Milí" ? parseFloat(precio) / 1000
+                                        : umProduccion == umPrimaria ? precio : "";
+
+            const dataTemp = {
+                nombre: nombre,
+                umPrimaria: umPrimaria,
+                costoAdquisicion: costoAdquisicion,
+                umAdquisicion: umAdqToUse,
+                umProduccion: umProdToUse,
+                cantidadPiezas: cantidadPiezas,
+                costoProduccion: costoProduccion,
+                imagen: imagenUrl,
+            };
+
+            const response = await actualizaIngrediente(id, dataTemp);
+            const { data } = response;
+
+            navigate({ search: queryString.stringify(""), });
+            LogsInformativos("Se ha modificado el ingrediente " + datosIngredientes.nombre, datosIngredientes);
+            Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
+            cancelarRegistro();
+            return null;
+
+        } catch (e) {
+            console.log(e);
+            Swal.fire({ icon: 'error', title: "Error al modificar", showConfirmButton: false, timer: 1600 });
+            return { error: "Error" };
+        }
+    }, null);
+
     return (
         <>
-            <Form onSubmit={onSubmit} onChange={onChange}>
+            <Form action={action} onChange={onChange}>
                 <div className="datosDelProducto">
                     <Row className="mb-3">
                         <Form.Group as={Col} controlId="formGridNombre">
@@ -116,10 +118,11 @@ function ModificaIngredientes(props) {
                         <Form.Group as={Col} controlId="formGridNombre">
                             <Form.Label>Precio de adquisición</Form.Label>
                             <Form.Control
-                                type="text"
+                                type="number"
                                 name="costoAdquisicion"
                                 placeholder="Escribe el costo de adquisición"
                                 defaultValue={formData.costoAdquisicion}
+                                step="0.01"
                             />
                         </Form.Group>
 
@@ -149,7 +152,7 @@ function ModificaIngredientes(props) {
                                         <Form.Label>Unidad de medida de adquisicón</Form.Label>
                                         <Form.Control
                                             type="text"
-                                            name="tipo"
+                                            name="tipo" // Keep logic using calculated umAdqToUse
                                             value="Paquete"
                                             disabled
                                         />
@@ -166,7 +169,7 @@ function ModificaIngredientes(props) {
                                         <Form.Label>Unidad de medida de producción</Form.Label>
                                         <Form.Control
                                             type="text"
-                                            name="tipo"
+                                            name="tipo" // Keep logic using calculated umProdToUse
                                             value="Piezas"
                                             disabled
                                         />
@@ -232,7 +235,7 @@ function ModificaIngredientes(props) {
                                     <Form.Group as={Col} controlId="formGridNombre">
                                         <Form.Label>Cantidad de piezas del paquete</Form.Label>
                                         <Form.Control
-                                            type="text"
+                                            type="number"
                                             name="cantidadPiezas"
                                             defaultValue={formData.cantidadPiezas}
                                             placeholder="Cantidad de piezas que contiene el paquete"
@@ -251,9 +254,9 @@ function ModificaIngredientes(props) {
                             type="submit"
                             variant="success"
                             className="registrar"
-                            disabled={loading}
+                            disabled={isPending}
                         >
-                            <FontAwesomeIcon icon={faSave} /> {!loading ? "Registrar" : <Spinner animation="border" />}
+                            <FontAwesomeIcon icon={faSave} /> {!isPending ? "Registrar" : <Spinner animation="border" size="sm" />}
                         </Button>
                     </Col>
                     <Col>
@@ -261,7 +264,7 @@ function ModificaIngredientes(props) {
                             title="Cerrar ventana"
                             variant="danger"
                             className="cancelar"
-                            disabled={loading}
+                            disabled={isPending}
                             onClick={() => {
                                 cancelarRegistro()
                             }}

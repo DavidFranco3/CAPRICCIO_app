@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useActionState } from 'react';
 import { Button, Col, Form, Spinner, Row, Image, Alert } from "react-bootstrap";
 import { map } from "lodash";
 import { eliminaProductos } from "../../../../api/productos";
@@ -23,27 +23,23 @@ function EliminaProductos(props) {
         setShowModal(false)
     }
 
-    const [loading, setLoading] = useState(false);
-
-    const onSubmit = e => {
-        e.preventDefault()
-        setLoading(true)
+    const [errorState, action, isPending] = useActionState(async (prevState, fd) => {
         try {
-            eliminaProductos(id).then(response => {
-                const { data } = response;
-                navigate({
-                    search: queryString.stringify(""),
-                });
-                LogsInformativos("El producto " + nombre + " fue eliminado", datosProducto);
-                Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
-                cancelarRegistro();
-            }).catch(e => {
-                console.log(e)
-            })
+            const response = await eliminaProductos(id);
+            const { data } = response;
+            navigate({
+                search: queryString.stringify(""),
+            });
+            LogsInformativos("El producto " + nombre + " fue eliminado", datosProducto);
+            Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
+            cancelarRegistro();
+            return null;
         } catch (e) {
-            console.log(e)
+            console.log(e);
+            Swal.fire({ icon: 'error', title: "Error al eliminar producto", timer: 1600, showConfirmButton: false });
+            return { error: e.message };
         }
-    }
+    }, null);
 
     return (
         <>
@@ -55,7 +51,7 @@ function EliminaProductos(props) {
                     </p>
                 </Alert>
 
-                <Form onSubmit={onSubmit}>
+                <Form action={action}>
                     <div className="imagenPrincipal">
                         <h4 className="textoImagenPrincipal">Imagen del producto</h4>
                         <div className="imagenProducto">
@@ -66,7 +62,7 @@ function EliminaProductos(props) {
                             </div>
                         </div>
                     </div>
-                    
+
                     <Row className="mb-3">
                         <Form.Group as={Col} controlId="formGridNombre">
                             <Form.Label>
@@ -97,14 +93,14 @@ function EliminaProductos(props) {
                     </Row>
 
                     <Row className="mb-3">
-                        <Form.Group as={Col} controlId="formGridNombre">
+                        <Form.Group as={Col} controlId="formGridPrecio">
                             <Form.Label>
                                 Precio
                             </Form.Label>
                             <Form.Control
                                 type="text"
-                                name="nombre"
-                                placeholder="Escribe el nombre"
+                                name="precio"
+                                placeholder="Escribe el precio"
                                 value={precio}
                                 disabled
                             />
@@ -131,9 +127,9 @@ function EliminaProductos(props) {
                                 type="submit"
                                 variant="success"
                                 className="registrar"
-                                disabled={loading}
+                                disabled={isPending}
                             >
-                                <FontAwesomeIcon icon={faSave} /> {!loading ? "Eliminar" : <Spinner animation="border" />}
+                                <FontAwesomeIcon icon={faSave} /> {!isPending ? "Eliminar" : <Spinner animation="border" />}
                             </Button>
                         </Col>
                         <Col>
@@ -141,7 +137,7 @@ function EliminaProductos(props) {
                                 title="Cerrar ventana"
                                 variant="danger"
                                 className="cancelar"
-                                disabled={loading}
+                                disabled={isPending}
                                 onClick={() => {
                                     cancelarRegistro()
                                 }}

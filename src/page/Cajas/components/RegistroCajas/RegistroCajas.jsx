@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useActionState } from 'react';
 import { registraCajas } from "../../../../api/cajas";
 import "../../../../scss/styles.scss";
 import { Button, Col, Form, Row, Spinner } from "react-bootstrap";
@@ -11,53 +11,51 @@ import { LogsInformativos } from '../../../Logs/components/LogsSistema/LogsSiste
 
 function RegistroCajas(props) {
     const { setShowModal, navigate, listUsuarios } = props;
-    const [formData, setFormData] = useState(initialFormValue());
-    const [loading, setLoading] = useState(false);
 
     // Para cancelar el registro
     const cancelarRegistro = () => {
         setShowModal(false)
     }
 
-    const onSubmit = e => {
-        e.preventDefault();
+    const [errorState, action, isPending] = useActionState(async (prevState, fd) => {
+        const cajero = fd.get("cajero");
 
-        if (!formData.cajero) {
+        if (!cajero || cajero === "Elige una opción") {
             Swal.fire({ icon: 'warning', title: "Completa el formulario", timer: 1600, showConfirmButton: false });
-        } else {
-            try {
-                setLoading(true);
-
-                const temp = formData.cajero.split("/");
-
-                const dataTemp = {
-                    idCajero: temp[0],
-                    cajero: temp[1],
-                    saldo: "0",
-                    estado: "true"
-                }
-                registraCajas(dataTemp).then(response => {
-                    const { data } = response;
-                    navigate({
-                        search: queryString.stringify(""),
-                    });
-                    LogsInformativos("Se ha registrado la caja para el cajero " + dataTemp.cajero, data.datos);
-                    Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
-                    cancelarRegistro();
-                })
-            } catch (e) {
-                console.log(e)
-            }
+            return { error: "Incompleto" };
         }
-    }
 
-    const onChange = e => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
+        try {
+            const temp = cajero.split("/");
+
+            const dataTemp = {
+                idCajero: temp[0],
+                cajero: temp[1],
+                saldo: "0",
+                estado: "true"
+            }
+
+            const response = await registraCajas(dataTemp);
+            const { data } = response;
+
+            navigate({
+                search: queryString.stringify(""),
+            });
+            LogsInformativos("Se ha registrado la caja para el cajero " + dataTemp.cajero, data.datos);
+            Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
+            cancelarRegistro();
+            return null;
+
+        } catch (e) {
+            console.log(e);
+            Swal.fire({ icon: 'error', title: "Error al registrar la caja", timer: 1600, showConfirmButton: false });
+            return { error: "Error" };
+        }
+    }, null);
 
     return (
         <>
-            <Form onSubmit={onSubmit} onChange={onChange}>
+            <Form action={action}>
                 <div className="datosDelProducto">
                     <Row className="mb-3">
                         <Form.Group as={Col} controlId="formGridNombre">
@@ -66,7 +64,7 @@ function RegistroCajas(props) {
                                 as="select"
                                 name="cajero"
                                 placeholder="Escribe el nombre del cajero"
-                                defaultValue={formData.cajero}
+                                defaultValue=""
                             >
                                 <option>Elige una opción</option>
                                 {map(listUsuarios, (usuario, index) => (
@@ -84,9 +82,9 @@ function RegistroCajas(props) {
                             type="submit"
                             variant="success"
                             className="registrar"
-                            disabled={loading}
+                            disabled={isPending}
                         >
-                            <FontAwesomeIcon icon={faSave} /> {!loading ? "Registrar" : <Spinner animation="border" />}
+                            <FontAwesomeIcon icon={faSave} /> {!isPending ? "Registrar" : <Spinner animation="border" size="sm" />}
                         </Button>
                     </Col>
                     <Col>
@@ -94,7 +92,7 @@ function RegistroCajas(props) {
                             title="Cerrar ventana"
                             variant="danger"
                             className="cancelar"
-                            disabled={loading}
+                            disabled={isPending}
                             onClick={() => {
                                 cancelarRegistro()
                             }}
@@ -106,12 +104,6 @@ function RegistroCajas(props) {
             </Form>
         </>
     );
-}
-
-function initialFormValue() {
-    return {
-        cajero: ""
-    }
 }
 
 export default RegistroCajas;

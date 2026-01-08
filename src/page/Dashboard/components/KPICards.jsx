@@ -31,7 +31,7 @@ const KPICards = ({ ventas }) => {
         return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(value);
     };
 
-    const cardStyles = "shadow-sm border-0 h-100";
+    const cardStyles = "shadow-sm border-0 h-100 text-white";
     const iconStyles = "h-8 w-8 text-white opacity-75";
 
     return (
@@ -42,7 +42,7 @@ const KPICards = ({ ventas }) => {
                         <div className="d-flex justify-content-between align-items-start">
                             <div>
                                 <p className="mb-0 opacity-75 fw-bold text-uppercase" style={{ fontSize: '0.8rem' }}>Ventas Hoy</p>
-                                <h3 className="fw-bold mb-0">{formatCurrency(metrics.totalVentas)}</h3>
+                                <h3 className="fw-bold mb-0" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>{formatCurrency(metrics.totalVentas)}</h3>
                             </div>
                             <div className="icon-bubble">
                                 <CurrencyDollarIcon className={iconStyles} />
@@ -58,7 +58,7 @@ const KPICards = ({ ventas }) => {
                         <div className="d-flex justify-content-between align-items-start">
                             <div>
                                 <p className="mb-0 opacity-75 fw-bold text-uppercase" style={{ fontSize: '0.8rem' }}>Pedidos</p>
-                                <h3 className="fw-bold mb-0">{metrics.totalPedidos}</h3>
+                                <h3 className="fw-bold mb-0" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>{metrics.totalPedidos}</h3>
                             </div>
                             <div className="icon-bubble">
                                 <TicketIcon className={iconStyles} />
@@ -74,7 +74,7 @@ const KPICards = ({ ventas }) => {
                         <div className="d-flex justify-content-between align-items-start">
                             <div>
                                 <p className="mb-0 opacity-75 fw-bold text-uppercase" style={{ fontSize: '0.8rem' }}>Ticket Promedio</p>
-                                <h3 className="fw-bold mb-0">{formatCurrency(metrics.ticketPromedio)}</h3>
+                                <h3 className="fw-bold mb-0" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>{formatCurrency(metrics.ticketPromedio)}</h3>
                             </div>
                             <div className="icon-bubble">
                                 <ChartBarIcon className={iconStyles} />
@@ -90,7 +90,7 @@ const KPICards = ({ ventas }) => {
                         <div className="d-flex justify-content-between align-items-start">
                             <div>
                                 <p className="mb-0 opacity-75 fw-bold text-uppercase" style={{ fontSize: '0.8rem' }}>Productos</p>
-                                <h3 className="fw-bold mb-0">{metrics.productosVendidos}</h3>
+                                <h3 className="fw-bold mb-0" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>{metrics.productosVendidos}</h3>
                             </div>
                             <div className="icon-bubble">
                                 <ShoppingBagIcon className={iconStyles} />

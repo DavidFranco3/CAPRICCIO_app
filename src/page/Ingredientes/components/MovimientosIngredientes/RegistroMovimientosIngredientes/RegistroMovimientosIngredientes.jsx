@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useActionState } from 'react';
 import {
     listarMovimientosIngredientes,
     obtenerIngredientes, registraMovimientosIngrediente
@@ -13,9 +13,8 @@ import { LogsInformativos } from '../../../../Logs/components/LogsSistema/LogsSi
 
 function RegistroMovimientosIngredientes(props) {
     const { setShowModal, navigate, id } = props;
-    const [formData, setFormData] = useState(initialFormValue());
-    const [loading, setLoading] = useState(false);
 
+    // Data for display
     const [cantidadAcumulada, setCantidadAcumulada] = useState(0);
     const [nombreIngrediente, setNombreIngrediente] = useState("");
     const [umIngrediente, setUmIngrediente] = useState("");
@@ -45,107 +44,81 @@ function RegistroMovimientosIngredientes(props) {
         setShowModal(false)
     }
 
-    const onSubmit = (e) => {
-        e.preventDefault()
+    const [errorState, action, isPending] = useActionState(async (prevState, fd) => {
+        const tipo = fd.get("tipo");
+        const cantidadStr = fd.get("cantidad");
+        const cantidad = parseFloat(cantidadStr);
 
-        if (!formData.tipo || !formData.cantidad) {
-            // console.log("Valores "+ validCount + " del form " + size(formData))
-            Swal.fire({ icon: 'warning', title: "Completa el formulario", timer: 1600, showConfirmButton: false })
-        } else {
-            setLoading(true)
-
-            try {
-                // Obtener los datos de la materia prima, para recuperar todos los movimientos y almacenar uno nuevo
-                listarMovimientosIngredientes(id).then(response => {
-                    const { data } = response;
-
-                    // Validar tipo y determinar nuevas existencias
-                    if (formData.tipo === "Entrada") {
-                        const nuevaCantidad = parseFloat(cantidadAcumulada) + parseFloat(formData.cantidad);
-
-                        const dataMovimiento = {
-                            nombre: nombreIngrediente,
-                            tipo: formData.tipo,
-                            cantidad: formData.cantidad,
-                            um: umIngrediente,
-                            fecha: new Date(),
-                        }
-
-                        const finalEntrada = data.concat(dataMovimiento)
-
-                        const dataTempFinal = {
-                            movimientos: finalEntrada,
-                            cantidad: nuevaCantidad.toString()
-                        }
-
-                        //console.log("datos finales ", movimientosFinal)
-
-
-                        registraMovimientosIngrediente(id, dataTempFinal).then(response => {
-                            const { data } = response;
-                            //console.log(response)
-                            const { mensaje, datos } = data;
-                            Swal.fire({ icon: 'success', title: mensaje, timer: 1600, showConfirmButton: false })
-                            setLoading(false);
-                            LogsInformativos(`Se han actualizado las existencias del ingrediente ${nombreIngrediente}`, datos)
-                            navigate({
-                                search: queryString.stringify(""),
-                            });
-                            cancelarRegistro();
-                        });
-                    }
-                    if (formData.tipo === "Salida") {
-                        // console.log("Afecta existencias stock")
-                        if (parseFloat(cantidadAcumulada) === 0 || parseFloat(formData.cantidad) > parseFloat(cantidadAcumulada)) {
-                            Swal.fire({ icon: 'error', title: "Las existencias no pueden satisfacer la solicitud", timer: 1600, showConfirmButton: false })
-                            setLoading(false)
-                        } else {
-                            const nuevaCantidad = parseFloat(cantidadAcumulada) - parseFloat(formData.cantidad);
-
-                            const dataMovimiento = {
-                                nombre: nombreIngrediente,
-                                tipo: formData.tipo,
-                                cantidad: formData.cantidad,
-                                um: umIngrediente,
-                                fecha: new Date(),
-                            }
-
-                            const finalEntrada = data.concat(dataMovimiento)
-
-                            const dataTempFinal = {
-                                movimientos: finalEntrada,
-                                cantidad: nuevaCantidad.toString()
-                            }
-                            registraMovimientosIngrediente(id, dataTempFinal).then(response => {
-                                const { data } = response;
-                                const { mensaje, datos } = data;
-                                Swal.fire({ icon: 'success', title: mensaje, timer: 1600, showConfirmButton: false })
-                                setLoading(false);
-                                LogsInformativos(`Se han actualizado las existencias del ingrediente ${nombreIngrediente}`, datos)
-                                navigate({
-                                    search: queryString.stringify(""),
-                                });
-                                cancelarRegistro();
-                            })
-                        }
-                    }
-
-                })
-            } catch (e) {
-                console.log(e)
-            }
+        if (!tipo || !cantidadStr || tipo === "Elige una opción") {
+            Swal.fire({ icon: 'warning', title: "Completa el formulario", timer: 1600, showConfirmButton: false });
+            return { error: "Incompleto" };
         }
-    }
 
-    const onChange = e => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
+        try {
+            // Fetch fresh data for integrity
+            const [ingredienteRes, movimientosRes] = await Promise.all([
+                obtenerIngredientes(id),
+                listarMovimientosIngredientes(id)
+            ]);
 
-    console.log(formData);
+            const currentData = ingredienteRes.data;
+            const history = movimientosRes.data;
+
+            const currentStock = parseFloat(currentData.cantidad);
+            const currentName = currentData.nombre;
+            const currentUm = currentData.umProduccion;
+
+            let nuevaCantidad = currentStock;
+
+            if (tipo === "Entrada") {
+                nuevaCantidad = currentStock + cantidad;
+            } else if (tipo === "Salida") {
+                if (currentStock === 0 || cantidad > currentStock) {
+                    Swal.fire({ icon: 'error', title: "Las existencias no pueden satisfacer la solicitud", timer: 1600, showConfirmButton: false });
+                    return { error: "Stock insuficiente" };
+                }
+                nuevaCantidad = currentStock - cantidad;
+            }
+
+            const dataMovimiento = {
+                nombre: currentName,
+                tipo: tipo,
+                cantidad: cantidadStr,
+                um: currentUm,
+                fecha: new Date(),
+            }
+
+            // Combine history
+            const finalEntrada = history.concat(dataMovimiento);
+
+            const dataTempFinal = {
+                movimientos: finalEntrada,
+                cantidad: nuevaCantidad.toString()
+            }
+
+            const response = await registraMovimientosIngrediente(id, dataTempFinal);
+            const { data } = response;
+            const { mensaje, datos } = data;
+
+            Swal.fire({ icon: 'success', title: mensaje, timer: 1600, showConfirmButton: false });
+            LogsInformativos(`Se han actualizado las existencias del ingrediente ${currentName}`, datos);
+
+            navigate({
+                search: queryString.stringify(""),
+            });
+            cancelarRegistro();
+            return null;
+
+        } catch (e) {
+            console.log(e);
+            Swal.fire({ icon: 'error', title: "Error al registrar movimiento", showConfirmButton: false, timer: 1600 });
+            return { error: "Error" };
+        }
+    }, null);
 
     return (
         <>
-            <Form onSubmit={onSubmit} onChange={onChange}>
+            <Form action={action}>
                 <div className="datosDelProducto">
                     <Row className="mb-3">
                         <Form.Group as={Col} controlId="formGridNombre">
@@ -153,7 +126,7 @@ function RegistroMovimientosIngredientes(props) {
                             <Form.Control
                                 as="select"
                                 name="tipo"
-                                defaultValue={formData.tipo}
+                                defaultValue=""
                             >
                                 <option>Elige una opción</option>
                                 <option value="Entrada">Entrada</option>
@@ -178,7 +151,7 @@ function RegistroMovimientosIngredientes(props) {
                                 type="number"
                                 name="cantidad"
                                 placeholder="Escribe la cantidad"
-                                defaultValue={formData.cantidad}
+                                step="any"
                             />
                         </Form.Group>
                     </Row>
@@ -191,9 +164,9 @@ function RegistroMovimientosIngredientes(props) {
                             type="submit"
                             variant="success"
                             className="registrar"
-                            disabled={loading}
+                            disabled={isPending}
                         >
-                            <FontAwesomeIcon icon={faSave} /> {!loading ? "Registrar" : <Spinner animation="border" />}
+                            <FontAwesomeIcon icon={faSave} /> {!isPending ? "Registrar" : <Spinner animation="border" size="sm" />}
                         </Button>
                     </Col>
                     <Col>
@@ -201,7 +174,7 @@ function RegistroMovimientosIngredientes(props) {
                             title="Cerrar ventana"
                             variant="danger"
                             className="cancelar"
-                            disabled={loading}
+                            disabled={isPending}
                             onClick={() => {
                                 cancelarRegistro()
                             }}
@@ -213,13 +186,6 @@ function RegistroMovimientosIngredientes(props) {
             </Form>
         </>
     );
-}
-
-function initialFormValue() {
-    return {
-        tipo: "",
-        cantidad: "",
-    }
 }
 
 export default RegistroMovimientosIngredientes;

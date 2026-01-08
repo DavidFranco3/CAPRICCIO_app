@@ -137,37 +137,39 @@ function Logs(props) {
 
   return (
     <>
-      
-      <div className="card card-outline  m-3">
-        <div className="card-header bg-gray">
-          <h4 className="font-bold mb-0">Logs del sistema</h4>
+
+      <div className="m-3">
+        <div className="dashboard-header-glass">
+          <h4 className="font-bold text-white mb-0">Logs del sistema</h4>
         </div>
-        <div className="card-body">
-          {listLog ? (
-            <>
-              <Suspense fallback={<Spinner />}>
-                <ListLogs
-                  listLogs={listLog}
-                  location={location}
-                  navigate={navigate}
-                  setRefreshCheckLogin={setRefreshCheckLogin}
-                  setRowsPerPage={setRowsPerPage}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                  setPage={setPage}
-                  noTotalLogs={noTotalLogs}
+        <div className="card card-outline glass-card">
+          <div className="card-body">
+            {listLog ? (
+              <>
+                <Suspense fallback={<Spinner />}>
+                  <ListLogs
+                    listLogs={listLog}
+                    location={location}
+                    navigate={navigate}
+                    setRefreshCheckLogin={setRefreshCheckLogin}
+                    setRowsPerPage={setRowsPerPage}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    setPage={setPage}
+                    noTotalLogs={noTotalLogs}
+                  />
+                </Suspense>
+              </>
+            ) : (
+              <>
+                <Lottie
+                  loop={true}
+                  play={true}
+                  animationData={AnimacionLoading}
                 />
-              </Suspense>
-            </>
-          ) : (
-            <>
-              <Lottie
-                loop={true}
-                play={true}
-                animationData={AnimacionLoading}
-              />
-            </>
-          )}
+              </>
+            )}
+          </div>
         </div>
       </div>
     </>

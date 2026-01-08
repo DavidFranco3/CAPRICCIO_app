@@ -113,7 +113,7 @@ function Historial(props) {
 
   return (
     <div className="card card-outline m-3">
-      <div className="card-header bg-gray">
+      <div className="card-header bg-header-premium">
         <h4 className="font-bold mb-0">Historiales</h4>
       </div>
 

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useActionState } from "react";
 import { Col, Form, Row } from "react-bootstrap";
 import dayjs from 'dayjs';
 import 'dayjs/locale/es';
@@ -506,11 +506,15 @@ function DatosExtraVenta(props) {
     });
   };
 
-  const cambiarOrdenAVenta = async () => {
+  // UNIFIED ACTION FOR VENTA (Cobrar / Cobrar Después)
+  const [errorState, action, isPending] = useActionState(async (prevState, fd) => {
+    const actionType = fd.get("actionType"); // "COBR" or "PP"
     const fecha = calcularFecha();
     formData.infoVenta.total = total;
     const formattedDate = dayjs(fechayHoraSinFormato).tz('America/Mexico_City').format('YYYY-MM-DDTHH:mm:ss.SSSZ');
 
+    // Determine tipoPago based on checkboxes (which are still in local state but we can also check fd)
+    // Actually, since we have complex state, it's easier to keep using formData here
     if (
       (formData.infoMetodosPago.efectivo.estado &&
         formData.infoMetodosPago.tdc.estado) ||
@@ -526,130 +530,14 @@ function DatosExtraVenta(props) {
       formData.infoVenta.tipoPago = "TDC";
     } else if (formData.infoMetodosPago.transfer.estado) {
       formData.infoVenta.tipoPago = "Transferencia";
+    } else {
+      formData.infoVenta.tipoPago = actionType === "PP" ? "" : formData.infoVenta.tipoPago;
     }
 
-    console.log(formData.infoVenta);
-
-    if (totalPagado - cambio < total) {
+    if (actionType === "COBR" && (totalPagado - cambio < total)) {
       Swal.fire({ icon: 'warning', title: "Por favor ingresa la cantidad mínima del total", timer: 1600, showConfirmButton: false });
-    } else {
-      try {
-        const dataTemp = {
-          numeroTiquet: formData.infoVenta.numeroTiquet,
-          turno: turno?.idTurno,
-          cliente: formData.infoVenta.cliente,
-          tipo: props.mesaClick ? "Orden de mesa" : "Pedido de mostrador",
-          mesa: formData.infoVenta.mesa,
-          usuario: formData.infoVenta.usuario,
-          estado: "COBR",
-          detalles: formData.infoVenta.detalles,
-          observaciones: formData.infoVenta.observaciones,
-          tipoPago: formData.infoVenta.tipoPago,
-          efectivo: formData.infoMetodosPago.efectivo.cantidad,
-          cambio: formData.infoVenta.cambio,
-          productos: formData.infoVenta.productos,
-          subtotal: formData.infoVenta.subtotal,
-          tipoPedido: formData.infoVenta.tipoPedido,
-          hacerPedido: formData.infoVenta.hacerPedido,
-          tipoDescuento: formData.infoVenta.tipoDescuento,
-          descuento: formData.infoVenta.descuento,
-          pagado:
-            (props.hacerPedido === "Rappi" && props.hacerPedido === "Didi" && props.hacerPedido === "Uber")
-              ? false
-              : true,
-          total: formData.infoVenta.total,
-          iva: formData.infoVenta.iva,
-          atendido: formData.infoVenta.atendido,
-          comision: formData.infoVenta.comision,
-          año: formData.infoVenta.año || fecha.añoVenta,
-          mes: formData.infoVenta.mes || fecha.mes,
-          semana: formData.infoVenta.semana || fecha.weekNumber,
-          fecha: formData.infoVenta.fecha || fecha.formattedDate,
-          metodosPago: formData.infoMetodosPago,
-          createdAt: formattedDate
-        };
-        console.log(dataTemp);
-
-        if (!isVenta) {
-          await imprimirTicketFinal(
-            <TicketFinal
-              formData={dataTemp}
-              setShowMod={setShowMod}
-              setShowTerminalPV={setShowTerminalPV}
-              setShowTicket={setShowTicket}
-            />
-          );
-          await registraVentas(dataTemp).then(async (response) => {
-            const { data } = response;
-            LogsInformativos(
-              "Orden creada y cobrada " +
-              dataTemp.numeroTiquet +
-              " en la  mesa " +
-              props.numMesa,
-              data.datos
-            );
-            await actualizarStockInsumos(dataTemp.productos);
-            await agregarDineroCaja(dataTemp.total, dataTemp.tipoPago);
-            await desocuparMesa();
-            Swal.fire({ icon: 'success', title: "Se ha creado y cobrado la orden en mesa con éxito", timer: 1600, showConfirmButton: false });
-          });
-        } else {
-          await imprimirTicketFinal(
-            <TicketFinal
-              formData={dataTemp}
-              setShowMod={setShowMod}
-              setShowTerminalPV={setShowTerminalPV}
-              setShowTicket={setShowTicket}
-            />
-          );
-          await cobrarTicket(formData.infoVenta.numeroTiquet, dataTemp).then(
-            async (response) => {
-              const { data } = response;
-              LogsInformativos(
-                "Se ha cobrado la orden " +
-                formData.infoVenta.numeroTiquet +
-                " de la  mesa " +
-                formData.infoVenta.mesa,
-                data.datos
-              );
-              await actualizarStockInsumos(dataTemp.productos);
-              await agregarDineroCaja(dataTemp.total, dataTemp.tipoPago);
-              await desocuparMesa();
-              Swal.fire({ icon: 'success', title: `Se ha cobrado la orden de la mesa ${dataTemp.mesa} con éxito`, timer: 1600, showConfirmButton: false });
-            }
-          );
-        }
-      } catch (error) {
-        console.error("Error al enviar los datos:", error);
-      }
+      return { error: "Monto insuficiente" };
     }
-  };
-
-  const cobrarDespues = async () => {
-    const fecha = calcularFecha();
-    formData.infoVenta.total = total;
-    const formattedDate = dayjs(fechayHoraSinFormato).tz('America/Mexico_City').format('YYYY-MM-DDTHH:mm:ss.SSSZ');
-
-    if (
-      (formData.infoMetodosPago.efectivo.estado &&
-        formData.infoMetodosPago.tdc.estado) ||
-      (formData.infoMetodosPago.efectivo.estado &&
-        formData.infoMetodosPago.transfer.estado) ||
-      (formData.infoMetodosPago.transfer.estado &&
-        formData.infoMetodosPago.tdc.estado)
-    ) {
-      formData.infoVenta.tipoPago = "Combinado";
-    } else if (formData.infoMetodosPago.efectivo.estado) {
-      formData.infoVenta.tipoPago = "Efectivo";
-    } else if (formData.infoMetodosPago.tdc.estado) {
-      formData.infoVenta.tipoPago = "TDC";
-    } else if (formData.infoMetodosPago.transfer.estado) {
-      formData.infoVenta.tipoPago = "Transferencia";
-    } else {
-      formData.infoVenta.tipoPago = "";
-    }
-
-    console.log(formData.infoVenta);
 
     try {
       const dataTemp = {
@@ -659,19 +547,19 @@ function DatosExtraVenta(props) {
         tipo: props.mesaClick ? "Orden de mesa" : "Pedido de mostrador",
         mesa: formData.infoVenta.mesa,
         usuario: formData.infoVenta.usuario,
-        estado: "PP",
+        estado: actionType,
         detalles: formData.infoVenta.detalles,
         observaciones: formData.infoVenta.observaciones,
         tipoPago: formData.infoVenta.tipoPago,
         efectivo: formData.infoMetodosPago.efectivo.cantidad,
         cambio: formData.infoVenta.cambio,
-        subtotal: formData.infoVenta.subtotal,
         productos: formData.infoVenta.productos,
+        subtotal: formData.infoVenta.subtotal,
         tipoPedido: formData.infoVenta.tipoPedido,
         hacerPedido: formData.infoVenta.hacerPedido,
         tipoDescuento: formData.infoVenta.tipoDescuento,
         descuento: formData.infoVenta.descuento,
-        pagado: props.hacerPedido === false,
+        pagado: (actionType === "COBR" && !(props.hacerPedido === "Rappi" || props.hacerPedido === "Didi" || props.hacerPedido === "Uber")),
         total: formData.infoVenta.total,
         iva: formData.infoVenta.iva,
         atendido: formData.infoVenta.atendido,
@@ -683,68 +571,73 @@ function DatosExtraVenta(props) {
         metodosPago: formData.infoMetodosPago,
         createdAt: formattedDate
       };
-      console.log(dataTemp);
-      await imprimirTicketFinal(
-        <TicketFinal
-          formData={dataTemp}
-          setShowMod={setShowMod}
-          setShowTerminalPV={setShowTerminalPV}
-          setShowTicket={setShowTicket}
-        />
-      );
+
       if (!isVenta) {
+        if (actionType === "COBR") {
+          await imprimirTicketFinal(
+            <TicketFinal
+              formData={dataTemp}
+              setShowMod={setShowMod}
+              setShowTerminalPV={setShowTerminalPV}
+              setShowTicket={setShowTicket}
+            />
+          );
+        }
         await registraVentas(dataTemp).then(async (response) => {
           const { data } = response;
           LogsInformativos(
-            "Orden creada y puesta para cobrar después " +
+            `Orden creada y ${actionType === "COBR" ? "cobrada" : "puesta para cobrar después"} ` +
             dataTemp.numeroTiquet,
             data.datos
           );
-          try {
-          } catch (error) {
-            console.error("Error al cerrar el modal principal:", error);
-            try {
-            } catch (error) {
-              console.error("Error al cerrar el modal secundario:", error);
-              // Mostrar un mensaje de error general aquí
-              alert("Error al cerrar los modales");
-            }
+          if (actionType === "COBR") {
+            await actualizarStockInsumos(dataTemp.productos);
+            await agregarDineroCaja(dataTemp.total, dataTemp.tipoPago);
+            await desocuparMesa();
           }
-          Swal.fire({ icon: 'success', title: "orden creada para pagar después", timer: 1600, showConfirmButton: false });
+          Swal.fire({ icon: 'success', title: data.mensaje || (actionType === "COBR" ? "Venta realizada con éxito" : "Orden guardada"), timer: 1600, showConfirmButton: false });
+          cancelarRegistro();
         });
       } else {
+        if (actionType === "COBR") {
+          await imprimirTicketFinal(
+            <TicketFinal
+              formData={dataTemp}
+              setShowMod={setShowMod}
+              setShowTerminalPV={setShowTerminalPV}
+              setShowTicket={setShowTicket}
+            />
+          );
+        }
         await cobrarTicket(formData.infoVenta.numeroTiquet, dataTemp).then(
-          (response) => {
+          async (response) => {
             const { data } = response;
             LogsInformativos(
-              "Orden cambiada para cobrar después " +
-              dataTemp.numeroTiquet +
-              " en la  mesa " +
-              props.numMesa,
+              `Orden ${actionType === "COBR" ? "cobrada" : "cambiada para cobrar después"} ` +
+              formData.infoVenta.numeroTiquet,
               data.datos
             );
-            try {
-            } catch (error) {
-              console.error("Error al cerrar el modal principal:", error);
-              try {
-              } catch (error) {
-                console.error("Error al cerrar el modal secundario:", error);
-                // Mostrar un mensaje de error general aquí
-                alert("Error al cerrar los modales");
-              }
+            if (actionType === "COBR") {
+              await actualizarStockInsumos(dataTemp.productos);
+              await agregarDineroCaja(dataTemp.total, dataTemp.tipoPago);
+              await desocuparMesa();
             }
-            Swal.fire({ icon: 'success', title: "Lista la orden para pagar después", timer: 1600, showConfirmButton: false });
+            Swal.fire({ icon: 'success', title: data.mensaje || (actionType === "COBR" ? "Cobro realizado" : "Actualizado"), timer: 1600, showConfirmButton: false });
+            cancelarRegistro();
           }
         );
       }
+      return null;
     } catch (error) {
-      console.error("Error al enviar los datos:", error);
+      console.error("Error al procesar la venta:", error);
+      Swal.fire({ icon: 'error', title: "Error al processar la operación", text: error.message });
+      return { error: error.message };
     }
-  };
+  }, null);
 
   return (
     <>
-      <Form onSubmit={cobrarDespues}>
+      <Form action={action}>
         <div className="metodoDePago">
           <Row className="mx-1 mb-2 ">
             <Col className="border rounded mx-1">
@@ -1050,40 +943,50 @@ function DatosExtraVenta(props) {
             </Row>
           )}
         </div>
-      </Form>
 
-      <div className="mt-3 d-flex justify-content-evenly">
-        <button
-          className="btn btn-success"
-          onClick={() => cambiarOrdenAVenta()}
-        >
-          <i className="fa fa-coins me-2"></i>
-          Cobrar
-        </button>
-        <button className="btn btn-warning" onClick={cobrarDespues}>
-          <i className="fa fa-hourglass-half me-2"></i>
-          Cobrar después
-        </button>
-        <button className="btn btn-danger" onClick={cancelarRegistro}>
-          <i className="fa fa-ban me-2"></i>
-          Cancelar
-        </button>
-        <button
-          className="btn btn-primary"
-          onClick={() =>
-            imprimirTicketFinal(
-              <TicketFinal
-                formData={formData.infoVenta}
-                setShowMod={setShowMod}
-                setShowTerminalPV={setShowTerminalPV}
-                setShowTicket={setShowTicket}
-              />
-            )
-          }
-        >
-          <i className="fas fa-print"></i> Imp
-        </button>
-      </div>
+        <div className="mt-3 d-flex justify-content-evenly">
+          <Button
+            className="btn btn-success"
+            type="submit"
+            name="actionType"
+            value="COBR"
+            disabled={isPending}
+          >
+            <i className="fa fa-coins me-2"></i>
+            {!isPending ? "Cobrar" : <Spinner animation="border" size="sm" />}
+          </Button>
+          <Button
+            className="btn btn-warning"
+            type="submit"
+            name="actionType"
+            value="PP"
+            disabled={isPending}
+          >
+            <i className="fa fa-hourglass-half me-2"></i>
+            {!isPending ? "Cobrar después" : <Spinner animation="border" size="sm" />}
+          </Button>
+          <Button className="btn btn-danger" onClick={cancelarRegistro} disabled={isPending}>
+            <i className="fa fa-ban me-2"></i>
+            Cancelar
+          </Button>
+          <Button
+            className="btn btn-primary"
+            disabled={isPending}
+            onClick={() =>
+              imprimirTicketFinal(
+                <TicketFinal
+                  formData={formData.infoVenta}
+                  setShowMod={setShowMod}
+                  setShowTerminalPV={setShowTerminalPV}
+                  setShowTicket={setShowTicket}
+                />
+              )
+            }
+          >
+            <i className="fas fa-print"></i> Imp
+          </Button>
+        </div>
+      </Form>
       <BasicModal
         show={showMod}
         setShow={setShowMod}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useActionState } from 'react';
 import { Button, Col, Form, Row, Spinner, Image, Alert } from "react-bootstrap";
 import { eliminaUsuario } from "../../../../api/usuarios";
 import Swal from 'sweetalert2';
@@ -13,7 +13,6 @@ import { LogsInformativos } from '../../../Logs/components/LogsSistema/LogsSiste
 
 function EliminaUsuarios(props) {
     const { datosUsuario, navigate, setShowModal } = props;
-
     const { id, nombre, usuario, password, admin } = datosUsuario;
 
     dayjs.locale('es');
@@ -24,30 +23,27 @@ function EliminaUsuarios(props) {
         setShowModal(false)
     }
 
-
-    const [loading, setLoading] = useState(null);
-
-    const onSubmit = e => {
-        e.preventDefault()
-        setLoading(true)
+    const [errorState, action, isPending] = useActionState(async (prevState, fd) => {
         try {
-            eliminaUsuario(id).then(response => {
-                const { data } = response;
-                navigate({
-                    search: queryString.stringify(""),
-                });
-                LogsInformativos("El usuario " + usuario + " fue eliminado", datosUsuario);
-                Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
-                cancelarRegistro();
-            })
+            const response = await eliminaUsuario(id);
+            const { data } = response;
+            navigate({
+                search: queryString.stringify(""),
+            });
+            LogsInformativos("El usuario " + usuario + " fue eliminado", datosUsuario);
+            Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
+            cancelarRegistro();
+            return null;
         } catch (e) {
-            console.log(e)
+            console.log(e);
+            Swal.fire({ icon: 'error', title: "Error al eliminar usuario", timer: 1600, showConfirmButton: false });
+            return { error: e.message };
         }
-    }
+    }, null);
 
     return (
         <>
-            <Form onSubmit={onSubmit}>
+            <Form action={action}>
                 <div className="datosDelProducto">
                     <Alert variant="danger">
                         <Alert.Heading>Atención! Acción destructiva!</Alert.Heading>
@@ -67,7 +63,7 @@ function EliminaUsuarios(props) {
                                 disabled
                             />
                         </Form.Group>
-                        <Form.Group as={Col} controlId="formGridNombre">
+                        <Form.Group as={Col} controlId="formGridUsuario">
                             <Form.Label>Usario</Form.Label>
                             <Form.Control
                                 type="text"
@@ -80,7 +76,7 @@ function EliminaUsuarios(props) {
                     </Row>
 
                     <Row className="mb-3">
-                        <Form.Group as={Col} controlId="formGridNombre">
+                        <Form.Group as={Col} controlId="formGridPassword">
                             <Form.Label>Password</Form.Label>
                             <Form.Control
                                 type="text"
@@ -90,7 +86,7 @@ function EliminaUsuarios(props) {
                                 disabled
                             />
                         </Form.Group>
-                        <Form.Group as={Col} controlId="formGridNombre">
+                        <Form.Group as={Col} controlId="formGridAdmin">
                             <Form.Label>Tipo</Form.Label>
                             <Form.Control
                                 as="select"
@@ -100,9 +96,9 @@ function EliminaUsuarios(props) {
                                 disabled
                             >
                                 <option>Elige una opción</option>
-                                <option value="administrador" selected={admin === "administrador"}>Administrador</option>
-                                <option value="vendedor" selected={admin === "vendedor"}>Cajero</option>
-                                <option value="mesero" selected={admin === "mesero"}>Mesero</option>
+                                <option value="administrador">Administrador</option>
+                                <option value="vendedor">Cajero</option>
+                                <option value="mesero">Mesero</option>
                             </Form.Control>
                         </Form.Group>
                     </Row>
@@ -115,9 +111,9 @@ function EliminaUsuarios(props) {
                             type="submit"
                             variant="success"
                             className="registrar"
-                            disabled={loading}
+                            disabled={isPending}
                         >
-                            <FontAwesomeIcon icon={faSave} /> {!loading ? "Eliminar" : <Spinner animation="border" />}
+                            <FontAwesomeIcon icon={faSave} /> {!isPending ? "Eliminar" : <Spinner animation="border" />}
                         </Button>
                     </Col>
                     <Col>
@@ -125,7 +121,7 @@ function EliminaUsuarios(props) {
                             title="Cerrar ventana"
                             variant="danger"
                             className="cancelar"
-                            disabled={loading}
+                            disabled={isPending}
                             onClick={() => {
                                 cancelarRegistro()
                             }}

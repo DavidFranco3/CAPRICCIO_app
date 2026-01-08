@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useActionState } from 'react';
 import "../../../../scss/styles.scss";
 import { deshabilitaUsuario } from '../../../../api/usuarios';
 import Swal from 'sweetalert2';
@@ -13,7 +13,6 @@ import { LogsInformativos } from '../../../Logs/components/LogsSistema/LogsSiste
 
 function CancelarUsuarios(props) {
     const { datosUsuario, navigate, setShowModal } = props;
-
     const { id, nombre, usuario, password, admin, estadoUsuario } = datosUsuario;
 
     dayjs.locale('es');
@@ -24,30 +23,26 @@ function CancelarUsuarios(props) {
         setShowModal(false)
     }
 
-    const [loading, setLoading] = useState(false);
-
-    const onSubmit = e => {
-        e.preventDefault()
-        setLoading(true);
+    const [errorState, action, isPending] = useActionState(async (prevState, fd) => {
         try {
             const dataTemp = {
                 estadoUsuario: estadoUsuario === "true" ? "false" : "true"
             }
-            deshabilitaUsuario(id, dataTemp).then(response => {
-                const { data } = response;
-                navigate({
-                    search: queryString.stringify(""),
-                });
-                LogsInformativos("Estado del usuario " + usuario + " actualizado", datosUsuario);
-                Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
-                cancelarRegistro();
-            }).catch(e => {
-                console.log(e)
-            })
+            const response = await deshabilitaUsuario(id, dataTemp);
+            const { data } = response;
+            navigate({
+                search: queryString.stringify(""),
+            });
+            LogsInformativos("Estado del usuario " + usuario + " actualizado", datosUsuario);
+            Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
+            cancelarRegistro();
+            return null;
         } catch (e) {
-            console.log(e)
+            console.log(e);
+            Swal.fire({ icon: 'error', title: "Error al actualizar estado del usuario", timer: 1600, showConfirmButton: false });
+            return { error: e.message };
         }
-    }
+    }, null);
 
     return (
         <>
@@ -75,7 +70,7 @@ function CancelarUsuarios(props) {
                         </>
                     )
                 }
-                <Form onSubmit={onSubmit}>
+                <Form action={action}>
                     <Row className="mb-3">
                         <Form.Group as={Col} controlId="formGridNombre">
                             <Form.Label>Nombre</Form.Label>
@@ -87,7 +82,7 @@ function CancelarUsuarios(props) {
                                 disabled
                             />
                         </Form.Group>
-                        <Form.Group as={Col} controlId="formGridNombre">
+                        <Form.Group as={Col} controlId="formGridUsuario">
                             <Form.Label>Usario</Form.Label>
                             <Form.Control
                                 type="text"
@@ -100,7 +95,7 @@ function CancelarUsuarios(props) {
                     </Row>
 
                     <Row className="mb-3">
-                        <Form.Group as={Col} controlId="formGridNombre">
+                        <Form.Group as={Col} controlId="formGridPassword">
                             <Form.Label>Password</Form.Label>
                             <Form.Control
                                 type="text"
@@ -110,7 +105,7 @@ function CancelarUsuarios(props) {
                                 disabled
                             />
                         </Form.Group>
-                        <Form.Group as={Col} controlId="formGridNombre">
+                        <Form.Group as={Col} controlId="formGridAdmin">
                             <Form.Label>Tipo</Form.Label>
                             <Form.Control
                                 as="select"
@@ -120,9 +115,9 @@ function CancelarUsuarios(props) {
                                 disabled
                             >
                                 <option>Elige una opción</option>
-                                <option value="administrador" selected={admin === "administrador"}>Administrador</option>
-                                <option value="vendedor" selected={admin === "vendedor"}>Cajero</option>
-                                <option value="mesero" selected={admin === "mesero"}>Mesero</option>
+                                <option value="administrador">Administrador</option>
+                                <option value="vendedor">Cajero</option>
+                                <option value="mesero">Mesero</option>
                             </Form.Control>
                         </Form.Group>
                     </Row>
@@ -134,8 +129,9 @@ function CancelarUsuarios(props) {
                                 type="submit"
                                 variant="success"
                                 className="registrar"
+                                disabled={isPending}
                             >
-                                <FontAwesomeIcon icon={faSave} /> {!loading ? (estadoUsuario === "true" ? "Deshabilitar" : "Habilitar") : <Spinner animation="border" />}
+                                <FontAwesomeIcon icon={faSave} /> {!isPending ? (estadoUsuario === "true" ? "Deshabilitar" : "Habilitar") : <Spinner animation="border" />}
                             </Button>
                         </Col>
                         <Col>
@@ -143,6 +139,7 @@ function CancelarUsuarios(props) {
                                 title="Cerrar ventana"
                                 variant="danger"
                                 className="cancelar"
+                                disabled={isPending}
                                 onClick={() => {
                                     cancelarRegistro()
                                 }}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useActionState } from 'react';
 import { Button, Col, Form, Row, Spinner, Image, Alert } from "react-bootstrap";
 import { eliminaIngrediente } from "../../../../api/ingredientes";
 import Swal from 'sweetalert2';
@@ -24,30 +24,27 @@ function EliminaIngredientes(props) {
         setShowModal(false)
     }
 
-
-    const [loading, setLoading] = useState(null);
-
-    const onSubmit = e => {
-        e.preventDefault()
-        setLoading(true)
+    const [errorState, action, isPending] = useActionState(async () => {
         try {
-            eliminaIngrediente(id).then(response => {
-                const { data } = response;
-                navigate({
-                    search: queryString.stringify(""),
-                });
-                LogsInformativos("El ingrediente " + nombre  + " fue eliminado", datosIngrediente);
-                Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false })
-                cancelarRegistro();
-            })
+            const response = await eliminaIngrediente(id);
+            const { data } = response;
+            navigate({
+                search: queryString.stringify(""),
+            });
+            LogsInformativos("El ingrediente " + nombre + " fue eliminado", datosIngrediente);
+            Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false })
+            cancelarRegistro();
+            return null;
         } catch (e) {
             console.log(e)
+            Swal.fire({ icon: 'error', title: "Error al eliminar", showConfirmButton: false, timer: 1600 })
+            return { error: "Error" };
         }
-    }
+    }, null);
 
     return (
         <>
-            <Form onSubmit={onSubmit}>
+            <Form action={action}>
                 <div className="datosDelProducto">
                     <Alert variant="danger">
                         <Alert.Heading>Atención! Acción destructiva!</Alert.Heading>
@@ -112,9 +109,9 @@ function EliminaIngredientes(props) {
                             type="submit"
                             variant="success"
                             className="registrar"
-                            disabled={loading}
+                            disabled={isPending}
                         >
-                            <FontAwesomeIcon icon={faSave} /> {!loading ? "Eliminar" : <Spinner animation="border" />}
+                            <FontAwesomeIcon icon={faSave} /> {!isPending ? "Eliminar" : <Spinner animation="border" size="sm" />}
                         </Button>
                     </Col>
                     <Col>
@@ -122,7 +119,7 @@ function EliminaIngredientes(props) {
                             title="Cerrar ventana"
                             variant="danger"
                             className="cancelar"
-                            disabled={loading}
+                            disabled={isPending}
                             onClick={() => {
                                 cancelarRegistro()
                             }}

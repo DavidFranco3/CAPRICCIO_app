@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useActionState } from 'react';
 import "../../../../scss/styles.scss";
 import { cancelarVenta } from "../../../../api/ventas";
 import Swal from 'sweetalert2';
@@ -13,10 +13,7 @@ import { LogsInformativos } from '../../../Logs/components/LogsSistema/LogsSiste
 
 function CancelarVenta(props) {
     const { datosVentas, navigate, setShowModal } = props;
-
     const { _id, numeroTiquet, productos, total, estado, createdAt } = datosVentas
-
-    console.log(navigate)
 
     dayjs.locale('es');
     dayjs.extend(localizedFormat);
@@ -26,30 +23,26 @@ function CancelarVenta(props) {
         setShowModal(false)
     }
 
-    const [loading, setLoading] = useState(false);
-
-    const onSubmit = e => {
-        e.preventDefault()
-        setLoading(true);
+    const [errorState, action, isPending] = useActionState(async (prevState, fd) => {
         try {
             const dataTemp = {
                 estado: estado === "true" ? "false" : "true"
             }
-            cancelarVenta(_id, dataTemp).then(response => {
-                const { data } = response;
-                navigate({
-                    search: queryString.stringify(""),
-                });
-                LogsInformativos("Estado de la venta " + numeroTiquet + " actualizado", datosVentas);
-                Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
-                cancelarRegistro();
-            }).catch(e => {
-                console.log(e)
-            })
+            const response = await cancelarVenta(_id, dataTemp);
+            const { data } = response;
+            navigate({
+                search: queryString.stringify(""),
+            });
+            LogsInformativos("Estado de la venta " + numeroTiquet + " actualizado", datosVentas);
+            Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
+            cancelarRegistro();
+            return null;
         } catch (e) {
-            console.log(e)
+            console.log(e);
+            Swal.fire({ icon: 'error', title: "Error al actualizar estado de la venta", timer: 1600, showConfirmButton: false });
+            return { error: e.message };
         }
-    }
+    }, null);
 
     return (
         <>
@@ -78,7 +71,7 @@ function CancelarVenta(props) {
                         </>
                     )
                 }
-                <Form onSubmit={onSubmit}>
+                <Form action={action}>
 
                     <Row className="mb-3">
                         <Form.Group as={Col} controlId="formGridNoTiquet">
@@ -101,7 +94,7 @@ function CancelarVenta(props) {
                     </Row>
 
                     <Row className="mb-3">
-                        <Form.Group as={Col} controlId="formGridNoTiquet">
+                        <Form.Group as={Col} controlId="formGridTotal">
                             Total
                             <Form.Control
                                 type="text"
@@ -110,7 +103,7 @@ function CancelarVenta(props) {
                             />
                         </Form.Group>
 
-                        <Form.Group as={Col} controlId="formGridNoProductos">
+                        <Form.Group as={Col} controlId="formGridFecha">
                             Día de la venta
                             <Form.Control
                                 type="text"
@@ -127,8 +120,9 @@ function CancelarVenta(props) {
                                 type="submit"
                                 variant="success"
                                 className="registrar"
+                                disabled={isPending}
                             >
-                                <FontAwesomeIcon icon={faTrashCan} /> {!loading ? ("Eliminar") : <Spinner animation="border" />}
+                                <FontAwesomeIcon icon={faTrashCan} /> {!isPending ? ("Eliminar") : <Spinner animation="border" />}
                             </Button>
                         </Col>
                         <Col>
@@ -136,6 +130,7 @@ function CancelarVenta(props) {
                                 title="Cerrar ventana"
                                 variant="danger"
                                 className="cancelar"
+                                disabled={isPending}
                                 onClick={() => {
                                     cancelarRegistro()
                                 }}

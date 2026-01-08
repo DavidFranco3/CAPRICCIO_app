@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useActionState } from 'react';
 import "../../../scss/styles.scss";
 import { cancelarVenta } from "../../../api/ventas";
 import Swal from 'sweetalert2';
@@ -13,12 +13,8 @@ import { LogsInformativos } from '../../Logs/components/LogsSistema/LogsSistema'
 
 function CancelarVenta(props) {
     const { datosVentas, navigate, location, setShow } = props;
-console.log(datosVentas)
-    console.log(location);
 
     const { _id, numeroTiquet, productos, total, estado, fechaCreacion } = datosVentas
-
-    console.log(navigate)
 
     dayjs.locale('es');
     dayjs.extend(localizedFormat);
@@ -28,29 +24,25 @@ console.log(datosVentas)
         setShow(false)
     }
 
-    const [loading, setLoading] = useState(false);
-
-    const onSubmit = e => {
-        e.preventDefault()
-        setLoading(true);
+    const [errorState, action, isPending] = useActionState(async () => {
         try {
             const dataTemp = {
                 estado: estado !== "false" ? "false" : "pp"
             }
-            cancelarVenta(_id, dataTemp).then(response => {
-                const { data } = response;
-                LogsInformativos("Estado de la venta " + numeroTiquet + " actualizado", datosVentas);
-                Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
-                cancelarRegistro();
-            }).catch(e => {
-                console.log(e)
-            })
+            const response = await cancelarVenta(_id, dataTemp);
+            const { data } = response;
+            LogsInformativos("Estado de la venta " + numeroTiquet + " actualizado", datosVentas);
+            Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
+            cancelarRegistro();
+            return null;
         } catch (e) {
-            console.log(e)
+            console.log(e);
+            Swal.fire({ icon: 'error', title: "Error al actualizar", timer: 1600, showConfirmButton: false });
+            return { error: "Error" };
         }
-    }
+    }, null);
 
-    
+
     return (
         <>
             <div className="datosDelProducto">
@@ -78,7 +70,7 @@ console.log(datosVentas)
                         </>
                     )
                 }
-                <Form onSubmit={onSubmit}>
+                <Form action={action}>
 
                     <Row className="mb-3">
                         <Form.Group as={Col} controlId="formGridNoTiquet">
@@ -127,8 +119,9 @@ console.log(datosVentas)
                                 type="submit"
                                 variant="success"
                                 className="registrar"
+                                disabled={isPending}
                             >
-                                <FontAwesomeIcon icon={faSave} /> {!loading ? (estado === "PP" ? "Deshabilitar" : "Habilitar") : <Spinner animation="border" />}
+                                <FontAwesomeIcon icon={faSave} /> {!isPending ? (estado === "PP" ? "Deshabilitar" : "Habilitar") : <Spinner animation="border" size="sm" />}
                             </Button>
                         </Col>
                         <Col>
@@ -136,6 +129,7 @@ console.log(datosVentas)
                                 title="Cerrar ventana"
                                 variant="danger"
                                 className="cancelar"
+                                disabled={isPending}
                                 onClick={() => {
                                     cancelarRegistro()
                                 }}

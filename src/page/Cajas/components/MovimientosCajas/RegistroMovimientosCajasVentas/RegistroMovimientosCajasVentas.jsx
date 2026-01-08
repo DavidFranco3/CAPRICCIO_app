@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useActionState } from 'react';
 import { registraMovimientos } from "../../../../../api/movimientosCajas";
 import { actualizaVenta, obtenerVentas } from "../../../../../api/ventas";
 import { obtenerCaja } from "../../../../../api/cajas";
@@ -19,9 +19,9 @@ function RegistroMovimientosCajasVentas(props) {
 
     const { id, numeroTiquet, usuario } = datosVentas
 
+    // UI State for calculations
     const [formData, setFormData] = useState(initialFormValue(datosVentas));
     const [formDataMovimiento, setFormDataMovimiento] = useState(initialFormValueMovimiento());
-    const [loading, setLoading] = useState(false);
 
     const [idCajero, setIdCajero] = useState("");
     const [cajero, setCajero] = useState("");
@@ -31,7 +31,6 @@ function RegistroMovimientosCajasVentas(props) {
             obtenerUsuario(usuario).then(response => {
                 const { data } = response;
                 const { _id, nombre } = data;
-                //console.log(data)
                 setIdCajero(_id);
                 setCajero(nombre);
             }).catch((e) => {
@@ -55,7 +54,6 @@ function RegistroMovimientosCajasVentas(props) {
             obtenerUltimaCajaCajero(usuario).then(response => {
                 const { data } = response;
                 const { _id } = data[0];
-                console.log(_id)
                 setCaja(_id);
             }).catch((e) => {
                 if (e.message === 'Network Error') {
@@ -76,69 +74,95 @@ function RegistroMovimientosCajasVentas(props) {
         setShowModal(false)
     }
 
-    const onSubmit = e => {
-        e.preventDefault();
-
-        if (!formData.movimiento || !formDataMovimiento.tipoPago) {
-            Swal.fire({ icon: 'warning', title: "Completa el formulario", timer: 1600, showConfirmButton: false });
-        } else {
-            try {
-                setLoading(true);
-
-                const dataTemp = {
-                    idCaja: caja,
-                    idCajero: usuario,
-                    cajero: cajero,
-                    movimiento: formData.movimiento,
-                    pago: formData.pago,
-                    monto: formData.monto,
-                    estado: "true",
-                }
-                registraMovimientos(dataTemp).then(response => {
-                    const { data } = response;
-                    //LogVentaActualizacion(id, numeroTiquet, formDataMovimiento.tipoPago, formDataMovimiento.efectivo, formDataMovimiento.iva, formData.monto, navigate)
-                    LogCajaActualizacion(caja, formData.movimiento == "Fondo de caja" ? formData.monto : formData.movimiento == "Venta" && formData.pago == "Transferencia" ? 0 : formData.movimiento == "Venta" && formData.pago == "Tarjeta" ? 0 : formData.movimiento == "Venta" && formData.pago == "Efectivo" ? formData.monto : formData.movimiento == "Retiro" ? parseFloat(formData.monto) * -1 : formData.movimiento == "Aumento" ? formData.monto : 0);
-                    LogsInformativos("Se ha registrado el movimiento del cajero " + dataTemp.cajero, data.datos);
-                    Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
-                }).catch(e => {
-                    console.log(e)
-                })
-
-                const dataTemp2 = {
-
-                    tipoPago: formDataMovimiento.tipoPago,
-                    efectivo: formDataMovimiento.efectivo,
-                    cambio:formDataMovimiento.tipoPago == "Efectivo" && formDataMovimiento.iva == "si" ? (parseFloat(formDataMovimiento.efectivo) - (formData.monto + formData.monto * parseFloat("0.16"))).toFixed(2) : (formDataMovimiento.efectivo - formData.monto).toFixed(2),
-                    total: formDataMovimiento.tipoPago == "Efectivo" && formDataMovimiento.iva == "si" ? formData.monto + formData.monto * parseFloat("0.16") : formDataMovimiento.tipoPago == "Tarjeta" && formDataMovimiento.iva == "si" ? formData.monto + formData.monto * parseFloat("0.16") : formDataMovimiento.tipoPago == "Tarjeta" && formDataMovimiento.iva == "no" ? formData.monto : formDataMovimiento.tipoPago == "Transferencia" && formDataMovimiento.iva == "si" ? formData.monto + formData.monto * parseFloat("0.16") : formData.monto,
-                    pagado: "true",
-                    iva: formDataMovimiento.iva == "si" ? (formData.monto * parseFloat("0.16")).toFixed(2) : "0",
-                    comision: formDataMovimiento.tipoPago == "Tarjeta"? formData.monto : "0"
-                }
-                actualizaVenta(id, dataTemp2).then(response => {
-                    const { data } = response;
-                    navigate({
-                        search: queryString.stringify(""),
-                    });
-                    LogsInformativos("Se actualizo la venta " + numeroTiquet, dataTemp2);
-                    cancelarRegistro();
-                    // console.log("Actualización de saldo personal")
-                }).catch(e => {
-                    console.log(e)
-                })
-            } catch (e) {
-                console.log(e)
-            }
-        }
-    }
-
     const onChange = e => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
         setFormDataMovimiento({ ...formDataMovimiento, [e.target.name]: e.target.value });
     };
 
+    const [errorState, action, isPending] = useActionState(async (prevState, fd) => {
+        const tipoPago = fd.get("tipoPago");
+        const iva = fd.get("iva");
+        const efectivoStr = fd.get("efectivo");
+
+        const movimiento = "Venta";
+        const montoBase = parseFloat(datosVentas.total);
+
+        if (!movimiento || !tipoPago || tipoPago === "Elige una opción") {
+            Swal.fire({ icon: 'warning', title: "Completa el formulario", timer: 1600, showConfirmButton: false });
+            return { error: "Incompleto" };
+        }
+
+        try {
+            const cajaRes = await obtenerUltimaCajaCajero(usuario);
+            const currentCajaId = cajaRes.data[0]._id;
+
+            const efectivoVal = parseFloat(efectivoStr || 0);
+            const monto = montoBase;
+
+            let totalCalc = monto;
+            if (iva === "si") {
+                totalCalc = monto + (monto * 0.16);
+            }
+
+            let cambio = 0;
+            if (tipoPago === "Efectivo") {
+                cambio = efectivoVal - totalCalc;
+            } else {
+                cambio = efectivoVal - (iva === "si" ? totalCalc : monto);
+            }
+
+            const dataTemp = {
+                idCaja: currentCajaId,
+                idCajero: usuario,
+                cajero: cajero,
+                movimiento: movimiento,
+                pago: tipoPago,
+                monto: monto,
+                estado: "true",
+            }
+
+            const response = await registraMovimientos(dataTemp);
+            const { data } = response;
+
+            let balanceChange = 0;
+            if (movimiento === "Venta") {
+                if (tipoPago === "Efectivo") balanceChange = monto;
+            }
+
+            LogCajaActualizacion(currentCajaId, balanceChange);
+            LogsInformativos("Se ha registrado el movimiento del cajero " + cajero, data.datos);
+            Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
+
+            // Update Venta
+            const dataTemp2 = {
+                tipoPago: tipoPago,
+                efectivo: efectivoStr,
+                cambio: cambio.toFixed(2),
+                total: totalCalc.toFixed(2),
+                pagado: "true",
+                iva: iva === "si" ? (monto * 0.16).toFixed(2) : "0",
+                comision: tipoPago === "Tarjeta" ? monto : "0"
+            }
+
+            await actualizaVenta(id, dataTemp2);
+
+            navigate({
+                search: queryString.stringify(""),
+            });
+            LogsInformativos("Se actualizo la venta " + numeroTiquet, dataTemp2);
+            cancelarRegistro();
+            return null;
+
+        } catch (e) {
+            console.log(e);
+            Swal.fire({ icon: 'error', title: "Error al registrar venta", timer: 1600, showConfirmButton: false });
+            return { error: "Error" };
+        }
+    }, null);
+
     return (
         <>
-            <Form onSubmit={onSubmit} onChange={onChange}>
+            <Form action={action} onChange={onChange}>
                 <div className="datosDelProducto">
                     <Row className="mb-3">
                         <Form.Group as={Col} controlId="formGridNombre">
@@ -180,7 +204,7 @@ function RegistroMovimientosCajasVentas(props) {
 
                             <Form.Control
                                 as="select"
-                                defaultValue={formDataMovimiento.tipoPago}
+                                defaultValue=""
                                 name="tipoPago"
                             >
                                 <option>Elige una opción</option>
@@ -197,7 +221,7 @@ function RegistroMovimientosCajasVentas(props) {
 
                             <Form.Control
                                 as="select"
-                                defaultValue={formDataMovimiento.iva}
+                                defaultValue=""
                                 name="iva"
                             >
                                 <option>Elige una opción</option>
@@ -254,7 +278,7 @@ function RegistroMovimientosCajasVentas(props) {
                                         </Form.Label>
                                         <Form.Control
                                             type="number"
-                                            name="efectivo"
+                                            name="cambio"
                                             placeholder="Escribe la cantidad de dinero ingresado"
                                             step="0.1"
                                             min="0"
@@ -275,9 +299,9 @@ function RegistroMovimientosCajasVentas(props) {
                             type="submit"
                             variant="success"
                             className="registrar"
-                            disabled={loading}
+                            disabled={isPending}
                         >
-                            <FontAwesomeIcon icon={faSave} /> {!loading ? "Registrar" : <Spinner animation="border" />}
+                            <FontAwesomeIcon icon={faSave} /> {!isPending ? "Registrar" : <Spinner animation="border" size="sm" />}
                         </Button>
                     </Col>
                     <Col>
@@ -285,7 +309,7 @@ function RegistroMovimientosCajasVentas(props) {
                             title="Cerrar ventana"
                             variant="danger"
                             className="cancelar"
-                            disabled={loading}
+                            disabled={isPending}
                             onClick={() => {
                                 cancelarRegistro()
                             }}
@@ -316,19 +340,4 @@ function initialFormValueMovimiento() {
     }
 }
 
-function initialFormDataCajaInitial() {
-    return {
-        idCajero: "",
-        cajero: "",
-    }
-}
-
-function initialFormDataCaja(data) {
-    return {
-        idCajero: data.idCajero,
-        cajero: data.cajero,
-    }
-}
-
 export default RegistroMovimientosCajasVentas;
-

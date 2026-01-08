@@ -176,9 +176,11 @@ function Dashboard(props) {
       {estadoUsuario === "true" && (
         <Container fluid className="p-4">
 
-          <div className="mb-4">
-            <h2 className="fw-bold text-white">Panel de Control</h2>
-            <p className="text-white-50">Resumen de actividad del día {dayjs().format('DD/MM/YYYY')}</p>
+          <div className="dashboard-header-glass">
+            <div>
+              <h2 className="fw-bold text-white mb-1">Panel de Control</h2>
+              <p className="text-white-50 mb-0">Resumen de actividad del día {dayjs().format('DD/MM/YYYY')}</p>
+            </div>
           </div>
 
           <KPICards ventas={ventasDia} />

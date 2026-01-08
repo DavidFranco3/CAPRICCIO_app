@@ -1,81 +1,57 @@
-import { useState } from 'react';
+import { useState, useActionState } from 'react';
 import { Button, Col, Form, Row, Spinner, Badge } from "react-bootstrap";
 import "../../../scss/styles.scss";
 import { faX, faSave, faCirclePlus, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Swal from 'sweetalert2';
-import {map} from "lodash";
+import { map } from "lodash";
 
 function MetodosPago(props) {
-    const { setListMetodosPago2, setShowModal  } = props;
+    const { setListMetodosPago2, setShowModal } = props;
 
     const [listMetodosPago, setListMetodosPago] = useState([]);
-
-    const [formData, setFormData] = useState(initialFormValue());
-
-    const [loading, setLoading] = useState(false);
-
+    const [tipoPago, setTipoPago] = useState("Elige una opción");
 
     const renglon = listMetodosPago.length + 1;
-console.log(formData.tipoPago)
-    const addItems = () => {
 
-        if (!formData.tipoPago) {
+    const addItems = () => {
+        if (!tipoPago || tipoPago === "Elige una opción") {
             Swal.fire({ icon: 'warning', title: "Completa la información del metodo de pago", timer: 1600, showConfirmButton: false });
         } else {
-
             const dataTemp = {
-                metodoPago: formData.tipoPago,
+                metodoPago: tipoPago,
             }
-
-            //LogRegistroProductosOV(folioActual, cargaProductos.ID, cargaProductos.item, cantidad, um, precioUnitario, total, setListProductosCargados);
-            // console.log(dataTemp)
-
-            setListMetodosPago(
-                [...listMetodosPago, dataTemp]
-            );
-
-            setFormData(initialFormValue)
-            document.getElementById("tipoPago").value = "Elige una opción"
-            //setTotalUnitario(0)
+            setListMetodosPago([...listMetodosPago, dataTemp]);
+            setTipoPago("Elige una opción");
         }
     }
 
     // Para limpiar el formulario de detalles de producto
     const cancelarCargaProducto = () => {
-        setFormData(initialFormValue)
-        document.getElementById("tipoPago").value = "Elige una opción"
+        setTipoPago("Elige una opción");
     }
-
-    console.log(listMetodosPago)
 
     // Para eliminar productos del listado
     const removeItem = (producto) => {
-        let newArray = listMetodosPago;
+        let newArray = [...listMetodosPago];
         newArray.splice(newArray.findIndex(a => a.metodoPago === producto.metodoPago), 1);
-        setListMetodosPago([...newArray]);
+        setListMetodosPago(newArray);
     }
-
-    const onSubmit = e => {
-        e.preventDefault();
-
-        setLoading(true);
-        setListMetodosPago2(listMetodosPago)
-        cancelarRegistro();
-    };
-
-    const onChange = e => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
 
     // Para cancelar el registro
     const cancelarRegistro = () => {
         setShowModal(false);
     };
 
+    const [errorState, action, isPending] = useActionState(async (prevState, fd) => {
+        setListMetodosPago2(listMetodosPago);
+        cancelarRegistro();
+        return null;
+    }, null);
+
     return (
         <>
-            <Form onSubmit={onSubmit} onChange={onChange}>
+            <Form action={action}>
                 <div className="metodoDePago">
                     <hr />
                     <Badge bg="secondary" className="tituloFormularioDetalles">
@@ -85,14 +61,12 @@ console.log(formData.tipoPago)
                     <hr />
 
                     <Row>
-                        <Form.Group as={Col} controlId="formGridPorcentaje scrap">
+                        <Form.Group as={Col} controlId="formGridIndex">
                             <Form.Label>
                                 ITEM
                             </Form.Label>
                             <Form.Control type="number"
-                                id="index"
                                 value={renglon}
-                                name="index"
                                 disabled
                             />
                         </Form.Group>
@@ -102,9 +76,9 @@ console.log(formData.tipoPago)
                             </Form.Label>
                             <Form.Control
                                 as="select"
-                                defaultValue={formData.tipoPago}
+                                value={tipoPago}
                                 name="tipoPago"
-                                id="tipoPago"
+                                onChange={(e) => setTipoPago(e.target.value)}
                             >
                                 <option>Elige una opción</option>
                                 <option value="Efectivo">Efectivo</option>
@@ -118,23 +92,23 @@ console.log(formData.tipoPago)
                                     &nbsp;
                                 </Form.Label>
 
-                                <Col>
+                                <Col className="d-flex">
                                     <Button
                                         variant="success"
                                         title="Agregar el producto"
-                                        className="editar"
+                                        className="editar me-2"
+                                        disabled={isPending}
                                         onClick={() => {
                                             addItems()
                                         }}
                                     >
                                         <FontAwesomeIcon icon={faCirclePlus} className="text-lg" />
                                     </Button>
-                                </Col>
-                                <Col>
                                     <Button
                                         variant="danger"
                                         title="Cancelar el producto"
                                         className="editar"
+                                        disabled={isPending}
                                         onClick={() => {
                                             cancelarCargaProducto()
                                         }}
@@ -142,7 +116,6 @@ console.log(formData.tipoPago)
                                         <FontAwesomeIcon icon={faX} className="text-lg" />
                                     </Button>
                                 </Col>
-
                             </Form.Group>
                         </Col>
                     </Row>
@@ -150,16 +123,12 @@ console.log(formData.tipoPago)
 
                 {/* Listado de productos  */}
                 <div className="tablaProductos">
-
-                    {/* ID, item, cantidad, um, descripcion, orden de compra, observaciones */}
-                    {/* Inicia tabla informativa  */}
                     <Badge bg="secondary" className="tituloListadoProductosSeleccionados">
                         <h4>Listado de ingredientes seleccionados</h4>
                     </Badge>
                     <br />
                     <hr />
-                    <table className="responsive-tableRegistroVentas"
-                    >
+                    <table className="responsive-tableRegistroVentas">
                         <thead>
                             <tr>
                                 <th scope="col">ITEM</th>
@@ -167,8 +136,6 @@ console.log(formData.tipoPago)
                                 <th scope="col">Eliminar</th>
                             </tr>
                         </thead>
-                        <tfoot>
-                        </tfoot>
                         <tbody>
                             {map(listMetodosPago, (producto, index) => (
                                 <tr key={index}>
@@ -194,17 +161,16 @@ console.log(formData.tipoPago)
                             ))}
                         </tbody>
                     </table>
-                    {/* Termina tabla informativa */}
                 </div>
 
                 <Form.Group as={Row} className="botonSubirProducto">
                     <Col>
-                        <Button title="Agregar Observaciones" type="submit" variant="success" className="registrar">
-                            <FontAwesomeIcon icon={faSave} /> {!loading ? "Aceptar" : <Spinner animation="border" />}
+                        <Button title="Agregar Observaciones" type="submit" variant="success" className="registrar" disabled={isPending}>
+                            <FontAwesomeIcon icon={faSave} /> {!isPending ? "Aceptar" : <Spinner animation="border" />}
                         </Button>
                     </Col>
                     <Col>
-                        <Button title="Cerrar ventana" variant="danger" className="cancelar" disabled={loading} onClick={cancelarRegistro}>
+                        <Button title="Cerrar ventana" variant="danger" className="cancelar" disabled={isPending} onClick={cancelarRegistro}>
                             <FontAwesomeIcon icon={faX} /> Cancelar
                         </Button>
                     </Col>
@@ -212,13 +178,6 @@ console.log(formData.tipoPago)
             </Form>
         </>
     );
-
-}
-
-function initialFormValue(data) {
-    return {
-        tipoPedido: "",
-    }
 }
 
 export default MetodosPago;

@@ -60,7 +60,7 @@ const VistaMesasVenta = (props) => {
   return (
     <>
       <div className="card card-outline m-3">
-        <div className=" card-header bg-gray">
+        <div className=" card-header bg-header-premium">
           <div className="d-flex justify-content-between align-items-center">
             <div>
               {" "}

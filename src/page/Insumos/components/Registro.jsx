@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useActionState } from "react";
 import { faUpload } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Col, Container, Form, Row } from "react-bootstrap";
+import { Col, Container, Form, Row, Spinner } from "react-bootstrap";
 import { registraInsumo } from "../../../api/insumos";
 import Swal from 'sweetalert2';
 import { data } from "autoprefixer";
@@ -11,16 +11,14 @@ function RegistroInsumo(props) {
 
   const [formData, setFormData] = useState({
     nombre: "",
-    precioCompra: 0,
+    precioCompra: "",
     precioUnitario: 0,
     categoria: "",
     umCompra: "",
     umTrabajo: "",
-    stock: 0,
+    stock: "",
     estado: "true",
   });
-
-  const [formValid, setFormValid] = useState(false);
 
   const calcularPrecioUnitario = (precioCompra, umCompra, umTrabajo) => {
     if (umCompra === umTrabajo) return precioCompra;
@@ -35,57 +33,53 @@ function RegistroInsumo(props) {
     return precioCompra; // Default case
   };
 
-  const onSubmit = async (event) => {
-    event.preventDefault();
-
-    const precioUnitario = calcularPrecioUnitario(
-      parseFloat(formData.precioCompra),
-      parseFloat(formData.umCompra),
-      parseFloat(formData.umTrabajo)
-    );
-
-    if (formValid) {
-      try {
-        const dataTemp = {
-          ...formData,
-          precioUnitario: precioUnitario,
-        };
-        const response = await registraInsumo(dataTemp);
-        const { data } = response;
-        Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
-        setShow(false);
-      } catch (error) {
-        console.log(error);
-        Swal.fire({ icon: 'error', title: "Error al registrar el insumo", timer: 1600, showConfirmButton: false });
-      }
-
-      // Aquí puedes manejar el envío del formulario
-      console.log("Formulario enviado:" + data);
-    } else {
-      console.log("Formulario incompleto");
-      Swal.fire({ icon: 'error', title: "Formulario incompleto", timer: 1600, showConfirmButton: false });
-    }
-  };
-
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    const updatedFormData = { ...formData, [name]: value };
-
-    setFormData(updatedFormData);
-    setFormValid(
-      updatedFormData.nombre &&
-        updatedFormData.precioCompra > 0 &&
-        updatedFormData.categoria &&
-        updatedFormData.umCompra &&
-        (updatedFormData.umTrabajo || updatedFormData.umCompra === "Pieza") &&
-        updatedFormData.stock > 0
-    );
+    setFormData({ ...formData, [name]: value });
   };
+
+  const [errorState, action, isPending] = useActionState(async (prevState, fd) => {
+    const nombre = fd.get("nombre");
+    const precioCompra = parseFloat(fd.get("precioCompra"));
+    const categoria = fd.get("categoria");
+    const umCompra = fd.get("umCompra");
+    const umTrabajo = fd.get("umTrabajo");
+    const stock = parseFloat(fd.get("stock"));
+
+    if (!nombre || !precioCompra || !categoria || !umCompra || !stock) {
+      Swal.fire({ icon: 'warning', title: "Formulario incompleto", timer: 1600, showConfirmButton: false });
+      return { error: "Incompleto" };
+    }
+
+    const precioUnitario = calcularPrecioUnitario(precioCompra, umCompra, umTrabajo);
+
+    try {
+      const dataTemp = {
+        nombre,
+        precioCompra,
+        precioUnitario,
+        categoria,
+        umCompra,
+        umTrabajo: umTrabajo || (umCompra === "Pieza" ? "Pieza" : ""), // Fallback if simple select
+        stock,
+        estado: "true",
+      };
+      const response = await registraInsumo(dataTemp);
+      const { data } = response;
+      Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
+      setShow(false);
+      return null;
+    } catch (error) {
+      console.log(error);
+      Swal.fire({ icon: 'error', title: "Error al registrar el insumo", timer: 1600, showConfirmButton: false });
+      return { error: "Error de registro" };
+    }
+  }, null);
 
   return (
     <>
       <Container>
-        <Form onSubmit={onSubmit}>
+        <Form action={action}>
           <Row>
             <Col>
               <Form.Label>Nombre</Form.Label>
@@ -93,8 +87,8 @@ function RegistroInsumo(props) {
                 type="text"
                 placeholder="Escribe el nombre"
                 name="nombre"
-                value={formData.nombre}
-                onChange={handleInputChange}
+                defaultValue={formData.nombre}
+                required
               />
             </Col>
             <Col>
@@ -103,16 +97,17 @@ function RegistroInsumo(props) {
                 type="number"
                 placeholder="Precio de compra"
                 name="precioCompra"
-                value={formData.precioCompra}
-                onChange={handleInputChange}
+                defaultValue={formData.precioCompra}
+                required
+                step="0.01"
               />
             </Col>
             <Col>
               <Form.Label>Categoria</Form.Label>
               <Form.Select
                 name="categoria"
-                value={formData.categoria}
-                onChange={handleInputChange}
+                defaultValue={formData.categoria}
+                required
               >
                 <option value="">Elige una opción</option>
                 <option value="Materia prima">Materia prima</option>
@@ -127,6 +122,7 @@ function RegistroInsumo(props) {
                 name="umCompra"
                 value={formData.umCompra}
                 onChange={handleInputChange}
+                required
               >
                 <option value="">Elige una opción</option>
                 <option value="Gramos">Gramos</option>
@@ -140,8 +136,8 @@ function RegistroInsumo(props) {
               <Form.Label>Unidad de medida de trabajo</Form.Label>
               <Form.Select
                 name="umTrabajo"
-                value={formData.umTrabajo}
-                onChange={handleInputChange}
+                defaultValue={formData.umTrabajo}
+                required
               >
                 {formData.umCompra === "Pieza" ? (
                   <>
@@ -164,8 +160,8 @@ function RegistroInsumo(props) {
                 type="number"
                 placeholder="Cantidad"
                 name="stock"
-                value={formData.stock}
-                onChange={handleInputChange}
+                defaultValue={formData.stock}
+                required
               />
             </Col>
           </Row>
@@ -173,9 +169,9 @@ function RegistroInsumo(props) {
             <button
               className="btn btn-success"
               type="submit"
-              disabled={!formValid}
+              disabled={isPending}
             >
-              <FontAwesomeIcon icon={faUpload} /> Registrar
+              <FontAwesomeIcon icon={faUpload} /> {!isPending ? "Registrar" : <Spinner animation="border" size="sm" />}
             </button>
           </div>
         </Form>

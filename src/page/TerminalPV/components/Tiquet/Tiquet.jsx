@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useActionState } from "react";
 import "./ticket.css";
 import Swal from 'sweetalert2';
 import { faCircleInfo, faTrashCan } from "@fortawesome/free-solid-svg-icons";
@@ -29,10 +29,10 @@ import Logo from "../../../../components/Logo/Logo";
 function Tiquet(props) {
   console.log(props);
 
-      // Importa el complemento de zona horaria
-      dayjs.extend(utc);
-      dayjs.extend(timezone);
-      dayjs.extend(localizedFormat);
+  // Importa el complemento de zona horaria
+  dayjs.extend(utc);
+  dayjs.extend(timezone);
+  dayjs.extend(localizedFormat);
 
 
 
@@ -86,7 +86,7 @@ function Tiquet(props) {
     }
   }, [idTicketMesa]);
 
-  const obtenerNumeroTiquet = async (setNumeroTiquet, setFormData) => {
+  const obtenerNumeroTiquet = async () => {
     try {
       const response = await listarVentas();
       const { data } = response;
@@ -97,29 +97,21 @@ function Tiquet(props) {
       let intentos = 0;
 
       do {
-        const letrasAleatorias = generarLetrasAleatorias();
-        nuevoNumeroTiquet = baseNumero + "-" + letrasAleatorias;
+        nuevoNumeroTiquet = baseNumero + "-" + generarLetrasAleatorias();
         existe = verificarNumeroTiquetUnico(data, nuevoNumeroTiquet);
         intentos++;
 
         if (intentos >= MAX_INTENTOS_GENERACION) {
           baseNumero++;
-          intentos = 0; // Resetear intentos para el siguiente número base
+          intentos = 0;
         }
-      } while (existe && baseNumero < 100); // Ajusta el límite de baseNumero si es necesario
+      } while (existe && baseNumero < 100);
 
-      if (baseNumero >= 100) {
-        console.error(
-          "No se pudo generar un número de ticket único después de varios intentos."
-        );
-        setNumeroTiquet("ERROR");
-      } else {
-        setNumeroTiquet(nuevoNumeroTiquet);
-        setFormData((prevFormData) => ({
-          ...prevFormData,
-          numeroTiquet: nuevoNumeroTiquet,
-        }));
-      }
+      setNumeroTiquet(nuevoNumeroTiquet);
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        numeroTiquet: nuevoNumeroTiquet,
+      }));
     } catch (error) {
       console.error("Error al obtener el último número de ticket:", error);
       const nuevoNumero = "1-" + generarLetrasAleatorias();
@@ -133,7 +125,7 @@ function Tiquet(props) {
 
   useEffect(() => {
     if (!idTicketMesa) {
-      obtenerNumeroTiquet(setNumeroTiquet, setFormData);
+      obtenerNumeroTiquet();
     }
   }, [idTicketMesa]);
 
@@ -248,93 +240,63 @@ function Tiquet(props) {
     };
   };
 
-  const ponerOrden = async () => {
-    const fecha = calcularFecha();
-    setAgregado(true);
-    const formattedDate = dayjs(fechayHoraSinFormato).tz('America/Mexico_City').format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+  // ACTION FOR PONER/ACTUALIZAR ORDEN 
+  const [errorState, action, isPending] = useActionState(async (prevState, fd) => {
+    const actionType = fd.get("actionType"); // "SAVE"
 
-    if (products.length === 0) {
-      Swal.fire({ icon: 'warning', title: "Debe cargar productos al ticket", timer: 1600, showConfirmButton: false });
-    } else {
+    if (actionType === "SAVE") {
+      if (products.length === 0) {
+        Swal.fire({ icon: 'warning', title: "Debe cargar productos al ticket", timer: 1600, showConfirmButton: false });
+        return null;
+      }
+
+      const fecha = calcularFecha();
+      const formattedDate = dayjs(fechayHoraSinFormato).tz('America/Mexico_City').format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+
       try {
-        const dataTemp = {
-          ...formData,
-          cliente: formData.cliente,
-          numeroTiquet: formData.numeroTiquet,
-          turno: turno.idTurno,
-          mesa: props.numMesa,
-          usuario: props.idUsuario,
-          estado: props.mesaClick ? "OEM" /* Orden En Mesa */ : "PP",
-          subtotal: total,
-          tipoPedido: props.tipoPedido,
-          hacerPedido: props.hacerPedido,
-          atendido: props.usuario,
-          mes: fecha.mes,
-          año: fecha.añoVenta,
-          semana: fecha.weekNumber,
-          fecha: fecha.formattedDate,
-          createdAt: formattedDate
-        };
-        console.log(dataTemp);
-        await registraVentas(dataTemp).then(async (response) => {
-          const { data } = response;
-          LogsInformativos(
-            "Se ha puesto la orden " +
-              numeroTiquet +
-              " en la  mesa " +
-              props.numMesa,
-            data.datos
-          );
-          await ocuparMesa();
-          Swal.fire({ icon: 'success', title: "Se ha puesto la orden en mesa con éxito", timer: 1600, showConfirmButton: false });
-        });
-      } catch (e) {}
-    }
-  };
+        if (idTicketMesa) {
+          // UPDATE
+          const dataTemp = {
+            productos: products,
+            detalles: formData.detalles,
+            subtotal: total,
+          };
+          await actualizarProdsTicket(formData.numeroTiquet, dataTemp);
+          LogsInformativos(`Se ha actualizado la orden ${formData.numeroTiquet} en la mesa ${numMesa}`, dataTemp);
+          Swal.fire({ icon: 'success', title: "Orden actualizada con éxito", timer: 1600, showConfirmButton: false });
+        } else {
+          // CREATE
+          const dataTemp = {
+            ...formData,
+            turno: turno.idTurno,
+            mesa: numMesa,
+            usuario: idUsuario,
+            estado: mesaClick ? "OEM" : "PP",
+            subtotal: total,
+            tipoPedido: tipoPedido,
+            hacerPedido: hacerPedido,
+            atendido: usuario,
+            mes: fecha.mes,
+            año: fecha.añoVenta,
+            semana: fecha.weekNumber,
+            fecha: fecha.formattedDate,
+            createdAt: formattedDate
+          };
+          await registraVentas(dataTemp);
+          LogsInformativos(`Se ha puesto la orden ${formData.numeroTiquet} en la mesa ${numMesa}`, dataTemp);
 
-  // FUNCIÓN PARA ACTUALIZAR LA ORDEN
-  const actualizarOrden = async () => {
-    if (products.length === 0) {
-      Swal.fire({ icon: 'warning', title: "Debe cargar productos al ticket", timer: 1600, showConfirmButton: false });
-    } else {
-      try {
-        const dataTemp = {
-          productos: props.products,
-          detalles: formData.detalles,
-          subtotal: total,
-        };
-        console.log(dataTemp);
-        await actualizarProdsTicket(formData.numeroTiquet, dataTemp).then(
-          async (response) => {
-            const { data } = response;
-            LogsInformativos(
-              "Se ha actualizado la orden " +
-                numeroTiquet +
-                " en la  mesa " +
-                props.numMesa,
-              data.datos
-            );
-            Swal.fire({ icon: 'success', title: "Se ha actualizado la orden con éxito", timer: 1600, showConfirmButton: false });
-          }
-        );
-      } catch (e) {}
+          // Ocupar mesa
+          await ocuparDesocuparMesas(mesaId, { estado: "ocupado", idTicket: formData.numeroTiquet });
+          setAgregado(true);
+          Swal.fire({ icon: 'success', title: "Orden puesta en mesa con éxito", timer: 1600, showConfirmButton: false });
+        }
+      } catch (e) {
+        console.log(e);
+        Swal.fire({ icon: 'error', title: "Error al procesar la orden", text: e.message });
+      }
     }
-  };
-
-  // Función para verificar funcion de botón
-  const ponerOrdenActualizarOrden = () => {
-    if (
-      idTicketMesa !== null &&
-      idTicketMesa !== undefined &&
-      idTicketMesa !== ""
-    ) {
-      // El idTicketMesa no es null, undefined ni una cadena vacía, entonces actualiza la venta
-      actualizarOrden();
-    } else {
-      // El idTiketMesa es null, undefined o una cadena vacía, entonces registra una nueva venta
-      ponerOrden();
-    }
-  };
+    return null;
+  }, null);
 
   const Encabezado = ({ Logo, tipoPedido, fechayHora }) => {
     return (
@@ -514,39 +476,39 @@ function Tiquet(props) {
 
   return (
     <>
-      <div id="ticketGenerado" className="ticket">
-        <div className="ticket__information">
-          {/**/}
+      <Form action={action}>
+        <div id="ticketGenerado" className="ticket">
+          <div className="ticket__information">
+            {/**/}
 
-          <Encabezado
-            Logo={Logo}
-            numeroTiquet={numeroTiquet}
-            mesa={numMesa}
-            fechayHora={fechayHora}
-          />
-          <div className="d-flex align-items-center mb-2">
-            <Form.Label className="mb-0 mr-2">Cliente:</Form.Label>
-            <Form.Control
-              type="text"
-              value={formData.cliente}
-              placeholder="Ingrese el nombre del cliente"
-              onChange={(e) => {
-                setFormData({ ...formData, cliente: e.target.value });
-              }}
-              className="ml-2"
+            <Encabezado
+              Logo={Logo}
+              numeroTiquet={numeroTiquet}
+              mesa={numMesa}
+              fechayHora={fechayHora}
             />
-          </div>
-          {/**/}
-          <Cuerpo products={products} onClick={handleDeleteProduct} />
-          <Row>
-            <Col>
-              <Form>
+            <div className="d-flex align-items-center mb-2">
+              <Form.Label className="mb-0 mr-2">Cliente:</Form.Label>
+              <Form.Control
+                type="text"
+                value={formData.cliente}
+                placeholder="Ingrese el nombre del cliente"
+                onChange={(e) => {
+                  setFormData({ ...formData, cliente: e.target.value });
+                }}
+                className="ml-2"
+              />
+            </div>
+            {/**/}
+            <Cuerpo products={products} onClick={handleDeleteProduct} />
+            <Row>
+              <Col>
                 <Form.Group controlId="detallesTextarea">
                   <Form.Label>Detalles</Form.Label>
                   <Form.Control
                     as="textarea"
                     placeholder="Ingrese los detalles de la orden"
-                    defaultValue={formData.detalles}
+                    value={formData.detalles}
                     rows={3}
                     style={{ overflow: "hidden", resize: "none" }}
                     onChange={(e) => {
@@ -554,15 +516,76 @@ function Tiquet(props) {
                     }}
                   />
                 </Form.Group>
-              </Form>
-            </Col>
-          </Row>
+              </Col>
+            </Row>
 
-          {/**/}
-          <Pie total={formData.subtotal} />
+            {/**/}
+            <Pie total={formData.subtotal} />
+          </div>
+
+          <div className="ticket__actions">
+            <Button
+              title="Cobrar"
+              variant="link"
+              className="p-0 border-0"
+              disabled={isPending}
+              onClick={() => {
+                if (products.length >= 1) {
+                  datosExtraVenta(
+                    <DatosExtraVenta
+                      formData={formData}
+                      setShowModal={setShowModal}
+                      setShow={setShow}
+                      setShowTicket={setShowModal}
+                      setShowTerminalPV={setShowTerminalPV}
+                      mesaId={mesaId}
+                      mesaClick={mesaClick}
+                      isVenta={idTicketMesa || agregado}
+                      comision={comision}
+                      turno={turno}
+                      numMesa={numMesa}
+                    />
+                  );
+                } else {
+                  Swal.fire({ icon: 'error', title: "Debes agregar productos al ticket", timer: 1600, showConfirmButton: false });
+                }
+              }}
+            >
+              <i className="fas fa-duotone fa-money-bill"></i>
+            </Button>
+
+            <Button
+              title="Añadir/Guardar"
+              type="submit"
+              name="actionType"
+              value="SAVE"
+              variant="link"
+              className="p-0 border-0"
+              disabled={isPending}
+            >
+              {isPending ? <Spinner size="sm" /> : <i className="fas fa-plus"></i>}
+            </Button>
+
+            <Button
+              title="Imprimir"
+              variant="link"
+              className="p-0 border-0"
+              disabled={isPending}
+              onClick={() =>
+                ticketCocina(
+                  <TicketCocina formData={formData} fecha={fechayHora} />
+                )
+              }
+            >
+              <i className="fas fa-receipt"></i>
+            </Button>
+
+            <Button title="Limpiar el ticket" variant="link" className="p-0 border-0" onClick={() => empty()} disabled={isPending}>
+              <FontAwesomeIcon icon={faTrashCan}></FontAwesomeIcon>
+            </Button>
+          </div>
         </div>
-        <Opciones icon={faCircleInfo} />
-      </div>
+      </Form>
 
       <BasicModal show={showModal} setShow={setShowModal} title={titulosModal}>
         {contentModal}

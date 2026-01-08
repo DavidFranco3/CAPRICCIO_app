@@ -1,6 +1,6 @@
-import { Col, Form, Button } from "react-bootstrap";
-import { actualizarComision, obtenerComisiones, registrarComision } from "../../api/comision"
-import { useEffect, useState } from "react";
+import { Col, Form, Button, Spinner } from "react-bootstrap";
+import { actualizarComision, obtenerComisiones } from "../../api/comision"
+import { useEffect, useState, useActionState } from "react";
 import Swal from 'sweetalert2';
 
 function Comision(props) {
@@ -11,7 +11,6 @@ function Comision(props) {
             obtenerComisiones()
                 .then((response) => {
                     const { data } = response;
-                    console.log(data);
                     setComision(data);
                 })
                 .catch((e) => {
@@ -26,70 +25,48 @@ function Comision(props) {
         cargarComision();
     }, []);
 
-    const [formData, setFormData] = useState({
-        nombreComision: "comisionTDC",
-        estado: true,
-        valor: comision[0]?.valor,
-    });
+    const [errorState, action, isPending] = useActionState(async (previousState, formData) => {
+        const valor = formData.get("valor");
 
-    const actualizar = async (e) => {
-        e.preventDefault(); // Prevenir la recarga de la página
-        console.log(comision[0]);
-        console.log(formData);
+        if (!valor) {
+            return { error: "Valor requerido" };
+        }
 
         const dataTemp = {
-            valor: formData.valor
+            valor: valor
         }
 
         try {
+            // Assuming we update the first/only commission found
+            if (!comision[0]?._id) return { error: "No comision ID" };
+
             const response = await actualizarComision(comision[0]._id, dataTemp);
-            console.log(response);
             Swal.fire({ icon: 'success', title: "Comisión actualizada correctamente", timer: 1600, showConfirmButton: false });
             props.setShowModal(false);
+            return null;
         } catch (e) {
             console.log(e);
+            Swal.fire({ icon: 'error', title: "Error al actualizar", timer: 1600, showConfirmButton: false });
+            return { error: "Error" };
         }
-    };
-    
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value,
-        });
-    };
-
-    // VOLVER A MOSTRAR SOLO EN CASO DE REQUIRIR OTRO REGISTRO
-    // const onSubmit = (e) => {
-    //     e.preventDefault();
-    //     console.log(formData);
-
-    //     const dataTemp = formData;
-
-    //     try {
-    //         const response = registrarComision(dataTemp);
-    //         console.log(response);
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // }
+    }, null);
 
     return (
         <div className="row g-3">
             <Col xs="auto">
-                <Form className="justify-content-center" >
+                <Form action={action} className="justify-content-center" >
                     <div className="d-flex align-items-center justify-content-center">
                         <Form.Control
                             type="number"
                             name="valor"
                             placeholder="Ingresa el valor"
                             className="w-auto me-2"
-                            value={formData.valor}
-                            onChange={handleInputChange}
+                            defaultValue={comision[0]?.valor}
+                            key={comision[0]?.valor ? "loaded" : "loading"}
                         />
                         <span>%</span>
-                        <Button onClick={actualizar} className="ms-2 btn btn-info">
-                            Actualizar
+                        <Button type="submit" className="ms-2 btn btn-info" disabled={isPending}>
+                            {isPending ? <Spinner animation="border" size="sm" /> : "Actualizar"}
                         </Button>
                     </div>
                 </Form>

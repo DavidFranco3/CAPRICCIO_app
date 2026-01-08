@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useActionState } from "react";
 import { Button, Col, Form, Row, Spinner, Image, Alert } from "react-bootstrap";
 import Swal from 'sweetalert2';
 import queryString from "query-string";
@@ -18,34 +18,27 @@ function EliminarInsumos(props) {
   dayjs.locale("es");
   dayjs.extend(localizedFormat);
 
-  // Para cancelar el registro
-  const cancelarRegistro = () => {
-    setShow(false);
-  };
-
-  const [loading, setLoading] = useState(null);
-
-  const onSubmit = (e) => {
-    e.preventDefault();
-    setLoading(true);
+  const [errorState, action, isPending] = useActionState(async () => {
     try {
-      eliminaInsumo(datosInsumo._id).then((response) => {
-        const { data } = response;
-        LogsInformativos(
-          "El insumo " + datosInsumo.nombre + " fue eliminado",
-          datosInsumo
-        );
-        Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
-        cancelarRegistro();
-      });
-    } catch (e) {
-      console.log(e);
+      const response = await eliminaInsumo(datosInsumo._id);
+      const { data } = response;
+      LogsInformativos(
+        "El insumo " + datosInsumo.nombre + " fue eliminado",
+        datosInsumo
+      );
+      Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
+      setShow(false);
+      return null; // Return null on success
+    } catch (error) {
+      console.error(error);
+      Swal.fire({ icon: 'error', title: "Error al eliminar el insumo", timer: 1600, showConfirmButton: false });
+      return { error: "Error de eliminación" };
     }
-  };
+  }, null);
 
   return (
     <>
-      <Form onSubmit={onSubmit}>
+      <Form action={action}>
         <div className="datosDelProducto">
           <Alert variant="danger">
             <Alert.Heading>Atención! Acción destructiva!</Alert.Heading>
@@ -110,10 +103,10 @@ function EliminarInsumos(props) {
               type="submit"
               variant="success"
               className="registrar"
-              disabled={loading}
+              disabled={isPending}
             >
               <FontAwesomeIcon icon={faSave} />{" "}
-              {!loading ? "Eliminar" : <Spinner animation="border" />}
+              {!isPending ? "Eliminar" : <Spinner animation="border" size="sm" />}
             </Button>
           </Col>
           <Col>
@@ -121,9 +114,9 @@ function EliminarInsumos(props) {
               title="Cerrar ventana"
               variant="danger"
               className="cancelar"
-              disabled={loading}
+              disabled={isPending}
               onClick={() => {
-                cancelarRegistro();
+                setShow(false);
               }}
             >
               <FontAwesomeIcon icon={faX} /> Cancelar

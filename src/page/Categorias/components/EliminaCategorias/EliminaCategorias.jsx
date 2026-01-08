@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useActionState } from 'react';
 import { Button, Col, Form, Row, Spinner, Image, Alert } from "react-bootstrap";
 import { eliminaCategoria } from "../../../../api/categorias";
 import Swal from 'sweetalert2';
@@ -13,7 +13,6 @@ import { LogsInformativos } from '../../../Logs/components/LogsSistema/LogsSiste
 
 function EliminaCategorias(props) {
     const { datosCategoria, navigate, setShowModal } = props;
-
     const { id, nombre, imagen, fechaActualizacion } = datosCategoria;
 
     dayjs.locale('es');
@@ -24,30 +23,27 @@ function EliminaCategorias(props) {
         setShowModal(false)
     }
 
-
-    const [loading, setLoading] = useState(null);
-
-    const onSubmit = e => {
-        e.preventDefault()
-        setLoading(true)
+    const [errorState, action, isPending] = useActionState(async (prevState, fd) => {
         try {
-            eliminaCategoria(id).then(response => {
-                const { data } = response;
-                navigate({
-                    search: queryString.stringify(""),
-                });
-                LogsInformativos("La categoría " + nombre  + " fue eliminada", datosCategoria);
-                Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false })
-                cancelarRegistro();
-            })
+            const response = await eliminaCategoria(id);
+            const { data } = response;
+            navigate({
+                search: queryString.stringify(""),
+            });
+            LogsInformativos("La categoría " + nombre + " fue eliminada", datosCategoria);
+            Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
+            cancelarRegistro();
+            return null;
         } catch (e) {
-            console.log(e)
+            console.log(e);
+            Swal.fire({ icon: 'error', title: "Error al eliminar categoría", timer: 1600, showConfirmButton: false });
+            return { error: e.message };
         }
-    }
+    }, null);
 
     return (
         <>
-            <Form onSubmit={onSubmit}>
+            <Form action={action}>
                 <div className="datosDelProducto">
                     <Alert variant="danger">
                         <Alert.Heading>Atención! Acción destructiva!</Alert.Heading>
@@ -79,13 +75,13 @@ function EliminaCategorias(props) {
                             />
                         </Form.Group>
 
-                        <Form.Group as={Col} controlId="formGridNombre">
+                        <Form.Group as={Col} controlId="formGridFecha">
                             <Form.Label>Modificación</Form.Label>
                             <Form.Control
                                 align="center"
                                 type="text"
-                                name="nombre"
-                                placeholder="Escribe el nombre"
+                                name="fecha"
+                                placeholder="Escribe la fecha"
                                 value={dayjs(fechaActualizacion).format('L hh:mm A')}
                                 disabled
                             />
@@ -100,9 +96,9 @@ function EliminaCategorias(props) {
                             type="submit"
                             variant="success"
                             className="registrar"
-                            disabled={loading}
+                            disabled={isPending}
                         >
-                            <FontAwesomeIcon icon={faSave} /> {!loading ? "Eliminar" : <Spinner animation="border" />}
+                            <FontAwesomeIcon icon={faSave} /> {!isPending ? "Eliminar" : <Spinner animation="border" />}
                         </Button>
                     </Col>
                     <Col>
@@ -110,7 +106,7 @@ function EliminaCategorias(props) {
                             title="Cerrar ventana"
                             variant="danger"
                             className="cancelar"
-                            disabled={loading}
+                            disabled={isPending}
                             onClick={() => {
                                 cancelarRegistro()
                             }}

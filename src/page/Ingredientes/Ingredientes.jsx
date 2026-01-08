@@ -208,76 +208,75 @@ function Ingredientes(props) {
 
   return (
     <>
-      <div className="card card-outline m-3">
-        <div className="card-header bg-gray">
-          <div className="d-flex justify-content-between align-items-center">
-            <h3 className="font-bold mb-0">Ingredientes</h3>
-            <div className="d-flex align-items-center">
-              <button
-                title="Registrar un nuevo ingrediente"
-                className="btn btn-outline-light"
-                style={{ marginRight: "10px" }}
-                onClick={() => {
-                  registroIngredientes(
-                    <RegistroIngredientes
-                      setShowModal={setShowModal}
-                      location={location}
-                      navigate={navigate}
-                    />
-                  );
-                }}
-              >
-                <FontAwesomeIcon icon={faCirclePlus} /> Registrar
-              </button>
-              <Switch
-                title={
-                  estadoSwitch === true
-                    ? "Ver ingredientes cancelados"
-                    : "Ver ingredientes activos"
-                }
-                checked={estadoSwitch}
-                onChange={setEstadoSwitch}
-                className={`${estadoSwitch ? "bg-teal-900" : "bg-red-600"}
+      <div className="m-3">
+        <div className="dashboard-header-glass">
+          <h3 className="font-bold text-white mb-0">Ingredientes</h3>
+          <div className="d-flex align-items-center">
+            <button
+              title="Registrar un nuevo ingrediente"
+              className="btn btn-outline-light"
+              style={{ marginRight: "10px" }}
+              onClick={() => {
+                registroIngredientes(
+                  <RegistroIngredientes
+                    setShowModal={setShowModal}
+                    location={location}
+                    navigate={navigate}
+                  />
+                );
+              }}
+            >
+              <FontAwesomeIcon icon={faCirclePlus} /> Registrar
+            </button>
+            <Switch
+              title={
+                estadoSwitch === true
+                  ? "Ver ingredientes cancelados"
+                  : "Ver ingredientes activos"
+              }
+              checked={estadoSwitch}
+              onChange={setEstadoSwitch}
+              className={`${estadoSwitch ? "bg-teal-900" : "bg-red-600"}
           relative inline-flex flex-shrink-0 h-[38px] w-[74px] border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75 float-end`}
-              >
-                <span className="sr-only">Use setting</span>
-                <span
-                  aria-hidden="true"
-                  className={`${
-                    estadoSwitch ? "translate-x-9" : "translate-x-0"
+            >
+              <span className="sr-only">Use setting</span>
+              <span
+                aria-hidden="true"
+                className={`${estadoSwitch ? "translate-x-9" : "translate-x-0"
                   }
             pointer-events-none inline-block h-[34px] w-[34px] rounded-full bg-white shadow-lg transform ring-0 transition ease-in-out duration-200`}
-                />
-              </Switch>
-            </div>
+              />
+            </Switch>
           </div>
         </div>
-        <div className="card-body">
-          {listIngredientes ? (
-            <>
-              <Suspense fallback={<Spinner />}>
-                <ListIngredientes
-                  setRefreshCheckLogin={setRefreshCheckLogin}
-                  listIngredientes={listIngredientes}
-                  location={location}
-                  navigate={navigate}
-                  setRowsPerPage={setRowsPerPage}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                  setPage={setPage}
-                  noTotalIngredientes={noTotalIngredientes}
+        <div className="card card-outline glass-card">
+          <div className="card-body">
+            {listIngredientes ? (
+              <>
+                <Suspense fallback={<Spinner />}>
+                  <ListIngredientes
+                    setRefreshCheckLogin={setRefreshCheckLogin}
+                    listIngredientes={listIngredientes}
+                    location={location}
+                    navigate={navigate}
+                    setRowsPerPage={setRowsPerPage}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    setPage={setPage}
+                    noTotalIngredientes={noTotalIngredientes}
+                  />
+                </Suspense>
+              </>
+            ) : (
+              <>
+                <Lottie
+                  loop={true}
+                  play={true}
+                  animationData={AnimacionLoading}
                 />
-              </Suspense>
-            </>
-          ) : (
-            <>
-              <Lottie
-                loop={true}
-                play={true}
-                animationData={AnimacionLoading}
-              />
-            </>
-          )}
+              </>
+            )}
+          </div>
         </div>
       </div>
 

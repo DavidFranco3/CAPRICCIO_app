@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useActionState } from 'react';
 import "../../../../scss/styles.scss";
 import { cancelarProducto } from "../../../../api/productos";
 import { map } from "lodash";
@@ -14,7 +14,6 @@ import { LogsInformativos } from '../../../Logs/components/LogsSistema/LogsSiste
 
 function CancelarProductos(props) {
     const { datosProducto, listCategorias, navigate, setShowModal } = props;
-
     const { id, nombre, categoria, precio, estado, imagen, fechaActualizacion } = datosProducto;
 
     dayjs.locale('es');
@@ -25,30 +24,26 @@ function CancelarProductos(props) {
         setShowModal(false)
     }
 
-    const [loading, setLoading] = useState(false);
-
-    const onSubmit = e => {
-        e.preventDefault()
-        setLoading(true);
+    const [errorState, action, isPending] = useActionState(async (prevState, fd) => {
         try {
             const dataTemp = {
                 estado: estado === "true" ? "false" : "true"
             }
-            cancelarProducto(id, dataTemp).then(response => {
-                const { data } = response;
-                navigate({
-                    search: queryString.stringify(""),
-                });
-                LogsInformativos("Estado del producto " + nombre + " actualizado", datosProducto);
-                Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
-                cancelarRegistro();
-            }).catch(e => {
-                console.log(e)
-            })
+            const response = await cancelarProducto(id, dataTemp);
+            const { data } = response;
+            navigate({
+                search: queryString.stringify(""),
+            });
+            LogsInformativos("Estado del producto " + nombre + " actualizado", datosProducto);
+            Swal.fire({ icon: 'success', title: data.mensaje, timer: 1600, showConfirmButton: false });
+            cancelarRegistro();
+            return null;
         } catch (e) {
-            console.log(e)
+            console.log(e);
+            Swal.fire({ icon: 'error', title: "Error al actualizar estado del producto", timer: 1600, showConfirmButton: false });
+            return { error: e.message };
         }
-    }
+    }, null);
 
     return (
         <>
@@ -76,8 +71,8 @@ function CancelarProductos(props) {
                         </>
                     )
                 }
-                <Form onSubmit={onSubmit}>
-                <div className="imagenPrincipal">
+                <Form action={action}>
+                    <div className="imagenPrincipal">
                         <h4 className="textoImagenPrincipal">Imagen del producto</h4>
                         <div className="imagenProducto">
                             <div className="vistaPreviaImagen">
@@ -118,14 +113,14 @@ function CancelarProductos(props) {
                     </Row>
 
                     <Row className="mb-3">
-                        <Form.Group as={Col} controlId="formGridNombre">
+                        <Form.Group as={Col} controlId="formGridPrecio">
                             <Form.Label>
                                 Precio
                             </Form.Label>
                             <Form.Control
                                 type="text"
-                                name="nombre"
-                                placeholder="Escribe el nombre"
+                                name="precio"
+                                placeholder="Escribe el precio"
                                 value={precio}
                                 disabled
                             />
@@ -152,8 +147,9 @@ function CancelarProductos(props) {
                                 type="submit"
                                 variant="success"
                                 className="registrar"
+                                disabled={isPending}
                             >
-                                <FontAwesomeIcon icon={faSave} /> {!loading ? (estado === "true" ? "Deshabilitar" : "Habilitar") : <Spinner animation="border" />}
+                                <FontAwesomeIcon icon={faSave} /> {!isPending ? (estado === "true" ? "Deshabilitar" : "Habilitar") : <Spinner animation="border" />}
                             </Button>
                         </Col>
                         <Col>
@@ -161,6 +157,7 @@ function CancelarProductos(props) {
                                 title="Cerrar ventana"
                                 variant="danger"
                                 className="cancelar"
+                                disabled={isPending}
                                 onClick={() => {
                                     cancelarRegistro()
                                 }}

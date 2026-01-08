@@ -155,7 +155,7 @@ function MovimientosCajas(props) {
     rreturn(
         <>
             <div className="card card-outline m-3">
-                <div className="card-header bg-gray">
+                <div className="card-header bg-header-premium">
                     <div className="d-flex justify-content-between align-items-center">
                         <h4 className="mb-0 font-bold">Movimientos de cajas</h4>
 

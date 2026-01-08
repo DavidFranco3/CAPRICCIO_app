@@ -67,7 +67,7 @@ function PedidosClientes(props) {
 
   const [idUsuario, setIdUsuario] = useState("");
 
-  
+
   const obtenerDatosUsuario = () => {
     try {
       obtenerUsuario(obtenidusuarioLogueado(getTokenApi()))
@@ -224,75 +224,75 @@ function PedidosClientes(props) {
 
   return (
     <>
-      <div className="card card-outline m-3">
-        <div className="card-header bg-gray">
-          <div className="d-flex justify-content-between align-items-center">
-            <h4 className="font-bold mb-0">Pedidos de clientes</h4>
-            <div className="d-flex align-items-center">
-              <div style={{ float: "right" }}>
-                {estadoUsuario === "false" && tipoUsuario === "externo" && (
-                  <>
-                    <button
-                      title="Ir a la terminal de pedidos"
-                      className="btn btn-outline-light "
-                      style={{ marginRight: "10px" }}
-                      onClick={() => {
-                        rutaRegistroVenta();
-                      }}
-                    >
-                      <FontAwesomeIcon icon={faCirclePlus} /> Nuevo pedido
-                    </button>
-                    <button
-                      title="Ver ayuda"
-                      className="btn btn-outline-light"
-                      style={{ marginRight: "10px" }}
-                      onClick={() => ayuda(<Slider />)}
-                    >
-                      <FontAwesomeIcon icon={faQuestion} /> Ayuda
-                    </button>
-                  </>
-                )}
-                <button
-                  title="Regresar a la pagina anterior"
-                  className="btn btn-outline-light"
-                  style={{ marginRight: "10px" }}
-                  onClick={() => {
-                    rutaRegreso();
-                  }}
-                >
-                  <FontAwesomeIcon icon={faArrowCircleLeft} /> Regresar
-                </button>
-              </div>
+      <div className="m-3">
+        <div className="dashboard-header-glass">
+          <h4 className="font-bold text-white mb-0">Pedidos de clientes</h4>
+          <div className="d-flex align-items-center">
+            <div style={{ float: "right" }}>
+              {estadoUsuario === "false" && tipoUsuario === "externo" && (
+                <>
+                  <button
+                    title="Ir a la terminal de pedidos"
+                    className="btn btn-outline-light "
+                    style={{ marginRight: "10px" }}
+                    onClick={() => {
+                      rutaRegistroVenta();
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faCirclePlus} /> Nuevo pedido
+                  </button>
+                  <button
+                    title="Ver ayuda"
+                    className="btn btn-outline-light"
+                    style={{ marginRight: "10px" }}
+                    onClick={() => ayuda(<Slider />)}
+                  >
+                    <FontAwesomeIcon icon={faQuestion} /> Ayuda
+                  </button>
+                </>
+              )}
+              <button
+                title="Regresar a la pagina anterior"
+                className="btn btn-outline-light"
+                style={{ marginRight: "10px" }}
+                onClick={() => {
+                  rutaRegreso();
+                }}
+              >
+                <FontAwesomeIcon icon={faArrowCircleLeft} /> Regresar
+              </button>
             </div>
           </div>
         </div>
-        <div className="card-body">
-          {listPedidos ? (
-            <>
-              <Suspense fallback={<Spinner />}>
-                <ListPedidos
-                  listPedidos={listPedidos}
-                  tipoUsuario={tipoUsuario}
-                  location={location}
-                  navigate={navigate}
-                  setRefreshCheckLogin={setRefreshCheckLogin}
-                  setRowsPerPage={setRowsPerPage}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                  setPage={setPage}
-                  noTotalPedidos={noTotalPedidos}
+        <div className="card card-outline glass-card">
+          <div className="card-body">
+            {listPedidos ? (
+              <>
+                <Suspense fallback={<Spinner />}>
+                  <ListPedidos
+                    listPedidos={listPedidos}
+                    tipoUsuario={tipoUsuario}
+                    location={location}
+                    navigate={navigate}
+                    setRefreshCheckLogin={setRefreshCheckLogin}
+                    setRowsPerPage={setRowsPerPage}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    setPage={setPage}
+                    noTotalPedidos={noTotalPedidos}
+                  />
+                </Suspense>
+              </>
+            ) : (
+              <>
+                <Lottie
+                  loop={true}
+                  play={true}
+                  animationData={AnimacionLoading}
                 />
-              </Suspense>
-            </>
-          ) : (
-            <>
-              <Lottie
-                loop={true}
-                play={true}
-                animationData={AnimacionLoading}
-              />
-            </>
-          )}
+              </>
+            )}
+          </div>
         </div>
       </div>
 

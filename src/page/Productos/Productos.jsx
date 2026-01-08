@@ -245,70 +245,69 @@ function Productos(props) {
 
   return (
     <>
-      <div className="card card-outline m-3">
-        <div className="card-header bg-gray">
-          <div className="d-flex justify-content-between align-items-center">
-            <h4 className="font-bold mb-0">Productos</h4>
-            <div className="d-flex align-items-center">
-              <button
-                title="Registrar un nuevo producto"
-                className="btn btn-outline-light me-2"
-                onClick={() =>
-                  registroProductos(<RegsitroProds setShow={setShowModal} />)
-                }
-              >
-                <FontAwesomeIcon icon={faCirclePlus} /> Registrar
-              </button>
-              <Switch
-                title={
-                  estadoSwitch === true
-                    ? "Ver productos cancelados"
-                    : "Ver productos activos"
-                }
-                checked={estadoSwitch}
-                onChange={() => setEstadoSwitch(!estadoSwitch)}
-                className={`${estadoSwitch ? "bg-teal-900" : "bg-red-600"}
+      <div className="m-3">
+        <div className="dashboard-header-glass">
+          <h4 className="font-bold text-white mb-0">Productos</h4>
+          <div className="d-flex align-items-center">
+            <button
+              title="Registrar un nuevo producto"
+              className="btn btn-outline-light me-2"
+              onClick={() =>
+                registroProductos(<RegsitroProds setShow={setShowModal} />)
+              }
+            >
+              <FontAwesomeIcon icon={faCirclePlus} /> Registrar
+            </button>
+            <Switch
+              title={
+                estadoSwitch === true
+                  ? "Ver productos cancelados"
+                  : "Ver productos activos"
+              }
+              checked={estadoSwitch}
+              onChange={() => setEstadoSwitch(!estadoSwitch)}
+              className={`${estadoSwitch ? "bg-teal-900" : "bg-red-600"}
               relative inline-flex flex-shrink-0 h-[38px] w-[74px] border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75`}
-              >
-                <span className="sr-only">Use setting</span>
-                <span
-                  aria-hidden="true"
-                  className={`${
-                    estadoSwitch ? "translate-x-9" : "translate-x-0"
+            >
+              <span className="sr-only">Use setting</span>
+              <span
+                aria-hidden="true"
+                className={`${estadoSwitch ? "translate-x-9" : "translate-x-0"
                   }
                 pointer-events-none inline-block h-[34px] w-[34px] rounded-full bg-white shadow-lg transform ring-0 transition ease-in-out duration-200`}
-                />
-              </Switch>
-            </div>
+              />
+            </Switch>
           </div>
         </div>
-        <div className="card-body">
-          {listProductos ? (
-            <>
-              <Suspense fallback={<Spinner />}>
-                <ListProductos
-                  setRefreshCheckLogin={setRefreshCheckLogin}
-                  listProductos={listProductos}
-                  listCategorias={listCategorias}
-                  location={location}
-                  navigate={navigate}
-                  setRowsPerPage={setRowsPerPage}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                  setPage={setPage}
-                  noTotalProductos={noTotalProductos}
+        <div className="card card-outline glass-card">
+          <div className="card-body">
+            {listProductos ? (
+              <>
+                <Suspense fallback={<Spinner />}>
+                  <ListProductos
+                    setRefreshCheckLogin={setRefreshCheckLogin}
+                    listProductos={listProductos}
+                    listCategorias={listCategorias}
+                    location={location}
+                    navigate={navigate}
+                    setRowsPerPage={setRowsPerPage}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    setPage={setPage}
+                    noTotalProductos={noTotalProductos}
+                  />
+                </Suspense>
+              </>
+            ) : (
+              <>
+                <Lottie
+                  loop={true}
+                  play={true}
+                  animationData={AnimacionLoading}
                 />
-              </Suspense>
-            </>
-          ) : (
-            <>
-              <Lottie
-                loop={true}
-                play={true}
-                animationData={AnimacionLoading}
-              />
-            </>
-          )}
+              </>
+            )}
+          </div>
         </div>
       </div>
 

@@ -142,37 +142,39 @@ function Clientes(props) {
 
   return (
     <>
-      
-      <div className="card card-outline m-3">
-        <div className="card-header bg-gray">
-          <h4 className="mb-0 font-bold">Clientes</h4>
+
+      <div className="m-3">
+        <div className="dashboard-header-glass">
+          <h4 className="font-bold text-white mb-0">Clientes</h4>
         </div>
-        <div className="card-body">
-          {listClientes ? (
-            <>
-              <Suspense fallback={<Spinner />}>
-                <ListClientes
-                  listClientes={listClientes}
-                  location={location}
-                  navigate={navigate}
-                  setRefreshCheckLogin={setRefreshCheckLogin}
-                  setRowsPerPage={setRowsPerPage}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                  setPage={setPage}
-                  noTotalClientes={noTotalClientes}
+        <div className="card card-outline glass-card">
+          <div className="card-body">
+            {listClientes ? (
+              <>
+                <Suspense fallback={<Spinner />}>
+                  <ListClientes
+                    listClientes={listClientes}
+                    location={location}
+                    navigate={navigate}
+                    setRefreshCheckLogin={setRefreshCheckLogin}
+                    setRowsPerPage={setRowsPerPage}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    setPage={setPage}
+                    noTotalClientes={noTotalClientes}
+                  />
+                </Suspense>
+              </>
+            ) : (
+              <>
+                <Lottie
+                  loop={true}
+                  play={true}
+                  animationData={AnimacionLoading}
                 />
-              </Suspense>
-            </>
-          ) : (
-            <>
-              <Lottie
-                loop={true}
-                play={true}
-                animationData={AnimacionLoading}
-              />
-            </>
-          )}
+              </>
+            )}
+          </div>
         </div>
       </div>
     </>
