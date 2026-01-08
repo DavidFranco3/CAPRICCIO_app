@@ -4,6 +4,9 @@
 // Constantes para puesta en produccion
 export const API_HOST = "https://capriccio-api.vercel.app";
 
+// Constantes para la puesta en produccion en el servidor
+// export const API_HOST = "https://capriccio.isotech.mx/app/";
+
 export const API_CLOUDINARY =
   "https://api.cloudinary.com/v1_1/omarlestrella/image/upload";
 

@@ -8,7 +8,16 @@ const Menu = ({ datosUsuario, turno }) => {
   console.log(turno);
   const enrutamiento = useNavigate();
 
-  const goTo = (ruta) => enrutamiento(ruta);
+  const goTo = (ruta) => {
+    enrutamiento(ruta);
+    // Cerrar el sidebar en móviles después de navegar
+    if (window.innerWidth <= 991) {
+      const body = document.querySelector('body');
+      body.classList.remove('sidebar-open');
+      body.classList.add('sidebar-collapse');
+      body.classList.add('sidebar-closed');
+    }
+  };
 
   const ItemCard = ({ path, title, logo }) => (
     <li className="nav-item">
