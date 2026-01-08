@@ -11,7 +11,7 @@ import {
   obtenerVentas,
   actualizarProdsTicket,
 } from "../../../../api/ventas";
-import { Col, Row, Image, Table, Form } from "react-bootstrap";
+import { Col, Row, Image, Table, Form, Button, Spinner } from "react-bootstrap";
 import DatosExtraVenta from "../DatosExtraVenta";
 import { logoTiquetGris } from "../../../../assets/base64/logo-tiquet";
 import dayjs from "dayjs";
@@ -273,9 +273,9 @@ function Tiquet(props) {
             usuario: idUsuario,
             estado: mesaClick ? "OEM" : "PP",
             subtotal: total,
-            tipoPedido: tipoPedido,
-            hacerPedido: hacerPedido,
-            atendido: usuario,
+            tipoPedido: formData.tipoPedido,
+            hacerPedido: formData.hacerPedido,
+            atendido: idUsuario,
             mes: fecha.mes,
             año: fecha.añoVenta,
             semana: fecha.weekNumber,
