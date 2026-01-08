@@ -18,6 +18,25 @@ const Header = (props) => {
   const [contentModal, setContentModal] = useState(null);
   const [titulosModal, setTitulosModal] = useState(null);
 
+  // Estados para búsqueda y dropdown
+  const [showSearch, setShowSearch] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  const toggleSearch = () => setShowSearch(!showSearch);
+  const toggleDropdown = () => setShowDropdown(!showDropdown);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch((e) => {
+        console.error(`Error attempting to enable full-screen mode: ${e.message} (${e.name})`);
+      });
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+  };
+
   const editarComision = (content) => {
     setTitulosModal("Comisión bancaria");
     setContentModal(content);
@@ -37,39 +56,23 @@ const Header = (props) => {
   const cierreAutomatico = () => {
     if (getTokenApi()) {
       if (isExpiredToken(getTokenApi())) {
-        /*LogsInformativosLogout(
-          "Sesión finalizada",
-          datosUsuario,
-          setRefreshCheckLogin
-        );*/
         logoutApi();
-        //setRefreshCheckLogin(true);
         Swal.fire({ icon: 'warning', title: "Sesión expirada", timer: 1600, showConfirmButton: false });
         Swal.fire({ icon: 'success', title: "Sesión cerrada por seguridad", timer: 1600, showConfirmButton: false });
       }
     }
   };
 
-  //Para cerrar la sesion
   const cerrarSesion = () => {
-    /*LogsInformativosLogout(
-      "Sesión finalizada",
-      datosUsuario,
-      setRefreshCheckLogin
-    );*/
     logoutApi();
-    //setRefreshCheckLogin(true);
     Swal.fire({ icon: 'success', title: "Sesión cerrada", timer: 1600, showConfirmButton: false });
     window.location.reload();
   };
 
-  // Cerrado de sesión automatico
   useEffect(() => {
     cierreAutomatico();
   }, []);
-  // Termina cerrado de sesión automatico
 
-  // Para ir hacia el inicio
   const enrutaInicio = () => {
     redirecciona("/");
   };
@@ -79,6 +82,17 @@ const Header = (props) => {
     setContentModal(content);
     setShowModal(true);
   };
+
+  // Cerrar dropdown al hacer click fuera
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showDropdown && !event.target.closest('.dropdown')) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showDropdown]);
 
   return (
     <div className="bg-secondary">
@@ -91,9 +105,8 @@ const Header = (props) => {
               role="button"
               onClick={(e) => {
                 e.preventDefault();
-                e.stopPropagation(); // Stop event from bubbling to document listener which closes sidebar
+                e.stopPropagation();
                 const body = document.querySelector('body');
-                // AdminLTE 3 mobile toggle logic
                 if (window.innerWidth <= 991) {
                   if (body.classList.contains('sidebar-open')) {
                     body.classList.remove('sidebar-open');
@@ -105,7 +118,6 @@ const Header = (props) => {
                     body.classList.remove('sidebar-closed');
                   }
                 } else {
-                  // Desktop toggle
                   if (body.classList.contains('sidebar-collapse')) {
                     body.classList.remove('sidebar-collapse');
                   } else {
@@ -140,12 +152,12 @@ const Header = (props) => {
           <li className="nav-item">
             <span
               className="nav-link"
-              data-widget="navbar-search"
               role="button"
+              onClick={toggleSearch}
             >
               <i className="fas fa-search" />
             </span>
-            <div className="navbar-search-block">
+            <div className={`navbar-search-block ${showSearch ? 'navbar-search-open' : ''}`} style={{ display: showSearch ? 'flex' : 'none' }}>
               <form className="form-inline">
                 <div className="input-group input-group-sm">
                   <input
@@ -161,7 +173,7 @@ const Header = (props) => {
                     <button
                       className="btn btn-navbar"
                       type="button"
-                      data-widget="navbar-search"
+                      onClick={toggleSearch}
                     >
                       <i className="fas fa-times" />
                     </button>
@@ -172,14 +184,18 @@ const Header = (props) => {
           </li>
 
           {/* Notifications Dropdown Menu */}
-          <li className="nav-item dropdown">
-            <span className="nav-link" data-toggle="dropdown" href="#">
+          <li className={`nav-item dropdown ${showDropdown ? 'show' : ''}`}>
+            <span
+              className="nav-link"
+              role="button"
+              onClick={toggleDropdown}
+            >
               <i className="far fa-bell" />
               <span className="badge badge-warning navbar-badge cursor-pointer">
                 <i className="fa fa-user"></i>
               </span>
             </span>
-            <div className="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+            <div className={`dropdown-menu dropdown-menu-lg dropdown-menu-right ${showDropdown ? 'show' : ''}`}>
               <span className="dropdown-item dropdown-header">
                 Usuario: {datosUsuario.nombre}
               </span>
@@ -213,6 +229,7 @@ const Header = (props) => {
                   <div className="m-0 dropdown-divider" />
                   <span className="dropdown-item">
                     <button
+                      className="btn btn-block text-left"
                       onClick={() => {
                         editarComision(
                           <Comision setShowModal={setShowModal} />
@@ -228,7 +245,11 @@ const Header = (props) => {
             </div>
           </li>
           <li className="nav-item">
-            <span className="nav-link" data-widget="fullscreen" role="button">
+            <span
+              className="nav-link"
+              role="button"
+              onClick={toggleFullscreen}
+            >
               <i className="fas fa-expand-arrows-alt" />
             </span>
           </li>
