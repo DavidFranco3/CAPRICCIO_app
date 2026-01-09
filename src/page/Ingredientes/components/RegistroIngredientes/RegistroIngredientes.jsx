@@ -282,3 +282,4 @@ function RegistroIngredientes(props) {
     );
 }
 
+export default RegistroIngredientes;
