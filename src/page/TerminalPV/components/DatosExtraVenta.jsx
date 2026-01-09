@@ -10,8 +10,6 @@ import Swal from 'sweetalert2';
 import { ocuparDesocuparMesas } from "../../../api/mesas";
 import {
   cobrarTicket,
-  listarVentas,
-  obtenerVentas,
   registraVentas,
 } from "../../../api/ventas";
 import { LogsInformativos } from "../../Logs/components/LogsSistema/LogsSistema";
@@ -944,48 +942,58 @@ function DatosExtraVenta(props) {
           )}
         </div>
 
-        <div className="mt-3 d-flex justify-content-evenly">
-          <Button
-            className="btn btn-success"
-            type="submit"
-            name="actionType"
-            value="COBR"
-            disabled={isPending}
-          >
-            <i className="fa fa-coins me-2"></i>
-            {!isPending ? "Cobrar" : <Spinner animation="border" size="sm" />}
-          </Button>
-          <Button
-            className="btn btn-warning"
-            type="submit"
-            name="actionType"
-            value="PP"
-            disabled={isPending}
-          >
-            <i className="fa fa-hourglass-half me-2"></i>
-            {!isPending ? "Cobrar después" : <Spinner animation="border" size="sm" />}
-          </Button>
-          <Button className="btn btn-danger" onClick={cancelarRegistro} disabled={isPending}>
-            <i className="fa fa-ban me-2"></i>
-            Cancelar
-          </Button>
-          <Button
-            className="btn btn-primary"
-            disabled={isPending}
-            onClick={() =>
-              imprimirTicketFinal(
-                <TicketFinal
-                  formData={formData.infoVenta}
-                  setShowMod={setShowMod}
-                  setShowTerminalPV={setShowTerminalPV}
-                  setShowTicket={setShowTicket}
-                />
-              )
-            }
-          >
-            <i className="fas fa-print"></i> Imp
-          </Button>
-        </div>
+        <Row className="mt-3">
+          <Col className="mb-2">
+            <Button
+              className="btn btn-success w-100"
+              type="submit"
+              name="actionType"
+              value="COBR"
+              disabled={isPending}
+            >
+              <i className="fa fa-coins me-2"></i>
+              {!isPending ? "Cobrar" : <Spinner animation="border" size="sm" />}
+            </Button>
+          </Col>
+          <Col className="mb-2">
+            <Button
+              className="btn btn-warning w-100"
+              type="submit"
+              name="actionType"
+              value="PP"
+              disabled={isPending}
+            >
+              <i className="fa fa-hourglass-half me-2"></i>
+              {!isPending ? "Cobrar después" : <Spinner animation="border" size="sm" />}
+            </Button>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <Button className="btn btn-danger w-100" onClick={cancelarRegistro} disabled={isPending}>
+              <i className="fa fa-ban me-2"></i>
+              Cancelar
+            </Button>
+          </Col>
+          <Col>
+            <Button
+              className="btn btn-primary w-100"
+              disabled={isPending}
+              onClick={() =>
+                imprimirTicketFinal(
+                  <TicketFinal
+                    formData={formData.infoVenta}
+                    setShowMod={setShowMod}
+                    setShowTerminalPV={setShowTerminalPV}
+                    setShowTicket={setShowTicket}
+                  />
+                )
+              }
+            >
+              <i className="fas fa-print"></i> Imp
+            </Button>
+          </Col>
+        </Row>
       </Form>
       <BasicModal
         show={showMod}

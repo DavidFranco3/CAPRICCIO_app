@@ -224,7 +224,7 @@ function CancelarMovimientosCajas(props) {
                                 title={estado === "true" ? "cancelar producto" : "recuperar producto"}
                                 type="submit"
                                 variant="success"
-                                className="registrar"
+                                className="registrar w-100"
                                 disabled={isPending}
                             >
                                 <FontAwesomeIcon icon={faSave} /> {!isPending ? (estado === "true" ? "Deshabilitar" : "Habilitar") : <Spinner animation="border" size="sm" />}
@@ -234,7 +234,7 @@ function CancelarMovimientosCajas(props) {
                             <Button
                                 title="Cerrar ventana"
                                 variant="danger"
-                                className="cancelar"
+                                className="cancelar w-100"
                                 disabled={isPending}
                                 onClick={() => {
                                     cancelarRegistro()

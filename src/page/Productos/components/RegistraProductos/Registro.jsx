@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Col, Container, Form, Row } from "react-bootstrap";
+import { Col, Container, Form, Row, Button } from "react-bootstrap";
 import { listarCategorias } from "../../../../api/categorias";
 import { listarInsumos } from "../../../../api/insumos";
 import { map } from "lodash";
@@ -12,7 +12,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { registraProductos } from "../../../../api/productos";
 import { subeArchivosCloudinary } from "../../../../api/cloudinary";
-import RegistraProductos from "./RegistraProductos";
 import { LogsInformativos } from "../../../Logs/components/LogsSistema/LogsSistema";
 import Swal from 'sweetalert2';
 
@@ -144,40 +143,40 @@ function RegsitroProds(props) {
   };
 
   const registrarProducto = async () => {
-  try {
-    let imageUrl = "";
+    try {
+      let imageUrl = "";
 
-    // Check if there's an image to upload
-    if (imagePreview) {
-      const response = await subeArchivosCloudinary(imagePreview, "productos");
-      const { data } = response;
-      imageUrl = data.secure_url;
+      // Check if there's an image to upload
+      if (imagePreview) {
+        const response = await subeArchivosCloudinary(imagePreview, "productos");
+        const { data } = response;
+        imageUrl = data.secure_url;
+      }
+
+      const dataTemp = {
+        nombre: formData.nombreProducto,
+        categoria: formData.categoria,
+        precio: formData.precio,
+        imagen: imageUrl, // Use imageUrl, which is either the uploaded URL or an empty string
+        negocio: formData.negocio,
+        costoProduccion: costoProduccion,
+        insumos: listInsumosReceta,
+        estado: "true",
+      };
+
+      const productoResponse = await registraProductos(dataTemp);
+      const { data: productoData } = productoResponse;
+      LogsInformativos(
+        "Se ha registrado el producto " + formData.nombreProducto,
+        productoData.datos
+      );
+      Swal.fire({ icon: 'success', title: productoData.mensaje, timer: 1600, showConfirmButton: false });
+      cancelarRegistro();
+    } catch (error) {
+      console.log(error);
+      Swal.fire({ icon: 'error', title: "Error al registrar el producto", timer: 1600, showConfirmButton: false });
     }
-
-    const dataTemp = {
-      nombre: formData.nombreProducto,
-      categoria: formData.categoria,
-      precio: formData.precio,
-      imagen: imageUrl, // Use imageUrl, which is either the uploaded URL or an empty string
-      negocio: formData.negocio,
-      costoProduccion: costoProduccion,
-      insumos: listInsumosReceta,
-      estado: "true",
-    };
-
-    const productoResponse = await registraProductos(dataTemp);
-    const { data: productoData } = productoResponse;
-    LogsInformativos(
-      "Se ha registrado el producto " + formData.nombreProducto,
-      productoData.datos
-    );
-    Swal.fire({ icon: 'success', title: productoData.mensaje, timer: 1600, showConfirmButton: false });
-    cancelarRegistro();
-  } catch (error) {
-    console.log(error);
-    Swal.fire({ icon: 'error', title: "Error al registrar el producto", timer: 1600, showConfirmButton: false });
-  }
-};
+  };
   return (
     <>
       <Container>
@@ -364,14 +363,32 @@ function RegsitroProds(props) {
             </div>
           </Col>
         </Row>
-        <div className="d-flex justify-content-around">
-          <button className="btn btn-success" onClick={registrarProducto}>
-            <FontAwesomeIcon icon={faUpload} /> Registrar
-          </button>
-          <button className="btn btn-danger" onClick={() => cancelarRegistro()}>
-            <FontAwesomeIcon icon={faX} /> Cancelar
-          </button>
-        </div>
+        <Form.Group as={Row} className="botonSubirProducto">
+          <Col>
+            <Button
+              title="Registrar producto"
+              type="submit"
+              variant="success"
+              className="registrar w-100"
+              disabled={isPending}
+            >
+              <FontAwesomeIcon icon={faSave} />{" "}
+              {!isPending ? "Registrar" : <Spinner animation="border" />}
+            </Button>
+            <Button
+              title="Cerrar ventana"
+              variant="danger"
+              className="cancelar w-100"
+              disabled={isPending}
+              type="button"
+              onClick={() => {
+                cancelarRegistro();
+              }}
+            >
+              <FontAwesomeIcon icon={faX} /> Cancelar
+            </Button>
+          </Col>
+        </Form.Group>
       </Container>
     </>
   );

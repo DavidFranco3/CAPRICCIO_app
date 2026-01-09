@@ -1,20 +1,18 @@
-import React, { useState, useActionState, useRef } from "react";
+import { startTransition, useActionState } from "react";
 import { Button, Col, Form, Row, Spinner } from "react-bootstrap";
 import { registraMesas } from "../../../api/mesas";
 import Swal from 'sweetalert2';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheck, faX } from "@fortawesome/free-solid-svg-icons";
+import { useForm } from "react-hook-form";
 
-const RegistroMesas = () => {
-  const formRef = useRef(null);
+const RegistroMesas = (props) => {
+  const { register, handleSubmit, formState: { errors } } = useForm();
 
   const [errorState, action, isPending] = useActionState(async (previousState, formData) => {
     const numeroMesa = formData.get("numeroMesa");
     const numeroPersonas = formData.get("numeroPersonas");
     const descripcion = formData.get("descripcion");
-
-    if (!numeroMesa || !numeroPersonas || !descripcion) {
-      Swal.fire({ icon: 'warning', title: "Todos los campos son obligatorios", timer: 1600, showConfirmButton: false });
-      return { error: "Campos incompletos" };
-    }
 
     try {
       const response = await registraMesas({
@@ -27,8 +25,7 @@ const RegistroMesas = () => {
       if (response.status === 200) {
         console.log("Registro exitoso");
         Swal.fire({ icon: 'success', title: "Registro exitoso", timer: 1600, showConfirmButton: false });
-        // Reset form
-        if (formRef.current) formRef.current.reset();
+        if (props.setShow) props.setShow(false);
         return null;
       } else {
         console.error("Error al registrar la mesa");
@@ -42,9 +39,17 @@ const RegistroMesas = () => {
     }
   }, null);
 
+  const onSubmit = (data) => {
+    const formData = new FormData();
+    Object.keys(data).forEach(key => formData.append(key, data[key]));
+    startTransition(() => {
+      action(formData);
+    });
+  };
+
   return (
     <div>
-      <Form action={action} ref={formRef}>
+      <Form onSubmit={handleSubmit(onSubmit)}>
         <Row className="mb-2 mb-md-4 mb-lg-7">
           <Col
             sm={12}
@@ -57,9 +62,13 @@ const RegistroMesas = () => {
           <Col sm={12} md={8} lg={8}>
             <Form.Control
               type="text"
-              name="numeroMesa"
               placeholder="Ej. 1"
+              {...register("numeroMesa", { required: "El número de mesa es obligatorio" })}
+              isInvalid={!!errors.numeroMesa}
             />
+            <Form.Control.Feedback type="invalid">
+              {errors.numeroMesa?.message}
+            </Form.Control.Feedback>
           </Col>
         </Row>
         <Row className="mb-2 mb-md-4 mb-lg-7">
@@ -74,9 +83,13 @@ const RegistroMesas = () => {
           <Col sm={12} md={8} lg={8}>
             <Form.Control
               type="text"
-              name="numeroPersonas"
               placeholder="Ej. 4"
+              {...register("numeroPersonas", { required: "El número de personas es obligatorio" })}
+              isInvalid={!!errors.numeroPersonas}
             />
+            <Form.Control.Feedback type="invalid">
+              {errors.numeroPersonas?.message}
+            </Form.Control.Feedback>
           </Col>
         </Row>
         <Row className="mb-2 mb-md-4 mb-lg-7">
@@ -91,16 +104,40 @@ const RegistroMesas = () => {
           <Col sm={12} md={8} lg={8}>
             <Form.Control
               as="textarea"
-              name="descripcion"
               placeholder="Descripción de la mesa"
+              {...register("descripcion", { required: "La descripción es obligatoria" })}
+              isInvalid={!!errors.descripcion}
             />
+            <Form.Control.Feedback type="invalid">
+              {errors.descripcion?.message}
+            </Form.Control.Feedback>
           </Col>
         </Row>
-        <div style={{ textAlign: "center" }}>
-          <Button variant="success" type="submit" disabled={isPending}>
-            {isPending ? <Spinner animation="border" size="sm" /> : <><i className="fa fa-solid fa-check" /> Agregar</>}
-          </Button>
-        </div>
+        <Form.Group as={Row} className="botonSubirProducto mt-3">
+          <Col>
+            <Button
+              variant="success"
+              type="submit"
+              className="w-100"
+              disabled={isPending}
+            >
+              {isPending ? <Spinner animation="border" size="sm" /> : <><FontAwesomeIcon icon={faCheck} /> Agregar</>}
+            </Button>
+          </Col>
+          <Col>
+            <Button
+              variant="danger"
+              className="w-100"
+              type="button"
+              onClick={() => {
+                if (props.setShow) props.setShow(false);
+              }}
+              disabled={isPending}
+            >
+              <FontAwesomeIcon icon={faX} /> Cancelar
+            </Button>
+          </Col>
+        </Form.Group>
       </Form>
     </div>
   );

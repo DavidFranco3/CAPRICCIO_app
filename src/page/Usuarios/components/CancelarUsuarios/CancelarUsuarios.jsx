@@ -128,7 +128,7 @@ function CancelarUsuarios(props) {
                                 title={estadoUsuario === "true" ? "cancelar usuario" : "recuperar usuario"}
                                 type="submit"
                                 variant="success"
-                                className="registrar"
+                                className="registrar w-100"
                                 disabled={isPending}
                             >
                                 <FontAwesomeIcon icon={faSave} /> {!isPending ? (estadoUsuario === "true" ? "Deshabilitar" : "Habilitar") : <Spinner animation="border" />}
@@ -138,7 +138,7 @@ function CancelarUsuarios(props) {
                             <Button
                                 title="Cerrar ventana"
                                 variant="danger"
-                                className="cancelar"
+                                className="cancelar w-100"
                                 disabled={isPending}
                                 onClick={() => {
                                     cancelarRegistro()

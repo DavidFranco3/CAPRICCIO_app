@@ -120,7 +120,7 @@ function CancelarPedido(props) {
                                 title={estado === "true" ? "cancelar venta" : "recuperar venta"}
                                 type="submit"
                                 variant="success"
-                                className="registrar"
+                                className="registrar w-100"
                                 disabled={isPending}
                             >
                                 <FontAwesomeIcon icon={faSave} /> {!isPending ? (estado === "Pendiente" ? "Confirmar" : "Cancelar") : <Spinner animation="border" size="sm" />}
@@ -130,7 +130,7 @@ function CancelarPedido(props) {
                             <Button
                                 title="Cerrar ventana"
                                 variant="danger"
-                                className="cancelar"
+                                className="cancelar w-100"
                                 disabled={isPending}
                                 onClick={() => {
                                     cancelarRegistro()

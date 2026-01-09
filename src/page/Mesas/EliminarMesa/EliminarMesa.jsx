@@ -1,8 +1,8 @@
-import { Container, Form, Spinner } from "react-bootstrap";
+import { Container, Form, Spinner, Row, Col, Button } from "react-bootstrap";
 import { eliminarMesa, obtenerMesa } from "../../../api/mesas";
 import { useEffect, useState, useActionState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDeleteLeft } from "@fortawesome/free-solid-svg-icons";
+import { faDeleteLeft, faX } from "@fortawesome/free-solid-svg-icons";
 import Swal from 'sweetalert2';
 
 function EliminarMesa(props) {
@@ -46,11 +46,28 @@ function EliminarMesa(props) {
             <Form.Label>Num. mesa</Form.Label>
             <Form.Control type="input" value={numeroMesa} disabled />
           </Form.Group>
-          <div className="mt-2 d-flex justify-content-center">
-            <button className="btn btn-danger" type="submit" disabled={isPending}>
-              {isPending ? <Spinner animation="border" size="sm" /> : <><FontAwesomeIcon icon={faDeleteLeft} /> Eliminar</>}
-            </button>
-          </div>
+          <Form.Group as={Row} className="botonSubirProducto mt-3">
+            <Col>
+              <Button
+                variant="success"
+                type="submit"
+                className="w-100"
+                disabled={isPending}
+              >
+                {isPending ? <Spinner animation="border" size="sm" /> : <><FontAwesomeIcon icon={faDeleteLeft} /> Eliminar</>}
+              </Button>
+            </Col>
+            <Col>
+              <Button
+                variant="danger"
+                className="w-100"
+                onClick={() => props.setShow(false)}
+                disabled={isPending}
+              >
+                <FontAwesomeIcon icon={faX} /> Cancelar
+              </Button>
+            </Col>
+          </Form.Group>
         </Form>
       </Container>
     </>

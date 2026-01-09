@@ -10,6 +10,9 @@ import Swal from 'sweetalert2';
 import BasicModal from "../../components/Modal/BasicModal";
 import EntradaSalidaEfec from "./MovsEfectivo/EntradaSalidaEfec";
 import MovimientosTurnos from "../../components/Turno/MovimientosTurno/MovimientosTurnos";
+import { Dropdown } from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBars, faCashRegister, faMoneyBillWave, faBan } from "@fortawesome/free-solid-svg-icons";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -189,20 +192,20 @@ function VistaTurnos(props) {
                       <td>{caja.nombreCaja}</td>
                       <td>{caja.saldo}</td>
                       <td>
-                        <div className="d-flex justify-content-around">
-                          <button
-                            className="btn btn-secondary"
-                            onClick={() => {
+                        <Dropdown className="dropdown-js">
+                          <Dropdown.Toggle className="botonDropdown" id={`dropdown-basic-caja-${caja._id}`} variant="link">
+                            <FontAwesomeIcon icon={faBars} />
+                          </Dropdown.Toggle>
+                          <Dropdown.Menu>
+                            <Dropdown.Item onClick={() => {
                               movimientosTurnoActual(
-                                <MovimientosTurnos caja={caja} turno={turno} />
+                                <MovimientosTurnos caja={caja} turno={turno} setShowModal={setShowModal} />
                               );
-                            }}
-                          >
-                            Corte caja
-                          </button>
-                          <button
-                            className="btn btn-danger"
-                            onClick={() =>
+                            }}>
+                              <FontAwesomeIcon icon={faCashRegister} style={{ color: "#17a2b8" }} />
+                              &nbsp; Corte caja
+                            </Dropdown.Item>
+                            <Dropdown.Item onClick={() =>
                               entradaSalidaEfectivo(
                                 false,
                                 <EntradaSalidaEfec
@@ -211,15 +214,14 @@ function VistaTurnos(props) {
                                   turno={turno}
                                   listCajas={listCajas}
                                   añadirDineroACaja={añadirDineroACaja}
+                                  setShowModal={setShowModal}
                                 />
                               )
-                            }
-                          >
-                            Salida Efectivo
-                          </button>
-                          <button
-                            className="btn btn-success"
-                            onClick={() =>
+                            }>
+                              <FontAwesomeIcon icon={faMoneyBillWave} style={{ color: "#dc3545" }} />
+                              &nbsp; Salida Efectivo
+                            </Dropdown.Item>
+                            <Dropdown.Item onClick={() =>
                               entradaSalidaEfectivo(
                                 true,
                                 <EntradaSalidaEfec
@@ -228,19 +230,19 @@ function VistaTurnos(props) {
                                   turno={turno}
                                   listCajas={listCajas}
                                   añadirDineroACaja={añadirDineroACaja}
+                                  setShowModal={setShowModal}
                                 />
                               )
-                            }
-                          >
-                            Entrada Efectivo
-                          </button>
-                          <button
-                            className="btn btn-primary"
-                            onClick={terminarTurno}
-                          >
-                            Corte final
-                          </button>
-                        </div>
+                            }>
+                              <FontAwesomeIcon icon={faMoneyBillWave} style={{ color: "#28a745" }} />
+                              &nbsp; Entrada Efectivo
+                            </Dropdown.Item>
+                            <Dropdown.Item onClick={terminarTurno}>
+                              <FontAwesomeIcon icon={faBan} style={{ color: "#007bff" }} />
+                              &nbsp; Corte final
+                            </Dropdown.Item>
+                          </Dropdown.Menu>
+                        </Dropdown>
                       </td>
                     </tr>
                   </tbody>

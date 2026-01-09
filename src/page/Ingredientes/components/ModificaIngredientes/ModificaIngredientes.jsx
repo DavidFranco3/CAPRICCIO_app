@@ -1,4 +1,4 @@
-import { useState, useActionState } from 'react';
+import { startTransition, useState, useActionState } from 'react';
 import "../../../../scss/styles.scss";
 import { Button, Col, Form, Row, Spinner } from "react-bootstrap";
 import { subeArchivosCloudinary } from '../../../../api/cloudinary';
@@ -8,14 +8,24 @@ import queryString from "query-string";
 import { faX, faSave } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { LogsInformativos } from '../../../Logs/components/LogsSistema/LogsSistema';
+import { useForm } from "react-hook-form";
 
 function ModificaIngredientes(props) {
     const { datosIngredientes, navigate, setShowModal } = props;
-
     const { id, imagen } = datosIngredientes;
 
-    // Para almacenar el valor del formulario
-    const [formData, setFormData] = useState(initialFormData(datosIngredientes));
+    const { register, handleSubmit, formState: { errors }, watch } = useForm({
+        defaultValues: {
+            nombre: datosIngredientes.nombre,
+            umPrimaria: datosIngredientes.umPrimaria,
+            costoAdquisicion: datosIngredientes.costoAdquisicion,
+            umAdquisicion: datosIngredientes.umAdquisicion,
+            umProduccion: datosIngredientes.umProduccion,
+            cantidadPiezas: datosIngredientes.cantidadPiezas
+        }
+    });
+
+    const umPrimaria = watch("umPrimaria");
 
     // Para almacenar la imagen
     const [imagenFile, setImagenFile] = useState(imagen);
@@ -24,10 +34,6 @@ function ModificaIngredientes(props) {
     const cancelarRegistro = () => {
         setShowModal(false)
     }
-
-    const onChange = e => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
 
     const [errorState, action, isPending] = useActionState(async (prevState, fd) => {
         const nombre = fd.get("nombre");
@@ -66,7 +72,7 @@ function ModificaIngredientes(props) {
 
             const costoProduccion = umPrimaria === "Paquete" ? costoAdquisicion / cantidadPiezas
                 : umProduccion === "Decá" ? parseFloat(precio) * 100
-                    : umProduccion === "Hectó" ? parseFloat(umAdquisicion) * 10
+                    : umProduccion === "Hectó" ? parseFloat(precio) / 10
                         : umProduccion === "Kiló" ? parseFloat(precio) * 1000
                             : umProduccion === "Decí" ? parseFloat(precio) / 10
                                 : umProduccion === "Centí" ? parseFloat(precio) / 100
@@ -100,59 +106,75 @@ function ModificaIngredientes(props) {
         }
     }, null);
 
+    const onSubmit = (data) => {
+        const formData = new FormData();
+        Object.keys(data).forEach(key => formData.append(key, data[key]));
+        startTransition(() => {
+            action(formData);
+        });
+    };
+
     return (
         <>
-            <Form action={action} onChange={onChange}>
+            <Form onSubmit={handleSubmit(onSubmit)}>
                 <div className="datosDelProducto">
                     <Row className="mb-3">
                         <Form.Group as={Col} controlId="formGridNombre">
                             <Form.Label>Nombre</Form.Label>
                             <Form.Control
                                 type="text"
-                                name="nombre"
                                 placeholder="Escribe el nombre"
-                                defaultValue={formData.nombre}
+                                {...register("nombre", { required: "El nombre es obligatorio" })}
+                                isInvalid={!!errors.nombre}
                             />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.nombre?.message}
+                            </Form.Control.Feedback>
                         </Form.Group>
 
-                        <Form.Group as={Col} controlId="formGridNombre">
+                        <Form.Group as={Col} controlId="formGridCosto">
                             <Form.Label>Precio de adquisición</Form.Label>
                             <Form.Control
                                 type="number"
-                                name="costoAdquisicion"
                                 placeholder="Escribe el costo de adquisición"
-                                defaultValue={formData.costoAdquisicion}
                                 step="0.01"
+                                {...register("costoAdquisicion", { required: "El costo es obligatorio", min: 0 })}
+                                isInvalid={!!errors.costoAdquisicion}
                             />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.costoAdquisicion?.message}
+                            </Form.Control.Feedback>
                         </Form.Group>
 
-                        <Form.Group as={Col} controlId="formGridNombre">
+                        <Form.Group as={Col} controlId="formGridUmPrimaria">
                             <Form.Label>Unidad de medida</Form.Label>
                             <Form.Control
                                 as="select"
-                                name="umPrimaria"
-                                defaultValue={formData.umPrimaria}
+                                {...register("umPrimaria", { required: "Selecciona una opción" })}
+                                isInvalid={!!errors.umPrimaria}
                             >
-                                <option>Elige una opción</option>
+                                <option value="">Elige una opción</option>
                                 <option value="Litros">Litros</option>
                                 <option value="Gramos">Gramos</option>
                                 <option value="Metros">Metros</option>
                                 <option value="Paquete">Paquete</option>
                             </Form.Control>
+                            <Form.Control.Feedback type="invalid">
+                                {errors.umPrimaria?.message}
+                            </Form.Control.Feedback>
                         </Form.Group>
                     </Row>
 
                     <Row className="mb-3">
 
                         {
-                            formData.umPrimaria === "Paquete" &&
+                            umPrimaria === "Paquete" &&
                             (
                                 <>
-                                    <Form.Group as={Col} controlId="formGridNombre">
+                                    <Form.Group as={Col} controlId="formGridUmAdqPaq">
                                         <Form.Label>Unidad de medida de adquisicón</Form.Label>
                                         <Form.Control
                                             type="text"
-                                            name="tipo" // Keep logic using calculated umAdqToUse
                                             value="Paquete"
                                             disabled
                                         />
@@ -162,14 +184,13 @@ function ModificaIngredientes(props) {
                         }
 
                         {
-                            formData.umPrimaria === "Paquete" &&
+                            umPrimaria === "Paquete" &&
                             (
                                 <>
-                                    <Form.Group as={Col} controlId="formGridNombre">
+                                    <Form.Group as={Col} controlId="formGridUmProdPaq">
                                         <Form.Label>Unidad de medida de producción</Form.Label>
                                         <Form.Control
                                             type="text"
-                                            name="tipo" // Keep logic using calculated umProdToUse
                                             value="Piezas"
                                             disabled
                                         />
@@ -179,24 +200,23 @@ function ModificaIngredientes(props) {
                         }
 
                         {
-                            formData.umPrimaria !== "" && formData.umPrimaria !== "Paquete" &&
+                            umPrimaria && umPrimaria !== "Paquete" &&
                             (
                                 <>
-                                    <Form.Group as={Col} controlId="formGridNombre">
+                                    <Form.Group as={Col} controlId="formGridUmAdq">
                                         <Form.Label>Unidad de medida de adquisición</Form.Label>
                                         <Form.Control
                                             as="select"
-                                            name="umAdquisicion"
-                                            defaultValue={formData.umAdquisicion}
+                                            {...register("umAdquisicion")}
                                         >
-                                            <option>Elige una opción</option>
-                                            <option value={formData.umPrimaria}>{formData.umPrimaria}</option>
-                                            <option value="Decá">Decá{formData.umPrimaria.toLowerCase()}</option>
-                                            <option value="Hectó">Hectó{formData.umPrimaria.toLowerCase()}</option>
-                                            <option value="Kiló">Kiló{formData.umPrimaria.toLowerCase()}</option>
-                                            <option value="Decí">Decí{formData.umPrimaria.toLowerCase()}</option>
-                                            <option value="Centí">Centí{formData.umPrimaria.toLowerCase()}</option>
-                                            <option value="Milí">Milí{formData.umPrimaria.toLowerCase()}</option>
+                                            <option value="">Elige una opción</option>
+                                            <option value={umPrimaria}>{umPrimaria}</option>
+                                            <option value="Decá">Decá{umPrimaria.toLowerCase()}</option>
+                                            <option value="Hectó">Hectó{umPrimaria.toLowerCase()}</option>
+                                            <option value="Kiló">Kiló{umPrimaria.toLowerCase()}</option>
+                                            <option value="Decí">Decí{umPrimaria.toLowerCase()}</option>
+                                            <option value="Centí">Centí{umPrimaria.toLowerCase()}</option>
+                                            <option value="Milí">Milí{umPrimaria.toLowerCase()}</option>
                                         </Form.Control>
                                     </Form.Group>
                                 </>
@@ -204,24 +224,23 @@ function ModificaIngredientes(props) {
                         }
 
                         {
-                            formData.umPrimaria !== "" && formData.umPrimaria !== "Paquete" &&
+                            umPrimaria && umPrimaria !== "Paquete" &&
                             (
                                 <>
-                                    <Form.Group as={Col} controlId="formGridNombre">
+                                    <Form.Group as={Col} controlId="formGridUmProd">
                                         <Form.Label>Unidad de medida de producción</Form.Label>
                                         <Form.Control
                                             as="select"
-                                            name="umProduccion"
-                                            defaultValue={formData.umProduccion}
+                                            {...register("umProduccion")}
                                         >
-                                            <option>Elige una opción</option>
-                                            <option value={formData.umPrimaria}>{formData.umPrimaria}</option>
-                                            <option value="Decá">Decá{formData.umPrimaria.toLowerCase()}</option>
-                                            <option value="Hectó">Hectó{formData.umPrimaria.toLowerCase()}</option>
-                                            <option value="Kiló">Kiló{formData.umPrimaria.toLowerCase()}</option>
-                                            <option value="Decí">Decí{formData.umPrimaria.toLowerCase()}</option>
-                                            <option value="Centí">Centí{formData.umPrimaria.toLowerCase()}</option>
-                                            <option value="Milí">Milí{formData.umPrimaria.toLowerCase()}</option>
+                                            <option value="">Elige una opción</option>
+                                            <option value={umPrimaria}>{umPrimaria}</option>
+                                            <option value="Decá">Decá{umPrimaria.toLowerCase()}</option>
+                                            <option value="Hectó">Hectó{umPrimaria.toLowerCase()}</option>
+                                            <option value="Kiló">Kiló{umPrimaria.toLowerCase()}</option>
+                                            <option value="Decí">Decí{umPrimaria.toLowerCase()}</option>
+                                            <option value="Centí">Centí{umPrimaria.toLowerCase()}</option>
+                                            <option value="Milí">Milí{umPrimaria.toLowerCase()}</option>
                                         </Form.Control>
                                     </Form.Group>
                                 </>
@@ -229,16 +248,15 @@ function ModificaIngredientes(props) {
                         }
 
                         {
-                            formData.umPrimaria === "Paquete" &&
+                            umPrimaria === "Paquete" &&
                             (
                                 <>
-                                    <Form.Group as={Col} controlId="formGridNombre">
+                                    <Form.Group as={Col} controlId="formGridCantPiezas">
                                         <Form.Label>Cantidad de piezas del paquete</Form.Label>
                                         <Form.Control
                                             type="number"
-                                            name="cantidadPiezas"
-                                            defaultValue={formData.cantidadPiezas}
                                             placeholder="Cantidad de piezas que contiene el paquete"
+                                            {...register("cantidadPiezas")}
                                         />
                                     </Form.Group>
                                 </>
@@ -253,7 +271,7 @@ function ModificaIngredientes(props) {
                             title="Registrar categoría"
                             type="submit"
                             variant="success"
-                            className="registrar"
+                            className="registrar w-100"
                             disabled={isPending}
                         >
                             <FontAwesomeIcon icon={faSave} /> {!isPending ? "Registrar" : <Spinner animation="border" size="sm" />}
@@ -263,8 +281,9 @@ function ModificaIngredientes(props) {
                         <Button
                             title="Cerrar ventana"
                             variant="danger"
-                            className="cancelar"
+                            className="cancelar w-100"
                             disabled={isPending}
+                            type="button"
                             onClick={() => {
                                 cancelarRegistro()
                             }}

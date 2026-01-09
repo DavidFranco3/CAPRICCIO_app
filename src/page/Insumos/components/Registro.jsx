@@ -1,57 +1,39 @@
-import React, { useState, useActionState } from "react";
-import { faUpload } from "@fortawesome/free-solid-svg-icons";
+import { startTransition, useState, useActionState } from "react";
+import { faUpload, faX } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Col, Container, Form, Row, Spinner } from "react-bootstrap";
+import { Col, Container, Form, Row, Spinner, Button } from "react-bootstrap";
 import { registraInsumo } from "../../../api/insumos";
 import Swal from 'sweetalert2';
-import { data } from "autoprefixer";
+import { useForm } from "react-hook-form";
 
 function RegistroInsumo(props) {
   const { setShow } = props;
+  const { register, handleSubmit, formState: { errors }, watch } = useForm();
 
-  const [formData, setFormData] = useState({
-    nombre: "",
-    precioCompra: "",
-    precioUnitario: 0,
-    categoria: "",
-    umCompra: "",
-    umTrabajo: "",
-    stock: "",
-    estado: "true",
-  });
-
-  const calcularPrecioUnitario = (precioCompra, umCompra, umTrabajo) => {
-    if (umCompra === umTrabajo) return precioCompra;
-    if (umCompra === "Kilogramos" && umTrabajo === "Gramos")
-      return precioCompra / 1000;
-    if (umCompra === "Litros" && umTrabajo === "Mililitros")
-      return precioCompra / 1000;
-    if (umCompra === "Gramos" && umTrabajo === "Kilogramos")
-      return precioCompra * 1000;
-    if (umCompra === "Mililitros" && umTrabajo === "Litros")
-      return precioCompra * 1000;
-    return precioCompra; // Default case
-  };
-
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setFormData({ ...formData, [name]: value });
-  };
+  // Watch selected units for conditional logic
+  const umCompra = watch("umCompra");
 
   const [errorState, action, isPending] = useActionState(async (prevState, fd) => {
     const nombre = fd.get("nombre");
     const precioCompra = parseFloat(fd.get("precioCompra"));
     const categoria = fd.get("categoria");
-    const umCompra = fd.get("umCompra");
-    const umTrabajo = fd.get("umTrabajo");
+    const umCompraVal = fd.get("umCompra");
+    const umTrabajoVal = fd.get("umTrabajo");
     const stock = parseFloat(fd.get("stock"));
 
-    if (!nombre || !precioCompra || !categoria || !umCompra || !stock) {
-      Swal.fire({ icon: 'warning', title: "Formulario incompleto", timer: 1600, showConfirmButton: false });
-      return { error: "Incompleto" };
-    }
+    // Validation is now handled by react-hook-form on client side, 
+    // but good to keep a check or rely on RHF preventing submit.
 
-    const precioUnitario = calcularPrecioUnitario(precioCompra, umCompra, umTrabajo);
+    const calcularPrecioUnitario = (precioC, umC, umT) => {
+      if (umC === umT) return precioC;
+      if (umC === "Kilogramos" && umT === "Gramos") return precioC / 1000;
+      if (umC === "Litros" && umT === "Mililitros") return precioC / 1000;
+      if (umC === "Gramos" && umT === "Kilogramos") return precioC * 1000;
+      if (umC === "Mililitros" && umT === "Litros") return precioC * 1000;
+      return precioC;
+    };
+
+    const precioUnitario = calcularPrecioUnitario(precioCompra, umCompraVal, umTrabajoVal);
 
     try {
       const dataTemp = {
@@ -59,8 +41,8 @@ function RegistroInsumo(props) {
         precioCompra,
         precioUnitario,
         categoria,
-        umCompra,
-        umTrabajo: umTrabajo || (umCompra === "Pieza" ? "Pieza" : ""), // Fallback if simple select
+        umCompra: umCompraVal,
+        umTrabajo: umTrabajoVal || (umCompraVal === "Pieza" ? "Pieza" : ""),
         stock,
         estado: "true",
       };
@@ -76,53 +58,68 @@ function RegistroInsumo(props) {
     }
   }, null);
 
+  const onSubmit = (data) => {
+    // Create FormData to pass to the action
+    const formData = new FormData();
+    Object.keys(data).forEach(key => formData.append(key, data[key]));
+
+    // Trigger the action manually wrapped in transition
+    startTransition(() => {
+      action(formData);
+    });
+  };
+
   return (
     <>
       <Container>
-        <Form action={action}>
+        <Form onSubmit={handleSubmit(onSubmit)}>
           <Row>
             <Col>
               <Form.Label>Nombre</Form.Label>
               <Form.Control
                 type="text"
                 placeholder="Escribe el nombre"
-                name="nombre"
-                defaultValue={formData.nombre}
-                required
+                {...register("nombre", { required: "El nombre es obligatorio" })}
+                isInvalid={!!errors.nombre}
               />
+              <Form.Control.Feedback type="invalid">
+                {errors.nombre?.message}
+              </Form.Control.Feedback>
             </Col>
             <Col>
               <Form.Label>Precio de compra (Unitario)</Form.Label>
               <Form.Control
                 type="number"
                 placeholder="Precio de compra"
-                name="precioCompra"
-                defaultValue={formData.precioCompra}
-                required
                 step="0.01"
+                {...register("precioCompra", { required: "El precio es obligatorio", min: 0 })}
+                isInvalid={!!errors.precioCompra}
               />
+              <Form.Control.Feedback type="invalid">
+                {errors.precioCompra?.message}
+              </Form.Control.Feedback>
             </Col>
             <Col>
               <Form.Label>Categoria</Form.Label>
               <Form.Select
-                name="categoria"
-                defaultValue={formData.categoria}
-                required
+                {...register("categoria", { required: "Selecciona una categoría" })}
+                isInvalid={!!errors.categoria}
               >
                 <option value="">Elige una opción</option>
                 <option value="Materia prima">Materia prima</option>
                 <option value="Insumo">Insumo</option>
               </Form.Select>
+              <Form.Control.Feedback type="invalid">
+                {errors.categoria?.message}
+              </Form.Control.Feedback>
             </Col>
           </Row>
           <Row>
             <Col>
               <Form.Label>Unidad de medida de compra</Form.Label>
               <Form.Select
-                name="umCompra"
-                value={formData.umCompra}
-                onChange={handleInputChange}
-                required
+                {...register("umCompra", { required: "Selecciona una unidad de compra" })}
+                isInvalid={!!errors.umCompra}
               >
                 <option value="">Elige una opción</option>
                 <option value="Gramos">Gramos</option>
@@ -131,17 +128,19 @@ function RegistroInsumo(props) {
                 <option value="Mililitros">Mililitros</option>
                 <option value={"Pieza"}>Pieza</option>
               </Form.Select>
+              <Form.Control.Feedback type="invalid">
+                {errors.umCompra?.message}
+              </Form.Control.Feedback>
             </Col>
             <Col>
               <Form.Label>Unidad de medida de trabajo</Form.Label>
               <Form.Select
-                name="umTrabajo"
-                defaultValue={formData.umTrabajo}
-                required
+                {...register("umTrabajo", { required: "Selecciona una unidad de trabajo" })}
+                isInvalid={!!errors.umTrabajo}
               >
-                {formData.umCompra === "Pieza" ? (
+                {umCompra === "Pieza" ? (
                   <>
-                    <option value="Mililitros">Pieza</option>
+                    <option value="Pieza">Pieza</option>
                   </>
                 ) : (
                   <>
@@ -153,27 +152,52 @@ function RegistroInsumo(props) {
                   </>
                 )}
               </Form.Select>
+              <Form.Control.Feedback type="invalid">
+                {errors.umTrabajo?.message}
+              </Form.Control.Feedback>
             </Col>
             <Col>
-              <Form.Label>Stock</Form.Label>
+              <Form.Label>Stock inicial</Form.Label>
               <Form.Control
                 type="number"
-                placeholder="Cantidad"
-                name="stock"
-                defaultValue={formData.stock}
-                required
+                placeholder="Stock inicial"
+                step="0.001"
+                {...register("stock", { required: "El stock es obligatorio", min: 0 })}
+                isInvalid={!!errors.stock}
               />
+              <Form.Control.Feedback type="invalid">
+                {errors.stock?.message}
+              </Form.Control.Feedback>
             </Col>
           </Row>
-          <div className="mt-3 d-flex justify-content-center">
-            <button
-              className="btn btn-success"
-              type="submit"
-              disabled={isPending}
-            >
-              <FontAwesomeIcon icon={faUpload} /> {!isPending ? "Registrar" : <Spinner animation="border" size="sm" />}
-            </button>
-          </div>
+          <br />
+          <Form.Group as={Row} className="botonSubirProducto">
+            <Col xs={6}>
+              <Button
+                title="Registrar insumo"
+                type="submit"
+                variant="success"
+                className="registrar w-100"
+                disabled={isPending}
+              >
+                <FontAwesomeIcon icon={faUpload} /> {!isPending ? "Registrar" : <Spinner animation="border" size="sm" />}
+              </Button>
+            </Col>
+            <Col xs={6}>
+              <Button
+                title="Cerrar ventana"
+                variant="danger"
+                className="cancelar w-100"
+                disabled={isPending}
+                type="button"
+                onClick={() => {
+                  setShow(false)
+                }}
+              >
+                <FontAwesomeIcon icon={faX} /> Cancelar
+              </Button>
+            </Col>
+          </Form.Group>
         </Form>
       </Container>
     </>

@@ -1,4 +1,4 @@
-import { useEffect, useState, useActionState } from "react";
+import { useEffect, useState, useActionState, startTransition } from "react";
 import Dropzone from "../../../../components/Dropzone";
 import {
   Button,
@@ -31,9 +31,11 @@ import {
 import "../../../../scss/styles.scss";
 import { LogsInformativos } from "../../../Logs/components/LogsSistema/LogsSistema";
 import { useNavigate, useParams } from "react-router-dom";
+import { useForm } from "react-hook-form";
 
 function ModificaProductos(props) {
   const { setRefreshCheckLogin } = props;
+  const { register, handleSubmit, formState: { errors }, reset } = useForm();
 
   const params = useParams();
   const { id } = params;
@@ -107,6 +109,12 @@ function ModificaProductos(props) {
           setProductData(data);
           setImagenProducto(data.imagen);
           setListProductosCargados(data.ingredientes);
+
+          reset({
+            nombreProducto: data.nombre,
+            categoria: data.categoria,
+            precioVenta: data.precio
+          });
         })
         .catch((e) => {
           console.log(e);
@@ -170,6 +178,14 @@ function ModificaProductos(props) {
       return { error: e.message };
     }
   }, null);
+
+  const onSubmit = (data) => {
+    const formData = new FormData();
+    Object.keys(data).forEach(key => formData.append(key, data[key]));
+    startTransition(() => {
+      action(formData);
+    });
+  };
 
   // Para la carga y el listado de productos
   const [cargaProductos, setCargaProductos] = useState(
@@ -277,7 +293,7 @@ function ModificaProductos(props) {
         </Row>
       </Alert>
 
-      <Form action={action}>
+      <Form onSubmit={handleSubmit(onSubmit)}>
         <Container fluid>
           <div className="imagenPrincipal">
             <h4 className="textoImagenPrincipal">Sube tu imagen</h4>
@@ -298,18 +314,25 @@ function ModificaProductos(props) {
                 <Form.Label>Nombre</Form.Label>
                 <Form.Control
                   type="text"
-                  name="nombreProducto"
                   placeholder="Escribe el nombre"
                   defaultValue={productData.nombre}
+                  {...register("nombreProducto", { required: "El nombre es obligatorio" })}
+                  isInvalid={!!errors.nombreProducto}
                 />
+                <Form.Control.Feedback type="invalid">
+                  {errors.nombreProducto?.message}
+                </Form.Control.Feedback>
               </Form.Group>
 
               <Form.Group as={Col} controlId="formGridCategoria">
                 <Form.Label>Categoría</Form.Label>
-                <Form.Control
-                  as="select"
+                <Form.Select
                   defaultValue={productData.categoria}
-                  name="categoria"
+                  {...register("categoria", {
+                    required: "Selecciona una opción",
+                    validate: value => value !== "Elige una opción" || "Selecciona una opción válida"
+                  })}
+                  isInvalid={!!errors.categoria}
                 >
                   <option>Elige una opción</option>
                   {map(listCategorias, (cat, index) => (
@@ -320,18 +343,25 @@ function ModificaProductos(props) {
                       {cat?.nombre}
                     </option>
                   ))}
-                </Form.Control>
+                </Form.Select>
+                <Form.Control.Feedback type="invalid">
+                  {errors.categoria?.message}
+                </Form.Control.Feedback>
               </Form.Group>
 
               <Form.Group as={Col} controlId="formGridPrecio">
                 <Form.Label>Precio de venta</Form.Label>
                 <Form.Control
                   type="number"
-                  name="precioVenta"
                   placeholder="Precio"
                   defaultValue={productData.precio}
                   step="0.01"
+                  {...register("precioVenta", { required: "El precio es obligatorio", min: 0 })}
+                  isInvalid={!!errors.precioVenta}
                 />
+                <Form.Control.Feedback type="invalid">
+                  {errors.precioVenta?.message}
+                </Form.Control.Feedback>
               </Form.Group>
             </Row>
 
@@ -359,8 +389,7 @@ function ModificaProductos(props) {
 
               <Form.Group as={Col} controlId="formGridIngredienteNombre">
                 <Form.Label>Nombre</Form.Label>
-                <Form.Control
-                  as="select"
+                <Form.Select
                   id="nombre"
                   name="nombre"
                   placeholder="Nombre"
@@ -385,7 +414,7 @@ function ModificaProductos(props) {
                       {ingrediente?.nombre}
                     </option>
                   ))}
-                </Form.Control>
+                </Form.Select>
               </Form.Group>
 
               <Form.Group as={Col} controlId="formGridUM">
@@ -447,6 +476,7 @@ function ModificaProductos(props) {
                     variant="success"
                     title="Agregar el producto"
                     className="me-2"
+                    type="button"
                     onClick={() => {
                       addItems();
                     }}
@@ -459,6 +489,7 @@ function ModificaProductos(props) {
                   <Button
                     variant="danger"
                     title="Cancelar el producto"
+                    type="button"
                     onClick={() => {
                       cancelarCargaProducto();
                     }}
@@ -563,33 +594,34 @@ function ModificaProductos(props) {
         <br />
 
         <Container fluid>
-          <Form.Group as={Row} className="botonSubirProducto">
-            <Col>
+          <div className="d-flex w-100">
+            <div className="w-50 pe-2">
               <Button
                 title="Registrar producto"
                 type="submit"
                 variant="success"
-                className="registrar"
+                className="registrar w-100"
                 disabled={isPending}
               >
                 <FontAwesomeIcon icon={faSave} />{" "}
-                {!isPending ? "Modificar" : <Spinner animation="border" />}
+                {!isPending ? "Registrar" : <Spinner animation="border" />}
               </Button>
-            </Col>
-            <Col>
+            </div>
+            <div className="w-50 ps-2">
               <Button
                 title="Cerrar ventana"
                 variant="danger"
-                className="cancelar"
+                className="cancelar w-100"
                 disabled={isPending}
+                type="button"
                 onClick={() => {
                   cancelarRegistro();
                 }}
               >
                 <FontAwesomeIcon icon={faX} /> Cancelar
               </Button>
-            </Col>
-          </Form.Group>
+            </div>
+          </div>
         </Container>
         <br />
       </Form>
@@ -637,5 +669,22 @@ function formatModelCategorias(categorias) {
   return tempCategorias;
 }
 
-export default ModificaProductos;
+function formatModelIngredientes(insumos) {
+  const tempInsumos = [];
+  insumos.forEach((insumo) => {
+    tempInsumos.push({
+      id: insumo._id,
+      nombre: insumo.nombre,
+      umCompra: insumo.umCompra,
+      precioCompra: parseFloat(insumo.precioCompra),
+      umTrabajo: insumo.umTrabajo,
+      stock: insumo.stock,
+      estado: insumo.estado,
+      fechaCreacion: insumo.createdAt,
+      fechaActualizacion: insumo.updatedAt,
+    });
+  });
+  return tempInsumos;
+}
 
+export default ModificaProductos;

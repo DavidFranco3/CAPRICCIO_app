@@ -1,5 +1,5 @@
 import VentasTerminadas from "./components/PedidosCobrados";
-import PedidosEnMesa from "./components/PedidosEnMesa";
+
 import PedidosPagoPendiente from "./components/PedidosPagoPendiente";
 import "./styles/styles.css";
 import {
@@ -49,14 +49,7 @@ function Pedidos(props) {
                       <PedidosPagoPendiente turno={turno} />
                     </div>
                   </div>
-                  <div className="card flex-fill mt-2 mx-1 border-warning" style={{ minWidth: '300px' }}>
-                    <div className="card-header bg-warning d-flex align-items-end">
-                      <h4 className="card-title mb-0">Pedidos en mesa</h4>
-                    </div>
-                    <div className="card-body">
-                      <PedidosEnMesa turno={turno} />
-                    </div>
-                  </div>
+
                 </div>
               </Tab>
               <Tab eventKey="concluidos" title="Pedidos Concluidos">

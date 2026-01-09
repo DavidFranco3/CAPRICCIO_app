@@ -82,45 +82,51 @@ const VistaMesas = () => {
         <div className="card card-outline glass-card">
           <div className="card-body">
             <div className="divMesasView">
-              {listMesas.map((mesa, index) => (
-                <div className="info-box">
-                  <Col
-                    className="d-flex cursor-pointer"
-                    onClick={() =>
-                      editarMesa(
-                        <EditarMesa setShow={setShowModal} mesaId={mesa.id} />
-                      )
-                    }
-                  >
-                    <span class="info-box-icon bg-blue">
-                      <i class="fas fa-utensils"></i>
-                    </span>
-                    <div class="info-box-content">
-                      <span class="info-box-number titMesa">
-                        N. Mesa: {mesa.numeroMesa}
-                      </span>
-                      <span class="info-box-text">
-                        N. Personas: {mesa.numeroPersonas}
-                      </span>
-                      <span class="info-box-text descMesa">
-                        {mesa.descripcion}
-                      </span>
-                    </div>
-                  </Col>
-                  <Col className="d-flex justify-content-end align-items-center">
-                    <span
-                      class="info-box-icon bg-red h-75 cursor-pointer"
+              {listMesas && listMesas.length > 0 ? (
+                listMesas.map((mesa, index) => (
+                  <div className="info-box">
+                    <Col
+                      className="d-flex cursor-pointer"
                       onClick={() =>
-                        eliminarMesa(
-                          <EliminarMesa mesaId={mesa.id} setShow={setShowModal} />
+                        editarMesa(
+                          <EditarMesa setShow={setShowModal} mesaId={mesa.id} />
                         )
                       }
                     >
-                      <FontAwesomeIcon icon={faTrashCan} />
-                    </span>
-                  </Col>
+                      <span class="info-box-icon bg-blue">
+                        <i class="fas fa-utensils"></i>
+                      </span>
+                      <div class="info-box-content">
+                        <span class="info-box-number titMesa">
+                          N. Mesa: {mesa.numeroMesa}
+                        </span>
+                        <span class="info-box-text">
+                          N. Personas: {mesa.numeroPersonas}
+                        </span>
+                        <span class="info-box-text descMesa">
+                          {mesa.descripcion}
+                        </span>
+                      </div>
+                    </Col>
+                    <Col className="d-flex justify-content-end align-items-center">
+                      <span
+                        class="info-box-icon bg-red h-75 cursor-pointer"
+                        onClick={() =>
+                          eliminarMesa(
+                            <EliminarMesa mesaId={mesa.id} setShow={setShowModal} />
+                          )
+                        }
+                      >
+                        <FontAwesomeIcon icon={faTrashCan} />
+                      </span>
+                    </Col>
+                  </div>
+                ))
+              ) : (
+                <div className="alert alert-warning" role="alert">
+                  No hay mesas registradas.
                 </div>
-              ))}
+              )}
             </div>
           </div>
         </div>

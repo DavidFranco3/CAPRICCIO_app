@@ -1,4 +1,4 @@
-import { useState, useActionState } from 'react';
+import { startTransition, useState, useActionState } from 'react';
 import { registraCategorias } from "../../../../api/categorias";
 import Dropzone from "../../../../components/Dropzone";
 import "../../../../scss/styles.scss";
@@ -9,9 +9,11 @@ import queryString from "query-string";
 import { faX, faSave } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { LogsInformativos } from '../../../Logs/components/LogsSistema/LogsSistema';
+import { useForm } from "react-hook-form";
 
 function RegistroCategorias(props) {
     const { setShowModal, navigate } = props;
+    const { register, handleSubmit, formState: { errors } } = useForm();
 
     //Para almacenar la imagen del producto que se guardara a la bd
     const [imagenProducto, setImagenProducto] = useState(null);
@@ -23,11 +25,7 @@ function RegistroCategorias(props) {
 
     const [errorState, action, isPending] = useActionState(async (prevState, fd) => {
         const nombre = fd.get("nombre");
-
-        if (!imagenProducto || !nombre) {
-            Swal.fire({ icon: 'warning', title: "Completa el formulario", timer: 1600, showConfirmButton: false });
-            return { error: "Incompleto" };
-        }
+        // Image is handled via closure variable (imagenProducto) or we could append it to FD before calling action
 
         try {
             // Sube a cloudinary la imagen principal del producto
@@ -57,9 +55,23 @@ function RegistroCategorias(props) {
         }
     }, null);
 
+    const onSubmit = (data) => {
+        if (!imagenProducto) {
+            Swal.fire({ icon: 'warning', title: "Debes subir una imagen", timer: 1600, showConfirmButton: false });
+            return;
+        }
+
+        const formData = new FormData();
+        Object.keys(data).forEach(key => formData.append(key, data[key]));
+
+        startTransition(() => {
+            action(formData);
+        });
+    };
+
     return (
         <>
-            <Form action={action}>
+            <Form onSubmit={handleSubmit(onSubmit)}>
                 <div className="imagenPrincipal">
                     <h4 className="textoImagenPrincipal">Sube tu imagen</h4>
                     <div title="Seleccionar imagen de la categoría" className="imagenProducto">
@@ -75,10 +87,13 @@ function RegistroCategorias(props) {
                             <Form.Label>Nombre</Form.Label>
                             <Form.Control
                                 type="text"
-                                name="nombre"
                                 placeholder="Escribe el nombre"
-                                required
+                                {...register("nombre", { required: "El nombre es obligatorio" })}
+                                isInvalid={!!errors.nombre}
                             />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.nombre?.message}
+                            </Form.Control.Feedback>
                         </Form.Group>
                     </Row>
                 </div>
@@ -89,7 +104,7 @@ function RegistroCategorias(props) {
                             title="Registrar categoría"
                             type="submit"
                             variant="success"
-                            className="registrar"
+                            className="registrar w-100"
                             disabled={isPending}
                         >
                             <FontAwesomeIcon icon={faSave} /> {!isPending ? "Registrar" : <Spinner animation="border" />}
@@ -99,8 +114,9 @@ function RegistroCategorias(props) {
                         <Button
                             title="Cerrar ventana"
                             variant="danger"
-                            className="cancelar"
+                            className="cancelar w-100"
                             disabled={isPending}
+                            type="button"
                             onClick={() => {
                                 cancelarRegistro()
                             }}

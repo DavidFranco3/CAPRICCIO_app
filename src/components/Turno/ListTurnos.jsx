@@ -3,9 +3,9 @@ import { listarTurno } from "../../api/turnos";
 import { listarVentasTurno } from "../../api/ventas";
 import DataTablecustom from "../Generales/DataTable";
 import { formatFecha } from "../Generales/FormatFecha";
-import { Badge } from "react-bootstrap";
+import { Badge, Dropdown } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
+import { faCircleInfo, faBars } from "@fortawesome/free-solid-svg-icons";
 import BasicModal from "../Modal/BasicModal";
 import MovimientosTurnos from "./MovimientosTurno/MovimientosTurnos";
 import GenerarExcel from "./GenerarExcel";
@@ -76,21 +76,27 @@ function ListTurnos(params) {
     },
     {
       name: "Acciones",
-      selector: (row) => (
-        <>
-          <Badge
-            className="cursor-pointer"
-            bg="primary"
-            onClick={() => detallesMovsTurno(<MovimientosTurnos turno={row} />)}
-          >
-            <FontAwesomeIcon className="text-lg" icon={faCircleInfo} />
-          </Badge>
-          <GenerarExcel idTurno={row.idTurno} />
-        </>
+      cell: (row) => (
+        <Dropdown className="dropdown-js">
+          <Dropdown.Toggle className="botonDropdown" id={`dropdown-basic-${row.idTurno}`} variant="link">
+            <FontAwesomeIcon icon={faBars} />
+          </Dropdown.Toggle>
+          <Dropdown.Menu>
+            <Dropdown.Item onClick={() => detallesMovsTurno(<MovimientosTurnos turno={row} />)}>
+              <FontAwesomeIcon icon={faCircleInfo} style={{ color: "#17a2b8" }} />
+              &nbsp; Detalles
+            </Dropdown.Item>
+            <Dropdown.Item as="div">
+              <GenerarExcel idTurno={row.idTurno} asMenuItem={true} />
+            </Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
       ),
       sortable: false,
       center: true,
       reorder: false,
+      ignoreRowClick: true,
+      width: "120px",
     },
   ];
 

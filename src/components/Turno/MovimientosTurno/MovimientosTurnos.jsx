@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { Container, Table, Image, Modal, Button, Form } from "react-bootstrap";
+import { Container, Table, Image, Modal, Button, Form, Row, Col } from "react-bootstrap";
 import { listarMovimientoTurno } from "../../../api/movimientosTurnoCajas";
 import { listarVentasTurno } from "../../../api/ventas";
 import Swal from 'sweetalert2';
 import printJS from 'print-js';
 import BasicModal from "../../Modal/BasicModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPrint } from "@fortawesome/free-solid-svg-icons";
+import { faPrint, faX } from "@fortawesome/free-solid-svg-icons";
 import utc from 'dayjs/plugin/utc';
 import dayjs from "dayjs";
 import localizedFormat from "dayjs/plugin/localizedFormat";
@@ -180,28 +180,28 @@ function MovimientosTurnos(params) {
     const anchoTipo = 16;
     const anchoCantidad = 5;
     const anchoRazon = 9;
-  
+
     const centrarTexto = (texto, ancho = anchoTicket) => {
       const espaciosIzquierda = Math.max(0, Math.floor((ancho - texto.length) / 2));
       return ' '.repeat(espaciosIzquierda) + texto;
     };
-  
+
     let ticket = '';
-  
+
     ticket += centrarTexto("CAPRICCIO") + "\n\n";
     ticket += centrarTexto("Movimientos del Turno No. " + turno.idTurno) + "\n";
     ticket += "#  Tipo Mov.      Cantidad     Razón\n";
     ticket += "----------------------------------------\n";
-  
+
     listMovs.forEach((mov, index) => {
       const numero = (index + 1).toString().padEnd(3);
       let tipoMov = mov.movimiento.length > anchoTipo ? mov.movimiento.slice(0, anchoTipo - 1) + "." : mov.movimiento.padEnd(anchoTipo);
       const cantidad = String(mov.cantidad).padStart(anchoCantidad);
       let razon = mov.razon;
       let razonCorto = razon.length > anchoRazon ? razon.slice(0, anchoRazon - 1) + "." : razon.padEnd(anchoRazon);
-  
+
       ticket += `${numero}${tipoMov}${cantidad}${razonCorto}\n`;
-  
+
       if (razon.length > anchoRazon) {
         let restoRazon = razon.slice(anchoRazon - 1);
         while (restoRazon.length > 0) {
@@ -211,9 +211,9 @@ function MovimientosTurnos(params) {
         }
       }
     });
-  
+
     ticket += "----------------------------------------\n";
-  
+
     const subtotalTexto = `Total de ventas en efectivo: $${(isNaN(Number(totalVentasEfectivo)) ? "0.00" : Number(totalVentasEfectivo).toFixed(2))}`;
     if (turno.estado === "abierto") {
       ticket += centrarTexto("Saldo de la caja hasta el momento: " + "$" + (isNaN(Number(saldoCaja)) ? "0.00" : Number(saldoCaja).toFixed(2)) + "\n\n");
@@ -226,10 +226,10 @@ function MovimientosTurnos(params) {
     ticket += "\n\n";
     ticket += "\n\n\n"; // Espacio extra para corte automático
     ticket += "\x1D\x56\x00"; // Código de corte de papel
-  
+
     return ticket;
   };
-  
+
   console.log(generarTicket(turno, listMovs, listVentas, totalVentasEfectivo, saldoCaja));
 
   return (
@@ -279,11 +279,28 @@ function MovimientosTurnos(params) {
           <span>No hay movimientos</span>
         )}
       </Container>
-      <div className=" mt-2 d-flex justify-content-center">
-        <button className="btn btn-secondary" onClick={() => isMobile ? handlePrint() : imprimirTicket()}>
-          <FontAwesomeIcon icon={faPrint} /> Imp
-        </button>
-      </div>
+      <Row className="mt-2 botonSubirProducto">
+        <Col>
+          <Button
+            className="registrar w-100"
+            variant="secondary"
+            onClick={() => isMobile ? handlePrint() : imprimirTicket()}
+          >
+            <FontAwesomeIcon icon={faPrint} /> Imprimir Ticket
+          </Button>
+        </Col>
+        <Col>
+          <Button
+            className="cancelar w-100"
+            variant="danger"
+            onClick={() => {
+              if (params.setShowModal) params.setShowModal(false);
+            }}
+          >
+            <FontAwesomeIcon icon={faX} /> Cerrar
+          </Button>
+        </Col>
+      </Row>
 
       <BasicModal
         show={showMod}

@@ -1,4 +1,4 @@
-import { useState, useActionState } from 'react';
+import { useState, useActionState, startTransition } from 'react';
 import "../../../../scss/styles.scss";
 import Dropzone from "../../../../components/Dropzone";
 import { Button, Col, Form, Row, Spinner } from "react-bootstrap";
@@ -9,10 +9,17 @@ import queryString from "query-string";
 import { faX, faSave } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { LogsInformativos } from '../../../Logs/components/LogsSistema/LogsSistema';
+import { useForm } from "react-hook-form";
 
 function ModificaCategorias(props) {
     const { datosCategorias, navigate, setShowModal } = props;
     const { id, imagen } = datosCategorias;
+
+    const { register, handleSubmit, formState: { errors } } = useForm({
+        defaultValues: {
+            nombre: datosCategorias.nombre
+        }
+    });
 
     // Para almacenar la imagen
     const [imagenFile, setImagenFile] = useState(imagen);
@@ -24,11 +31,7 @@ function ModificaCategorias(props) {
 
     const [errorState, action, isPending] = useActionState(async (prevState, fd) => {
         const nombre = fd.get("nombre");
-
-        if (!imagenFile || !nombre) {
-            Swal.fire({ icon: 'warning', title: "Completa el formulario", timer: 1600, showConfirmButton: false });
-            return { error: "Incompleto" };
-        }
+        // imagenFile is accessed from state
 
         try {
             let finalImageUrl = imagenFile;
@@ -61,9 +64,23 @@ function ModificaCategorias(props) {
         }
     }, null);
 
+    const onSubmit = (data) => {
+        if (!imagenFile) {
+            Swal.fire({ icon: 'warning', title: "Debes subir una imagen", timer: 1600, showConfirmButton: false });
+            return;
+        }
+
+        const formData = new FormData();
+        Object.keys(data).forEach(key => formData.append(key, data[key]));
+
+        startTransition(() => {
+            action(formData);
+        });
+    };
+
     return (
         <>
-            <Form action={action}>
+            <Form onSubmit={handleSubmit(onSubmit)}>
                 <div className="imagenPrincipal">
                     <h4 className="textoImagenPrincipal">Sube tu imagen</h4>
                     <div title="Seleccionar imagen de la categoría" className="imagenProducto">
@@ -80,11 +97,13 @@ function ModificaCategorias(props) {
                             <Form.Label>Nombre</Form.Label>
                             <Form.Control
                                 type="text"
-                                name="nombre"
                                 placeholder="Escribe el nombre"
-                                defaultValue={datosCategorias.nombre}
-                                required
+                                {...register("nombre", { required: "El nombre es obligatorio" })}
+                                isInvalid={!!errors.nombre}
                             />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.nombre?.message}
+                            </Form.Control.Feedback>
                         </Form.Group>
                     </Row>
                 </div>
@@ -95,7 +114,7 @@ function ModificaCategorias(props) {
                             title="Modificar categoría"
                             type="submit"
                             variant="success"
-                            className="registrar"
+                            className="registrar w-100"
                             disabled={isPending}
                         >
                             <FontAwesomeIcon icon={faSave} /> {!isPending ? "Modificar" : <Spinner animation="border" />}
@@ -105,8 +124,9 @@ function ModificaCategorias(props) {
                         <Button
                             title="Cerrar ventana"
                             variant="danger"
-                            className="cancelar"
+                            className="cancelar w-100"
                             disabled={isPending}
+                            type="button"
                             onClick={() => {
                                 cancelarRegistro()
                             }}

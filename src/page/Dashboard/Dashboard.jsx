@@ -264,18 +264,7 @@ function Dashboard(props) {
             </BasicModal>
           </>
         )}
-      {/*Vista del Dashboard para un usuario cliente*/}
-      {estadoUsuario === "false" && tipoUsuario === "externo" && (
-        <>
-          <div className="grid grid-cols-1 gap-1">
-            <ItemCard
-              path={"/PedidosClientes"}
-              logo={LogoPedidos}
-              title={"Pedidos en línea"}
-            />
-          </div>
-        </>
-      )}
+
     </>
   );
 }

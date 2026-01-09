@@ -108,7 +108,7 @@ function EliminaIngredientes(props) {
                             title="Eliminar categoría"
                             type="submit"
                             variant="success"
-                            className="registrar"
+                            className="registrar w-100"
                             disabled={isPending}
                         >
                             <FontAwesomeIcon icon={faSave} /> {!isPending ? "Eliminar" : <Spinner animation="border" size="sm" />}
@@ -118,7 +118,7 @@ function EliminaIngredientes(props) {
                         <Button
                             title="Cerrar ventana"
                             variant="danger"
-                            className="cancelar"
+                            className="cancelar w-100"
                             disabled={isPending}
                             onClick={() => {
                                 cancelarRegistro()

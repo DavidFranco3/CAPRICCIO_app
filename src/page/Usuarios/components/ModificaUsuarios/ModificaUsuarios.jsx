@@ -1,4 +1,4 @@
-import { useState, useActionState } from 'react';
+import { startTransition, useActionState } from 'react';
 import "../../../../scss/styles.scss";
 import { Button, Col, Form, Row, Spinner } from "react-bootstrap";
 import Swal from 'sweetalert2';
@@ -7,10 +7,20 @@ import queryString from "query-string";
 import { faX, faSave } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { LogsInformativos } from '../../../Logs/components/LogsSistema/LogsSistema';
+import { useForm } from "react-hook-form";
 
 function ModificaUsuarios(props) {
     const { datosUsuario, navigate, setShowModal } = props;
     const { id } = datosUsuario;
+
+    const { register, handleSubmit, formState: { errors } } = useForm({
+        defaultValues: {
+            nombre: datosUsuario.nombre,
+            usuario: datosUsuario.usuario,
+            password: datosUsuario.password,
+            admin: datosUsuario.admin || datosUsuario.rol // Assuming admin/rol might be the field
+        }
+    });
 
     // Para cancelar el registro
     const cancelarRegistro = () => {
@@ -60,28 +70,42 @@ function ModificaUsuarios(props) {
         }
     }, null);
 
+    const onSubmit = (data) => {
+        const formData = new FormData();
+        Object.keys(data).forEach(key => formData.append(key, data[key]));
+        startTransition(() => {
+            action(formData);
+        });
+    };
+
     return (
         <>
-            <Form action={action}>
+            <Form onSubmit={handleSubmit(onSubmit)}>
                 <div className="datosDelProducto">
                     <Row className="mb-3">
                         <Form.Group as={Col} controlId="formGridNombre">
                             <Form.Label>Nombre</Form.Label>
                             <Form.Control
                                 type="text"
-                                name="nombre"
                                 placeholder="Escribe el nombre"
-                                defaultValue={datosUsuario.nombre}
+                                {...register("nombre", { required: "El nombre es obligatorio" })}
+                                isInvalid={!!errors.nombre}
                             />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.nombre?.message}
+                            </Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group as={Col} controlId="formGridUsuario">
                             <Form.Label>Usuario</Form.Label>
                             <Form.Control
                                 type="text"
-                                name="usuario"
                                 placeholder="Escribe el usuario"
-                                defaultValue={datosUsuario.usuario}
+                                {...register("usuario", { required: "El usuario es obligatorio" })}
+                                isInvalid={!!errors.usuario}
                             />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.usuario?.message}
+                            </Form.Control.Feedback>
                         </Form.Group>
                     </Row>
 
@@ -90,23 +114,31 @@ function ModificaUsuarios(props) {
                             <Form.Label>Password</Form.Label>
                             <Form.Control
                                 type="text"
-                                name="password"
                                 placeholder="Escribe el password"
-                                defaultValue={datosUsuario.password}
+                                {...register("password", { required: "El password es obligatorio" })}
+                                isInvalid={!!errors.password}
                             />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.password?.message}
+                            </Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group as={Col} controlId="formGridAdmin">
                             <Form.Label>Tipo</Form.Label>
-                            <Form.Control
-                                as="select"
-                                name="admin"
-                                defaultValue={datosUsuario.admin}
+                            <Form.Select
+                                {...register("admin", {
+                                    required: "Selecciona una opción",
+                                    validate: value => value !== "Elige una opción" || "Selecciona una opción válida"
+                                })}
+                                isInvalid={!!errors.admin}
                             >
                                 <option>Elige una opción</option>
                                 <option value="administrador">Administrador</option>
                                 <option value="vendedor">Cajero</option>
                                 <option value="mesero">Mesero</option>
-                            </Form.Control>
+                            </Form.Select>
+                            <Form.Control.Feedback type="invalid">
+                                {errors.admin?.message}
+                            </Form.Control.Feedback>
                         </Form.Group>
                     </Row>
                 </div>
@@ -117,7 +149,7 @@ function ModificaUsuarios(props) {
                             title="Modificar categoría"
                             type="submit"
                             variant="success"
-                            className="registrar"
+                            className="registrar w-100"
                             disabled={isPending}
                         >
                             <FontAwesomeIcon icon={faSave} /> {!isPending ? "Modificar" : <Spinner animation="border" />}
@@ -127,8 +159,9 @@ function ModificaUsuarios(props) {
                         <Button
                             title="Cerrar ventana"
                             variant="danger"
-                            className="cancelar"
+                            className="cancelar w-100"
                             disabled={isPending}
+                            type="button"
                             onClick={() => {
                                 cancelarRegistro()
                             }}

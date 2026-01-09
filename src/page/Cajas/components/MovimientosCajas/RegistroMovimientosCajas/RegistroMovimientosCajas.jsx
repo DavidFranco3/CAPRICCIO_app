@@ -299,7 +299,7 @@ function RegistroMovimientosCajas(props) {
                             title="Registrar movimiento"
                             type="submit"
                             variant="success"
-                            className="registrar"
+                            className="registrar w-100"
                             disabled={isPending}
                         >
                             <FontAwesomeIcon icon={faSave} /> {!isPending ? "Registrar" : <Spinner animation="border" size="sm" />}
@@ -309,7 +309,7 @@ function RegistroMovimientosCajas(props) {
                         <Button
                             title="Cerrar ventana"
                             variant="danger"
-                            className="cancelar"
+                            className="cancelar w-100"
                             disabled={isPending}
                             onClick={() => {
                                 cancelarRegistro()

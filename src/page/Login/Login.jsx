@@ -1,4 +1,4 @@
-import { useState, useActionState } from "react";
+import { useState, useActionState, startTransition } from "react";
 import { login, setTokenApi } from "../../api/auth";
 import Swal from 'sweetalert2';
 import { jwtDecode } from "jwt-decode";
@@ -12,8 +12,10 @@ import RegistroClientes from "../Usuarios/components/RegistroClientes";
 import BasicModal from "../../components/Modal/BasicModal";
 import { LogsInformativos } from "../Logs/components/LogsSistema/LogsSistema";
 import "./Login.scss";
+import { useForm } from "react-hook-form";
 
 function Login({ setRefreshCheckLogin }) {
+  const { register, handleSubmit, formState: { errors } } = useForm();
 
   const logo = "https://res.cloudinary.com/omarlestrella/image/upload/v1730506157/TPV_LA_NENA/msdxqnu7gehwjru0jhvs.jpg";
 
@@ -78,6 +80,13 @@ function Login({ setRefreshCheckLogin }) {
     }
   }, null);
 
+  const onSubmit = (data) => {
+    const formData = new FormData();
+    Object.keys(data).forEach(key => formData.append(key, data[key]));
+    startTransition(() => {
+      loginAction(formData);
+    });
+  };
 
   return (
     <section className="login-container">
@@ -87,22 +96,27 @@ function Login({ setRefreshCheckLogin }) {
         </div>
         <h2>Bienvenido</h2>
 
-        <Form action={loginAction}>
-          <div className="form-group">
+        <Form onSubmit={handleSubmit(onSubmit)}>
+          <div className="form-group mb-3">
             <Form.Control
               type="text"
-              name="usuario"
               className="form-control"
               placeholder="Usuario"
+              {...register("usuario", { required: "El usuario es obligatorio" })}
+              isInvalid={!!errors.usuario}
             />
+            <Form.Control.Feedback type="invalid">
+              {errors.usuario?.message}
+            </Form.Control.Feedback>
           </div>
 
-          <div className="form-group">
+          <div className="form-group mb-3 position-relative">
             <Form.Control
               type={mostrarPassword ? "text" : "password"}
-              name="password"
               className="form-control"
               placeholder="Contraseña"
+              {...register("password", { required: "La contraseña es obligatoria" })}
+              isInvalid={!!errors.password}
             />
             <FontAwesomeIcon
               title="Mostrar contraseña"
@@ -110,6 +124,9 @@ function Login({ setRefreshCheckLogin }) {
               icon={!mostrarPassword ? faEyeSlash : faEye}
               onClick={togglePasswordVisiblity}
             />
+            <Form.Control.Feedback type="invalid">
+              {errors.password?.message}
+            </Form.Control.Feedback>
           </div>
 
           <Button

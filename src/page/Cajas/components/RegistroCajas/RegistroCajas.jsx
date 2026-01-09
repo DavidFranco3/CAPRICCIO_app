@@ -1,4 +1,4 @@
-import { useState, useActionState } from 'react';
+import { startTransition, useActionState } from 'react';
 import { registraCajas } from "../../../../api/cajas";
 import "../../../../scss/styles.scss";
 import { Button, Col, Form, Row, Spinner } from "react-bootstrap";
@@ -8,9 +8,11 @@ import queryString from "query-string";
 import { faX, faSave } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { LogsInformativos } from '../../../Logs/components/LogsSistema/LogsSistema';
+import { useForm } from "react-hook-form";
 
 function RegistroCajas(props) {
     const { setShowModal, navigate, listUsuarios } = props;
+    const { register, handleSubmit, formState: { errors } } = useForm();
 
     // Para cancelar el registro
     const cancelarRegistro = () => {
@@ -53,24 +55,37 @@ function RegistroCajas(props) {
         }
     }, null);
 
+    const onSubmit = (data) => {
+        const formData = new FormData();
+        Object.keys(data).forEach(key => formData.append(key, data[key]));
+        startTransition(() => {
+            action(formData);
+        });
+    };
+
     return (
         <>
-            <Form action={action}>
+            <Form onSubmit={handleSubmit(onSubmit)}>
                 <div className="datosDelProducto">
                     <Row className="mb-3">
                         <Form.Group as={Col} controlId="formGridNombre">
                             <Form.Label>Cajero</Form.Label>
-                            <Form.Control
-                                as="select"
-                                name="cajero"
-                                placeholder="Escribe el nombre del cajero"
+                            <Form.Select
                                 defaultValue=""
+                                {...register("cajero", {
+                                    required: "Selecciona una opción",
+                                    validate: value => value !== "Elige una opción" || "Selecciona una opción válida"
+                                })}
+                                isInvalid={!!errors.cajero}
                             >
                                 <option>Elige una opción</option>
                                 {map(listUsuarios, (usuario, index) => (
                                     <option key={index} value={usuario?.id + "/" + usuario?.nombre}>{usuario?.nombre}</option>
                                 ))}
-                            </Form.Control>
+                            </Form.Select>
+                            <Form.Control.Feedback type="invalid">
+                                {errors.cajero?.message}
+                            </Form.Control.Feedback>
                         </Form.Group>
                     </Row>
                 </div>
@@ -81,7 +96,7 @@ function RegistroCajas(props) {
                             title="Registrar caja"
                             type="submit"
                             variant="success"
-                            className="registrar"
+                            className="registrar w-100"
                             disabled={isPending}
                         >
                             <FontAwesomeIcon icon={faSave} /> {!isPending ? "Registrar" : <Spinner animation="border" size="sm" />}
@@ -91,8 +106,9 @@ function RegistroCajas(props) {
                         <Button
                             title="Cerrar ventana"
                             variant="danger"
-                            className="cancelar"
+                            className="cancelar w-100"
                             disabled={isPending}
+                            type="button"
                             onClick={() => {
                                 cancelarRegistro()
                             }}

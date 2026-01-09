@@ -115,6 +115,10 @@ function ListProductos(props) {
           <Categoria id={row.categoria} />
         </>
       ),
+      exportSelector: (row) => {
+        const categoria = listCategorias?.find((c) => c.id === row.categoria || c._id === row.categoria);
+        return categoria ? categoria.nombre : "Sin categoría";
+      },
       sortable: false,
       center: true,
       reorder: false,

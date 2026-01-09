@@ -8,7 +8,8 @@ import { Badge } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileExcel } from "@fortawesome/free-solid-svg-icons";
 
-const GenerarExcel = ({ idTurno }) => {
+const GenerarExcel = (props) => {
+    const { idTurno } = props;
     const [listVentas, setListVentas] = useState([]);
     const [listTurnos, setListTurnos] = useState([]);
     const [listMovimientos, setListMovimientos] = useState([]);
@@ -68,7 +69,7 @@ const GenerarExcel = ({ idTurno }) => {
     const exportarExcel = () => {
         // Objeto para agrupar productos y acumular cantidades
         const productosAgrupados = {};
-    
+
         listVentas.forEach(item => {
             item.productos.forEach(producto => {
                 const cantidad = producto.cantidad || 1;
@@ -83,7 +84,7 @@ const GenerarExcel = ({ idTurno }) => {
                 }
             });
         });
-    
+
         // Estructura de los datos para Excel
         const ws_data = [
             ["TOTAL EFECTIVO: ", totalEfectivo],
@@ -92,51 +93,51 @@ const GenerarExcel = ({ idTurno }) => {
             ["CORTE FINAL DE CAJA EN EFECTIVO", "", ""], // Título que se combinará
             ["Valor", "Cantidad", "Total"] // Encabezado de productos
         ];
-    
+
         let totalGeneral = 0;
-    
+
         Object.values(productosAgrupados).forEach(producto => {
             const totalProducto = producto.cantidad * producto.precio;
             totalGeneral += totalProducto;
             ws_data.push([producto.precio, producto.cantidad, totalProducto]);
         });
-    
+
         // Agregar una fila con el total general
         ws_data.push(["TOTAL", "", totalGeneral]);
         ws_data.push(["DINERO INICIAL", "", listTurnos.length > 0 ? listTurnos[0].fondoCaja : "N/A"]);
-    
+
         // Nueva fila para los pedidos de Uber, Rappi y Didi
         ws_data.push(["PEDIDOS UBER/RAPPI/DIDI", "", "", "Comidad del dia", "Prestamos de comida/sueldos"]); // Encabezado principal combinado
         ws_data.push(["APP/CLIENTES", "FORMA DE PAGO", "TOTAL", "NOMBRE", "TOTAL PROPORCIONAL DE COMIDA", "NOMBRE"]); // Subencabezados
-    
+
         // Filtrar las ventas que sean de Uber, Rappi o Didi
         const pedidosPlataforma = listVentas.filter(venta =>
             ["didi", "rappi", "uber"].includes(venta.hacerPedido)
         );
-    
+
         pedidosPlataforma.forEach(venta => {
             ws_data.push([venta.cliente + " " + venta.hacerPedido, venta.tipoPago, venta.total]);
         });
-    
+
         ws_data.push(["", "", ""]);
         ws_data.push(["BILLETES QUE LA JEFA SE LLEVO", "", ""]);
         ws_data.push(["Quedo en caja de billetes", "Quedo en caja de monedas"]);
         ws_data.push(["", "", ""]);
         ws_data.push(["Gastos de caja", "", ""]);
-    
+
         Object.values(listMovimientos).forEach(movimiento => {
             ws_data.push([movimiento.razon, movimiento.cantidad, ""]);
         });
-        const totalMovimientos = listMovimientos.reduce((acumulador, movimiento) => 
+        const totalMovimientos = listMovimientos.reduce((acumulador, movimiento) =>
             acumulador + movimiento.cantidad, 0
         );
         ws_data.push(["GASTOS", "", totalMovimientos]);
         ws_data.push(["TOTAL", "", totalGeneral - totalMovimientos]);
-        
-    
+
+
         // Crear hoja de Excel
         const ws = XLSX.utils.aoa_to_sheet(ws_data);
-    
+
         // Agregar colores y estilos a las celdas
         // Asegúrate de que la estructura del estilo esté bien aplicada
         ws["A1"].s = { fill: { fgColor: { rgb: "FFFF00" } }, font: { bold: true } }; // Amarillo y negrita
@@ -155,15 +156,24 @@ const GenerarExcel = ({ idTurno }) => {
             { s: { r: 4, c: 0 }, e: { r: 4, c: 2 } }, // "CORTE FINAL DE CAJA EN EFECTIVO" combinada en 3 columnas
             { s: { r: ws_data.length - pedidosPlataforma.length - 2, c: 0 }, e: { r: ws_data.length - pedidosPlataforma.length - 2, c: 2 } } // "PEDIDOS UBER/RAPPI/DIDI" combinada en 3 columnas
         ];
-    
+
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Productos");
-    
+
         // Convertir y descargar el archivo Excel
         const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
         const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
         saveAs(blob, "productos.xlsx");
     };
+
+    if (props.asMenuItem) {
+        return (
+            <div onClick={exportarExcel} style={{ cursor: "pointer" }}>
+                <FontAwesomeIcon icon={faFileExcel} style={{ color: "#28a745" }} />
+                &nbsp; Descargar Excel
+            </div>
+        );
+    }
 
     return (
         <Badge

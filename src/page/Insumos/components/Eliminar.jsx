@@ -102,7 +102,7 @@ function EliminarInsumos(props) {
               title="Eliminar categoría"
               type="submit"
               variant="success"
-              className="registrar"
+              className="registrar w-100"
               disabled={isPending}
             >
               <FontAwesomeIcon icon={faSave} />{" "}
@@ -113,7 +113,7 @@ function EliminarInsumos(props) {
             <Button
               title="Cerrar ventana"
               variant="danger"
-              className="cancelar"
+              className="cancelar w-100"
               disabled={isPending}
               onClick={() => {
                 setShow(false);
